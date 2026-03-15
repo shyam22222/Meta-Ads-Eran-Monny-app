@@ -1,40 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earn Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { background-color: #000; color: white; font-family: sans-serif; }
-        .balance-card { background: linear-gradient(135deg, #22c1ff, #007bff); border-radius: 20px; }
-    </style>
-</head>
-<body class="p-4">
-    <div class="balance-card p-8 text-center mb-6 shadow-lg">
-        <p class="text-sm opacity-90">Your Balance</p>
-        <h2 id="balance-text" class="text-4xl font-bold mt-2">$0.300</h2>
-    </div>
+let balance = 0.300;
+    let adsCount = 6;
 
-    <button onclick="watchAd()" class="w-full bg-blue-600 p-4 rounded-xl font-bold text-lg mb-4">
-        <i class="fas fa-play-circle mr-2"></i> Watch Ad (Earn $0.01)
-    </button>
+    function watchAd() {
+        if(adsCount >= 15) return alert("আজকের লিমিট শেষ!");
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        let balance = 0.300;
+        // ১. আপনার Adsterra ডিরেক্ট লিঙ্ক এখানে দিন
+        let adsterraLink = "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac";
+        
+        // ২. আপনার Monetag ডিরেক্ট লিঙ্ক এখানে দিন
+        let monetagLink = "https://omg10.com/4/10199976";
 
-        function watchAd() {
-            alert("বিজ্ঞাপন শুরু হচ্ছে... ১০ সেকেন্ড অপেক্ষা করুন।");
-            setTimeout(() => {
-                balance += 0.01;
-                document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
-                alert("অভিনন্দন! আপনি ০.০১ ডলার পেয়েছেন।");
-            }, 10000);
+        alert("বিজ্ঞাপন লোড হচ্ছে... এটি সম্পূর্ণ দেখলে ১০ সেন্ট যোগ হবে।");
+
+        // পর্যায়ক্রমে দুটি অ্যাডই ওপেন হবে (প্রথমে Adsterra, পরে ক্লিক করলে Monetag)
+        if (adsCount % 2 === 0) {
+            window.open(adsterraLink, '_blank');
+        } else {
+            window.open(monetagLink, '_blank');
         }
-    </script>
-</body>
-</html>
+
+        // ১০ সেকেন্ডের টাইমার
+        setTimeout(() => {
+            balance += 0.01;
+            adsCount += 1;
+            document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
+            document.getElementById('ads-count').innerText = adsCount;
+            
+            // টেলিগ্রাম বটের ডাটাবেজে আপডেট পাঠানো
+            tg.sendData(JSON.stringify({
+                "action": "update_balance",
+                "balance": balance
+            }));
+
+            alert("অভিনন্দন! আপনি ০.০১ ডলার পেয়েছেন।");
+        }, 10000);
+    }
