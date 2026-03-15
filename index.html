@@ -1,37 +1,81 @@
-let balance = 0.300;
-    let adsCount = 6;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn Money Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #0d1117; color: white; font-family: sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; }
+        .balance-card { background: linear-gradient(135deg, #007bff, #00c6ff); border-radius: 24px; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="balance-card p-10 text-center mb-6 shadow-2xl">
+        <p class="text-sm opacity-80 uppercase">Available Balance</p>
+        <h2 id="balance-text" class="text-5xl font-extrabold mt-2">$0.300</h2>
+    </div>
 
-    function watchAd() {
-        if(adsCount >= 15) return alert("আজকের লিমিট শেষ!");
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="glass-card p-4 text-center">
+            <p class="text-xs text-gray-400">Ads Watched</p>
+            <p id="ads-count" class="text-xl font-bold text-blue-400">6</p>
+        </div>
+        <div class="glass-card p-4 text-center">
+            <p class="text-xs text-gray-400">Daily Limit</p>
+            <p class="text-xl font-bold text-green-400">15</p>
+        </div>
+    </div>
 
-        // ১. আপনার Adsterra ডিরেক্ট লিঙ্ক এখানে দিন
-        let adsterraLink = "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac";
-        
-        // ২. আপনার Monetag ডিরেক্ট লিঙ্ক এখানে দিন
-        let monetagLink = "https://omg10.com/4/10199976";
+    <button onclick="watchAd()" class="w-full bg-blue-600 hover:bg-blue-700 p-5 rounded-2xl font-bold text-lg mb-4 flex items-center justify-center shadow-lg">
+        <i class="fas fa-play-circle mr-3"></i> WATCH AD (Earn $0.01)
+    </button>
+    
+    <button onclick="openWithdraw()" class="glass-card w-full p-4 rounded-2xl font-bold text-gray-300">
+        <i class="fas fa-wallet mr-2"></i> WITHDRAW FUNDS
+    </button>
 
-        alert("বিজ্ঞাপন লোড হচ্ছে... এটি সম্পূর্ণ দেখলে ১০ সেন্ট যোগ হবে।");
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
 
-        // পর্যায়ক্রমে দুটি অ্যাডই ওপেন হবে (প্রথমে Adsterra, পরে ক্লিক করলে Monetag)
-        if (adsCount % 2 === 0) {
-            window.open(adsterraLink, '_blank');
-        } else {
-            window.open(monetagLink, '_blank');
+        let balance = 0.300;
+        let adsCount = 6;
+
+        function watchAd() {
+            if(adsCount >= 15) {
+                alert("আজকের লিমিট শেষ!");
+                return;
+            }
+
+            // আপনার বিজ্ঞাপনের লিঙ্ক এখানে দিন
+            let adsterraLink = "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac"; 
+            let monetagLink = "https://omg10.com/4/10199976";
+
+            alert("বিজ্ঞাপন লোড হচ্ছে... ১০ সেকেন্ড অপেক্ষা করুন।");
+            
+            // অ্যাড ওপেন করা
+            window.open(adsCount % 2 === 0 ? adsterraLink : monetagLink, '_blank');
+
+            setTimeout(() => {
+                balance += 0.01;
+                adsCount += 1;
+                document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
+                document.getElementById('ads-count').innerText = adsCount;
+                alert("সাফল্য! $0.01 ডলার যোগ হয়েছে।");
+            }, 10000);
         }
 
-        // ১০ সেকেন্ডের টাইমার
-        setTimeout(() => {
-            balance += 0.01;
-            adsCount += 1;
-            document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
-            document.getElementById('ads-count').innerText = adsCount;
-            
-            // টেলিগ্রাম বটের ডাটাবেজে আপডেট পাঠানো
-            tg.sendData(JSON.stringify({
-                "action": "update_balance",
-                "balance": balance
-            }));
-
-            alert("অভিনন্দন! আপনি ০.০১ ডলার পেয়েছেন।");
-        }, 10000);
-    }
+        function openWithdraw() {
+            let p_num = prompt("আপনার বিকাশ/নগদ নম্বর দিন:");
+            if(p_num) {
+                alert("আপনার পেমেন্ট রিকোয়েস্ট পাঠানো হয়েছে!");
+                // এখানে আপনার টেলিগ্রামে মেসেজ যাওয়ার কোড যুক্ত হবে
+            }
+        }
+    </script>
+</body>
+</html>
