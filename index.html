@@ -1,35 +1,40 @@
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-    let tg = window.Telegram.WebApp;
-    tg.expand(); // ড্যাশবোর্ডটি পুরো স্ক্রিন জুড়ে ওপেন হবে
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #000; color: white; font-family: sans-serif; }
+        .balance-card { background: linear-gradient(135deg, #22c1ff, #007bff); border-radius: 20px; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="balance-card p-8 text-center mb-6 shadow-lg">
+        <p class="text-sm opacity-90">Your Balance</p>
+        <h2 id="balance-text" class="text-4xl font-bold mt-2">$0.300</h2>
+    </div>
 
-    let balance = 0.300;
-    let adsWatched = 6;
+    <button onclick="watchAd()" class="w-full bg-blue-600 p-4 rounded-xl font-bold text-lg mb-4">
+        <i class="fas fa-play-circle mr-2"></i> Watch Ad (Earn $0.01)
+    </button>
 
-    function watchAd() {
-        if (adsWatched < 15) {
-            alert("বিজ্ঞাপন দেখছেন... ১০ সেকেন্ড অপেক্ষা করুন।");
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let balance = 0.300;
+
+        function watchAd() {
+            alert("বিজ্ঞাপন শুরু হচ্ছে... ১০ সেকেন্ড অপেক্ষা করুন।");
             setTimeout(() => {
-                balance += 0.010;
-                adsWatched += 1;
-                
-                // স্ক্রিনে ব্যালেন্স আপডেট
-                document.querySelector('.balance-card h2').innerText = "$" + balance.toFixed(3);
-                document.querySelectorAll('.stats-card p.text-lg')[0].innerText = adsWatched;
-                document.querySelectorAll('.stats-card p.text-lg')[1].innerText = adsWatched + " / 15";
-
-                // বটের ডাটাবেজে তথ্য পাঠানোর জন্য (ভবিষ্যতের জন্য)
-                tg.sendData(JSON.stringify({
-                    "action": "ad_watched",
-                    "new_balance": balance
-                }));
-
-                alert("অভিনন্দন! ১০ সেন্ট যোগ হয়েছে।");
+                balance += 0.01;
+                document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
+                alert("অভিনন্দন! আপনি ০.০১ ডলার পেয়েছেন।");
             }, 10000);
-        } else {
-            alert("আজকের লিমিট শেষ!");
         }
-    }
-
-    document.querySelector('.task-btn').onclick = watchAd;
-</script>
+    </script>
+</body>
+</html>
