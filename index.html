@@ -3,140 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ads Pro</title>
+    <title>Meta Ads Monny Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; }
         .balance-card { background: linear-gradient(180deg, #37b0ff 0%, #0076ff 100%); border-radius: 25px; box-shadow: 0 10px 20px rgba(0, 118, 255, 0.3); }
         .stats-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; }
         .btn-blue { background-color: #007aff; border-radius: 15px; color: #fff; width: 100%; padding: 15px; font-weight: bold; }
         .bottom-nav { background-color: #121212; border-top: 1px solid #2c2c2e; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
-        .nav-item { text-align: center; color: #8e8e93; font-size: 10px; cursor: pointer; }
-        .nav-item.active { color: #fff; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; padding: 20px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; padding: 20px; overflow-y: auto; }
     </style>
 </head>
 <body class="p-4 pb-24">
 
-    <div class="flex items-center mb-6 mt-2">
-        <div id="u-avatar" class="w-12 h-12 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold">U</div>
-        <h1 class="text-xl font-bold">Welcome, <span id="u-name">User</span>!</h1>
-    </div>
-
-    <div class="balance-card p-10 text-center mb-6">
-        <p class="text-lg opacity-90 tracking-wide">Your Balance</p>
-        <h2 id="balance-text" class="text-6xl font-black mt-2">$0.000</h2>
-    </div>
-
-    <div class="grid grid-cols-3 gap-3 mb-8">
-        <div class="stats-card p-4 text-center">
-            <p id="ads-count" class="text-lg font-bold">0</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Ads Watched</p>
+    <div class="flex justify-between items-center mb-6 mt-2">
+        <div class="flex items-center">
+            <div id="u-avatar" class="w-10 h-10 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold">U</div>
+            <h1 class="font-bold text-sm"><span id="u-name">Loading...</span></h1>
         </div>
-        <div class="stats-card p-4 text-center">
-            <p class="text-lg font-bold">0/10</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Today's Ads</p>
-        </div>
-        <div class="stats-card p-4 text-center">
-            <p id="ref-count" class="text-lg font-bold">0</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Referrals</p>
-        </div>
-    </div>
-
-    <div class="bg-[#1c1c1e] rounded-3xl p-6 mb-6">
-        <h3 class="font-bold mb-4 text-blue-400 uppercase tracking-tighter">Daily Tasks</h3>
-        <button id="ad-btn" onclick="startAdTask()" class="btn-blue mb-4">
-            <i class="fas fa-play-circle mr-2"></i> Watch Ad (30s) - $0.01
+        <button onclick="openModal('leaderboard-modal')" class="bg-[#1c1c1e] p-2 rounded-lg border border-[#2c2c2e]">
+            <i class="fas fa-trophy text-yellow-500"></i>
         </button>
     </div>
 
-    <div id="withdraw-modal" class="modal">
-        <h2 class="text-2xl font-bold mb-4 text-blue-400">Withdraw Funds</h2>
-        <p class="text-sm text-gray-400 mb-4 font-bold">Min: $3.00</p>
-        <select id="method" class="w-full p-4 mb-4 bg-gray-800 rounded-xl text-white outline-none">
-            <option value="Bkash">Bkash</option>
-            <option value="Nagad">Nagad</option>
-            <option value="Binance">Binance (USDT)</option>
-        </select>
-        <input id="w-number" type="text" placeholder="Wallet Number" class="w-full p-4 mb-4 bg-gray-800 rounded-xl outline-none text-white">
-        <input id="w-amount" type="number" placeholder="Amount ($)" class="w-full p-4 mb-6 bg-gray-800 rounded-xl outline-none text-white">
-        <button onclick="submitWithdraw()" class="btn-blue mb-4">Submit</button>
-        <button onclick="closeModal('withdraw-modal')" class="w-full text-gray-500 font-bold">Cancel</button>
+    <div class="balance-card p-10 text-center mb-6">
+        <p class="text-sm opacity-90 uppercase tracking-widest">Total Balance</p>
+        <h2 id="balance-text" class="text-5xl font-black mt-2">$0.000</h2>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mb-6">
+        <button onclick="dailyBonus()" class="stats-card p-4 flex flex-col items-center">
+            <i class="fas fa-gift text-2xl text-pink-500 mb-2"></i>
+            <span class="text-[10px] uppercase font-bold">Daily Bonus</span>
+        </button>
+        <button onclick="openModal('spin-modal')" class="stats-card p-4 flex flex-col items-center">
+            <i class="fas fa-spinner text-2xl text-blue-400 mb-2"></i>
+            <span class="text-[10px] uppercase font-bold">Lucky Spin</span>
+        </button>
+    </div>
+
+    <div class="stats-card p-6 mb-6">
+        <h3 class="font-bold mb-4 text-blue-400 text-sm"><i class="fas fa-tv mr-2"></i> WATCH ADS & EARN</h3>
+        <button id="ad-btn" onclick="startAdTask()" class="btn-blue">Watch Ad (30s) - $0.01</button>
+    </div>
+
+    <div id="leaderboard-modal" class="modal">
+        <h2 class="text-2xl font-bold mb-6 text-yellow-500 text-center">Top Earners</h2>
+        <div id="leader-list" class="space-y-3"></div>
+        <button onclick="closeModal('leaderboard-modal')" class="w-full text-gray-500 font-bold mt-8">Close</button>
+    </div>
+
+    <div id="spin-modal" class="modal">
+        <h2 class="text-2xl font-bold mb-6 text-blue-400 text-center">Lucky Spin</h2>
+        <div class="text-center p-10 bg-gray-900 rounded-full w-48 h-48 mx-auto flex items-center justify-center border-4 border-blue-500 mb-8">
+            <i id="spin-icon" class="fas fa-sync-alt text-5xl"></i>
+        </div>
+        <button id="spin-btn" onclick="runSpin()" class="btn-blue">SPIN NOW ($0.001 - $0.005)</button>
+        <button onclick="closeModal('spin-modal')" class="w-full text-gray-500 font-bold mt-8">Close</button>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item" onclick="openModal('withdraw-modal')"><i class="fas fa-wallet block text-xl mb-1"></i>Withdraw</div>
-        <div class="nav-item" onclick="inviteFriend()"><i class="fas fa-user-plus block text-xl mb-1"></i>Invite</div>
-        <div class="nav-item active"><i class="fas fa-tasks block text-xl mb-1"></i>Home</div>
+        <div class="text-center text-white"><i class="fas fa-home block text-xl mb-1"></i>Home</div>
+        <div onclick="inviteFriend()" class="text-center text-gray-500"><i class="fas fa-user-plus block text-xl mb-1"></i>Invite</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let balance = 0.000; // নতুন ইউজারদের জন্য জিরো ব্যালেন্স
-        let adsCount = 0;
-        
-        // আপনার অ্যাড লিঙ্কসমূহ
-        const adLinks = [
-            "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", 
-            "https://omg10.com/4/10199976"
-        ];
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
+            databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/", // আপনার Realtime Database লিঙ্কটি এখানে বসান
+            projectId: "meta-ads-monny-bot"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        if(tg.initDataUnsafe.user) {
-            document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "test_user";
+        let userData = { balance: 0, ads: 0, lastBonus: 0 };
+
+        // Data Sync
+        db.ref('users/' + userId).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                userData = data;
+                document.getElementById('balance-text').innerText = "$" + (data.balance || 0).toFixed(3);
+                document.getElementById('u-name').innerText = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "User";
+            } else {
+                db.ref('users/' + userId).set({ balance: 0, ads: 0, name: tg.initDataUnsafe.user.first_name, lastBonus: 0 });
+            }
+        });
+
+        // Functions
+        function dailyBonus() {
+            let now = new Date().getTime();
+            if (now - (userData.lastBonus || 0) < 86400000) return tg.showAlert("Already claimed today!");
+            let bonus = 0.005;
+            db.ref('users/' + userId).update({ balance: userData.balance + bonus, lastBonus: now });
+            tg.showAlert("Daily Bonus $0.005 Added!");
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'block'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function runSpin() {
+            let btn = document.getElementById('spin-btn');
+            btn.disabled = true;
+            let win = (Math.random() * (0.005 - 0.001) + 0.001);
+            setTimeout(() => {
+                db.ref('users/' + userId).update({ balance: userData.balance + win });
+                tg.showAlert(`You won $${win.toFixed(3)}!`);
+                btn.disabled = false;
+            }, 2000);
+        }
 
         function startAdTask() {
+            tg.openLink("https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac");
             let btn = document.getElementById('ad-btn');
-            // ১. সাথে সাথে অ্যাড ওপেন হবে
-            tg.openLink(adLinks[adsCount % 2]);
-
-            let timeLeft = 30;
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-
-            let countdown = setInterval(() => {
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Reward in ${timeLeft}s...`;
-                timeLeft--;
-
-                if (timeLeft < 0) {
-                    clearInterval(countdown);
-                    // ২. ৩০ সেকেন্ড পর ব্যালেন্স যোগ হবে
-                    balance += 0.01;
-                    adsCount += 1;
-                    
-                    document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
-                    document.getElementById('ads-count').innerText = adsCount;
-                    
-                    btn.innerHTML = `<i class="fas fa-play-circle mr-2"></i> Watch Ad (Earn $0.01)`;
-                    btn.disabled = false;
-                    btn.style.opacity = "1";
-                    tg.showAlert("Congrats! $0.01 added to your balance.");
+            let time = 30; btn.disabled = true;
+            let timer = setInterval(() => {
+                btn.innerText = `Wait ${time}s...`; time--;
+                if(time < 0) {
+                    clearInterval(timer);
+                    db.ref('users/' + userId).update({ balance: userData.balance + 0.01, ads: (userData.ads || 0) + 1 });
+                    btn.innerText = "Watch Ad (30s) - $0.01"; btn.disabled = false;
+                    tg.showAlert("Reward Added!");
                 }
             }, 1000);
         }
 
-        // ৩. রেফারেল লিঙ্ক ফিক্স (আপনার সঠিক ইউজারনেমসহ)
-        function inviteFriend() {
-            let userId = tg.initDataUnsafe.user.id;
-            let botUsername = "metaadsmonnybot"; // আপনার সঠিক ইউজারনেম @ ছাড়া
-            let inviteLink = `https://t.me/${botUsername}?start=${userId}`;
-            let shareText = "এই বটের মাধ্যমে অ্যাড দেখে ইনকাম করুন! জয়েন করলেই বোনাস।";
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(shareText)}`);
+        function openModal(id) { 
+            if(id === 'leaderboard-modal') loadLeaders();
+            document.getElementById(id).style.display = 'block'; 
+        }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function loadLeaders() {
+            db.ref('users').orderByChild('balance').limitToLast(10).once('value', (s) => {
+                let html = "";
+                s.forEach((u) => {
+                    html = `<div class="stats-card p-4 flex justify-between"><span>${u.val().name}</span><span class="text-blue-400 font-bold">$${u.val().balance.toFixed(3)}</span></div>` + html;
+                });
+                document.getElementById('leader-list').innerHTML = html;
+            });
         }
 
-        function submitWithdraw() {
-            let amount = parseFloat(document.getElementById('w-amount').value);
-            if(balance < 3 || amount < 3) return tg.showAlert("Minimum balance $3.00 needed.");
-            tg.sendData(JSON.stringify({type: "withdraw", amount: amount}));
-            tg.showAlert("Request sent to Admin!");
-            closeModal('withdraw-modal');
+        function inviteFriend() {
+            let link = `https://t.me/metaadsmonnybot?start=${userId}`;
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Join and earn together!`);
         }
     </script>
 </body>
