@@ -1,140 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ads Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .balance-card { background: linear-gradient(180deg, #37b0ff 0%, #0076ff 100%); border-radius: 25px; }
-        .stats-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; }
-        .btn-blue { background-color: #007aff; border-radius: 15px; color: #fff; width: 100%; padding: 15px; font-weight: bold; }
-        .bottom-nav { background-color: #121212; border-top: 1px solid #2c2c2e; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
-        .nav-item { text-align: center; color: #8e8e93; font-size: 10px; }
-        .nav-item.active { color: #fff; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; padding: 20px; }
-    </style>
-</head>
-<body class="p-4 pb-24">
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
 
-    <div class="flex items-center mb-6 mt-2">
-        <div id="u-avatar" class="w-12 h-12 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold">U</div>
-        <h1 class="text-xl font-bold">Welcome, <span id="u-name">User</span>!</h1>
-    </div>
-    <div class="balance-card p-10 text-center mb-6">
-        <p class="text-lg opacity-90 tracking-wide">Your Balance</p>
-        <h2 id="balance-text" class="text-6xl font-black mt-2">$3.200</h2>
-    </div>
+    let balance = 3.200; // আপনার বর্তমান ব্যালেন্স
+    let adsCount = 10;
+    const adLinks = [
+        "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", 
+        "https://omg10.com/4/10199976"
+    ];
 
-    <div class="grid grid-cols-3 gap-3 mb-8">
-        <div class="stats-card p-4 text-center">
-            <i class="fas fa-play-circle text-blue-500 mb-1"></i>
-            <p id="ads-count" class="text-lg font-bold">10</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Ads Watched</p>
-        </div>
-        <div class="stats-card p-4 text-center">
-            <i class="fas fa-calendar-alt text-blue-500 mb-1"></i>
-            <p class="text-lg font-bold">10/10</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Daily Limit</p>
-        </div>
-        <div class="stats-card p-4 text-center">
-            <i class="fas fa-users text-blue-500 mb-1"></i>
-            <p id="ref-count" class="text-lg font-bold">0</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Referrals</p>
-        </div>
-    </div>
+    function startAdTimer() {
+        let btn = document.getElementById('ad-btn');
+        
+        // ১. ক্লিক করার সাথে সাথে অ্যাড ওপেন হবে
+        let currentAd = adLinks[adsCount % 2];
+        tg.openLink(currentAd);
 
-    <div class="bg-[#1c1c1e] rounded-3xl p-6 mb-6">
-        <h3 class="font-bold mb-4 text-blue-400 uppercase">Watch & Earn</h3>
-        <button id="ad-btn" onclick="startAdTimer()" class="btn-blue mb-4">
-            <i class="fas fa-play mr-2"></i> Watch Ad (30s) - $0.01
-        </button>
-    </div>
+        // ২. বাটন ডিজেবল করে টাইমার শুরু হবে
+        let timeLeft = 30;
+        btn.disabled = true;
+        btn.style.opacity = "0.6";
 
-    <div id="withdraw-modal" class="modal">
-        <h2 class="text-2xl font-bold mb-4 text-blue-400">Withdraw Funds</h2>
-        <p class="text-sm text-gray-400 mb-4 font-bold tracking-tighter">Min Withdraw: $3.00</p>
-        <select id="method" class="w-full p-4 mb-4 bg-gray-800 rounded-xl">
-            <option value="Bkash">Bkash</option>
-            <option value="Nagad">Nagad</option>
-            <option value="Binance (USDT)">Binance (USDT)</option>
-        </select>
-        <input id="w-number" type="text" placeholder="Wallet Number" class="w-full p-4 mb-4 bg-gray-800 rounded-xl outline-none text-white">
-        <input id="w-amount" type="number" placeholder="Amount ($)" class="w-full p-4 mb-6 bg-gray-800 rounded-xl outline-none text-white">
-        <button onclick="submitWithdraw()" class="btn-blue mb-4">Submit Request</button>
-        <button onclick="closeModal('withdraw-modal')" class="w-full text-gray-500 font-bold">Cancel</button>
-    </div>
+        let countdown = setInterval(() => {
+            btn.innerHTML = `<i class="fas fa-clock fa-spin mr-2"></i> Processing Reward: ${timeLeft}s`;
+            timeLeft--;
 
-    <div class="bottom-nav">
-        <div class="nav-item" onclick="openModal('withdraw-modal')"><i class="fas fa-wallet"></i>Withdraw</div>
-        <div class="nav-item" onclick="inviteFriend()"><i class="fas fa-user-plus"></i>Invite</div>
-        <div class="nav-item active"><i class="fas fa-tasks"></i>Web Task</div>
-        <div class="nav-item" onclick="tg.showAlert('Coming Soon')"><i class="fas fa-star"></i>Daily Task</div>
-    </div>
+            if (timeLeft < 0) {
+                clearInterval(countdown);
+                
+                // ৩. ৩০ সেকেন্ড পর ব্যালেন্স যোগ হবে
+                balance += 0.01;
+                adsCount += 1;
+                
+                // UI আপডেট
+                document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
+                document.getElementById('ads-count').innerText = adsCount;
+                
+                // বাটন আগের অবস্থায় ফেরত
+                btn.innerHTML = `<i class="fas fa-play mr-2"></i> Watch Ad (Earn $0.01)`;
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                
+                tg.showAlert("অভিনন্দন! আপনি ৩০ সেকেন্ড পূর্ণ করেছেন এবং $0.01 আর্ন করেছেন।");
+            }
+        }, 1000);
+    }
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let balance = 3.200;
-        let adsCount = 10;
-        // আপনার দেওয়া অ্যাড লিঙ্ক
-        const adLinks = ["https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", "https://omg10.com/4/10199976"];
-
-        if(tg.initDataUnsafe.user) {
-            document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'block'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        function startAdTimer() {
-            let btn = document.getElementById('ad-btn');
-            let timeLeft = 30; // ৩০ সেকেন্ডের টাইমার
-            btn.disabled = true;
-
-            let countdown = setInterval(() => {
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Loading... ${timeLeft}s`;
-                timeLeft--;
-                if(timeLeft < 0) {
-                    clearInterval(countdown);
-                    btn.innerHTML = `<i class="fas fa-play mr-2"></i> Watch Ad (30s) - $0.01`;
-                    btn.disabled = false;
-                    tg.openLink(adLinks[adsCount % 2]); // আপনার অ্যাড লিঙ্ক ওপেন
-                    balance += 0.01;
-                    adsCount += 1;
-                    updateUI();
-                    tg.showAlert("Success! $0.01 added.");
-                }
-            }, 1000);
-        }
-
-        function updateUI() {
-            document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
-            document.getElementById('ads-count').innerText = adsCount;
-        }
-
-        function inviteFriend() {
-            let userId = tg.initDataUnsafe.user.id;
-            let inviteLink = `https://t.me/Metaproo_bot?start=${userId}`;
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=জয়েন করলেই ১ ডলার বোনাস!`);
-        }
-
-        function submitWithdraw() {
-            let amount = parseFloat(document.getElementById('w-amount').value);
-            let num = document.getElementById('w-number').value;
-            let method = document.getElementById('method').value;
-
-            if(balance < 3 || amount < 3) return tg.showAlert("Min $3 needed.");
-            if(!num) return tg.showAlert("Enter number!");
-
-            tg.sendData(JSON.stringify({type: "withdraw", method: method, number: num, amount: amount}));
-            tg.showAlert("Request Sent!");
-            closeModal('withdraw-modal');
-        }
-    </script>
-</body>
-</html>
+    // বাকি ফাংশনগুলো (Invite, Withdraw) আগের মতোই থাকবে
+</script>
