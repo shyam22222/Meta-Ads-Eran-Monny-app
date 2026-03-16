@@ -2,27 +2,30 @@
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    let balance = 3.200; // আপনার বর্তমান ব্যালেন্স
+    // বর্তমান ব্যালেন্স ও স্ট্যাটাস
+    let balance = 3.200; // আপনার ড্যাশবোর্ড অনুযায়ী সেট করা
     let adsCount = 10;
+    
+    // আপনার অ্যাড লিঙ্কসমূহ
     const adLinks = [
-        "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", // Adsterra
-        "https://omg10.com/4/10199976" // Monetag
+        "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", 
+        "https://omg10.com/4/10199976"
     ];
 
     function startAdTask() {
         let btn = document.getElementById('ad-btn');
         
-        // ১. ক্লিক করার সাথে সাথেই অ্যাড ওপেন হবে
+        // ১. ক্লিক করার সাথে সাথেই সরাসরি অ্যাড ওপেন হবে
         let currentAd = adLinks[adsCount % 2];
         tg.openLink(currentAd);
 
-        // ২. ব্যাকগ্রাউন্ডে ৩০ সেকেন্ডের টাইমার শুরু হবে
+        // ২. বাটনের টেক্সট পরিবর্তন হবে এবং ৩০ সেকেন্ডের টাইমার শুরু হবে
         let timeLeft = 30;
         btn.disabled = true;
         btn.style.opacity = "0.5";
 
         let countdown = setInterval(() => {
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Confirming Reward: ${timeLeft}s`;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Reward in ${timeLeft}s...`;
             timeLeft--;
 
             if (timeLeft < 0) {
@@ -32,16 +35,17 @@
                 balance += 0.01;
                 adsCount += 1;
                 
-                // UI আপডেট
+                // UI বা ডিসপ্লে আপডেট করা
                 document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
                 document.getElementById('ads-count').innerText = adsCount;
                 
-                // বাটন আগের অবস্থায় ফেরত
+                // বাটনকে পুনরায় সচল করা
                 btn.innerHTML = `<i class="fas fa-play-circle mr-2"></i> Watch Ad (Earn $0.01)`;
                 btn.disabled = false;
                 btn.style.opacity = "1";
                 
-                tg.showAlert("অভিনন্দন! আপনি ৩০ সেকেন্ড অ্যাড দেখেছেন এবং $0.01 যোগ হয়েছে।");
+                // ইউজারকে মেসেজ দেওয়া
+                tg.showAlert("অভিনন্দন! আপনি ৩০ সেকেন্ড পূর্ণ করেছেন এবং $0.01 জমা হয়েছে।");
             }
         }, 1000);
     }
