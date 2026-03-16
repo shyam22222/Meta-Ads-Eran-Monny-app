@@ -5,30 +5,30 @@
     let balance = 3.200; // আপনার বর্তমান ব্যালেন্স
     let adsCount = 10;
     const adLinks = [
-        "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", 
-        "https://omg10.com/4/10199976"
+        "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", // Adsterra
+        "https://omg10.com/4/10199976" // Monetag
     ];
 
-    function startAdTimer() {
+    function startAdTask() {
         let btn = document.getElementById('ad-btn');
         
-        // ১. ক্লিক করার সাথে সাথে অ্যাড ওপেন হবে
+        // ১. ক্লিক করার সাথে সাথেই অ্যাড ওপেন হবে
         let currentAd = adLinks[adsCount % 2];
         tg.openLink(currentAd);
 
-        // ২. বাটন ডিজেবল করে টাইমার শুরু হবে
+        // ২. ব্যাকগ্রাউন্ডে ৩০ সেকেন্ডের টাইমার শুরু হবে
         let timeLeft = 30;
         btn.disabled = true;
-        btn.style.opacity = "0.6";
+        btn.style.opacity = "0.5";
 
         let countdown = setInterval(() => {
-            btn.innerHTML = `<i class="fas fa-clock fa-spin mr-2"></i> Processing Reward: ${timeLeft}s`;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Confirming Reward: ${timeLeft}s`;
             timeLeft--;
 
             if (timeLeft < 0) {
                 clearInterval(countdown);
                 
-                // ৩. ৩০ সেকেন্ড পর ব্যালেন্স যোগ হবে
+                // ৩. ৩০ সেকেন্ড পূর্ণ হওয়ার পর ব্যালেন্স যোগ হবে
                 balance += 0.01;
                 adsCount += 1;
                 
@@ -37,14 +37,12 @@
                 document.getElementById('ads-count').innerText = adsCount;
                 
                 // বাটন আগের অবস্থায় ফেরত
-                btn.innerHTML = `<i class="fas fa-play mr-2"></i> Watch Ad (Earn $0.01)`;
+                btn.innerHTML = `<i class="fas fa-play-circle mr-2"></i> Watch Ad (Earn $0.01)`;
                 btn.disabled = false;
                 btn.style.opacity = "1";
                 
-                tg.showAlert("অভিনন্দন! আপনি ৩০ সেকেন্ড পূর্ণ করেছেন এবং $0.01 আর্ন করেছেন।");
+                tg.showAlert("অভিনন্দন! আপনি ৩০ সেকেন্ড অ্যাড দেখেছেন এবং $0.01 যোগ হয়েছে।");
             }
         }, 1000);
     }
-
-    // বাকি ফাংশনগুলো (Invite, Withdraw) আগের মতোই থাকবে
 </script>
