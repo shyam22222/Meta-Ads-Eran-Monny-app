@@ -3,141 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ads Dashboard</title>
+    <title>Meta Ads Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .balance-card { 
-            background: linear-gradient(180deg, #37b0ff 0%, #0076ff 100%); 
-            border-radius: 25px;
-            box-shadow: 0 10px 20px rgba(0, 118, 255, 0.3);
-        }
+        .balance-card { background: linear-gradient(180deg, #37b0ff 0%, #0076ff 100%); border-radius: 25px; box-shadow: 0 10px 20px rgba(0, 118, 255, 0.3); }
         .stats-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; }
-        .btn-blue { background-color: #007aff; border-radius: 15px; color: #fff; width: 100%; padding: 18px; font-weight: bold; font-size: 18px; }
-        .btn-outline { border: 2px solid #007aff; border-radius: 15px; color: #007aff; width: 100%; padding: 15px; font-weight: bold; }
+        .task-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; padding: 20px; }
+        .btn-blue { background-color: #007aff; border-radius: 15px; color: #fff; width: 100%; padding: 15px; font-weight: bold; }
         .bottom-nav { background-color: #121212; border-top: 1px solid #2c2c2e; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
         .nav-item { text-align: center; color: #8e8e93; font-size: 10px; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 2px; }
-        .nav-item.active { color: #fff; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px; overflow-y: auto; }
     </style>
 </head>
 <body class="p-4 pb-24">
 
-    <div class="flex items-center mb-6 mt-2">
-        <div id="user-avatar" class="w-12 h-12 bg-blue-600 rounded-full mr-3 flex items-center justify-center text-xl font-bold border-2 border-gray-800">U</div>
-        <div>
-            <h1 class="text-xl font-bold leading-tight">Welcome, <span id="user-name">User</span>!</h1>
-            <p class="text-[10px] text-gray-500 tracking-widest uppercase">Premium Member</p>
+    <div class="flex items-center mb-6">
+        <div id="u-avatar" class="w-12 h-12 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold">U</div>
+        <h1 class="text-xl font-bold">Welcome, <span id="u-name">User</span>!</h1>
+    </div>
+
+    <div class="balance-card p-10 text-center mb-6">
+        <p class="text-lg opacity-90 tracking-wide">Your Balance</p>
+        <h2 id="balance-text" class="text-6xl font-black mt-2">$3.200</h2>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mb-8 text-[10px]">
+        <div class="stats-card p-4 text-center">
+            <i class="fas fa-play-circle text-blue-500 mb-1"></i>
+            <p id="ads-count" class="text-lg font-bold">10</p>
+            <p class="text-gray-400 font-bold">ADS WATCHED</p>
+        </div>
+        <div class="stats-card p-4 text-center">
+            <i class="fas fa-calendar-alt text-blue-500 mb-1"></i>
+            <p class="text-lg font-bold">10/10</p>
+            <p class="text-gray-400 font-bold">TODAY'S ADS</p>
+        </div>
+        <div class="stats-card p-4 text-center">
+            <i class="fas fa-users text-blue-500 mb-1"></i>
+            <p id="ref-count" class="text-lg font-bold">0</p>
+            <p class="text-gray-400 font-bold">REFERRALS</p>
         </div>
     </div>
 
-    <div class="balance-card p-10 text-center mb-6 relative overflow-hidden">
-        <p class="text-sm opacity-80 font-medium uppercase tracking-wider">Available Balance</p>
-        <h2 id="balance-text" class="text-6xl font-black mt-2 tracking-tighter">$3.200</h2>
-        <i class="fas fa-coins absolute right-[-10px] bottom-[-10px] text-8xl opacity-10 rotate-12"></i>
-    </div>
-
-    <div class="grid grid-cols-3 gap-3 mb-8">
-        <div class="stats-card p-4 text-center">
-            <i class="fas fa-play-circle text-blue-500 text-lg mb-1"></i>
-            <p id="ads-count" class="text-xl font-bold">10</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Ads Watched</p>
-        </div>
-        <div class="stats-card p-4 text-center">
-            <i class="fas fa-calendar-alt text-blue-500 text-lg mb-1"></i>
-            <p class="text-xl font-bold">10/15</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Today's Ads</p>
-        </div>
-        <div class="stats-card p-4 text-center">
-            <i class="fas fa-users text-blue-500 text-lg mb-1"></i>
-            <p class="text-xl font-bold">0</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase">Referrals</p>
-        </div>
-    </div>
-
-    <div class="bg-[#1c1c1e] rounded-[30px] p-6 mb-6 border border-[#2c2c2e]">
-        <h3 class="text-lg font-bold mb-4 flex items-center">
-            <span class="w-1.5 h-6 bg-blue-500 rounded-full mr-3"></span>
-            Today's Task
-        </h3>
-        
-        <button id="ad-btn" onclick="startTask()" class="btn-blue mb-4 shadow-lg shadow-blue-900/20 active:scale-95 transition-all">
-            <i class="fas fa-play-circle mr-2"></i> Watch Ad (Earn $0.01)
+    <div class="task-card mb-6">
+        <h3 class="font-bold mb-4 text-blue-500 uppercase tracking-tighter">Main Task</h3>
+        <button id="ad-btn" onclick="startAdTask()" class="btn-blue active:scale-95 transition-all">
+            <i class="fas fa-play mr-2"></i> Watch Ad (30s) - $0.01
         </button>
-        
-        <button onclick="tg.openTelegramLink('https://t.me/your_channel')" class="btn-outline active:scale-95 transition-all">
-            <i class="fab fa-telegram-plane mr-2 text-xl"></i> Join Channel
-        </button>
+    </div>
+
+    <div id="withdraw-modal" class="modal">
+        <h2 class="text-2xl font-bold mb-4 text-blue-500">Withdraw Funds</h2>
+        <p class="mb-4 text-sm text-gray-400">Minimum Withdraw: $3.00</p>
+        <select id="method" class="w-full p-4 mb-4 bg-gray-800 rounded-xl text-white outline-none">
+            <option value="Bkash">Bkash</option>
+            <option value="Nagad">Nagad</option>
+            <option value="Binance">Binance (USDT)</option>
+        </select>
+        <input id="p-number" type="text" placeholder="Wallet Number / ID" class="w-full p-4 mb-4 bg-gray-800 rounded-xl outline-none">
+        <input id="p-amount" type="number" placeholder="Amount (Min $3)" class="w-full p-4 mb-6 bg-gray-800 rounded-xl outline-none">
+        <button onclick="submitWithdraw()" class="btn-blue mb-4">Submit Request</button>
+        <button onclick="closeModal('withdraw-modal')" class="w-full text-gray-500 font-bold">Cancel</button>
+    </div>
+
+    <div id="daily-modal" class="modal">
+        <h2 class="text-2xl font-bold mb-4 text-green-500">Daily Website Tasks</h2>
+        <div class="task-card mb-4">
+            <p class="text-sm mb-2 text-gray-300">Visit Google News (30s)</p>
+            <button onclick="startWebTask('https://news.google.com')" class="btn-blue text-xs p-2">Start - $0.05</button>
+        </div>
+        <button onclick="closeModal('daily-modal')" class="w-full text-gray-500 font-bold mt-4">Close</button>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item" onclick="tg.showAlert('Withdraw Section Coming Soon!')"><i class="fas fa-wallet"></i>Withdraw</div>
-        <div class="nav-item" onclick="tg.showAlert('History Empty')"><i class="fas fa-history"></i>History</div>
-        <div class="nav-item" onclick="tg.showAlert('Invite Friends to Earn')"><i class="fas fa-user-plus"></i>Invite</div>
+        <div class="nav-item" onclick="openModal('withdraw-modal')"><i class="fas fa-money-bill-transfer"></i>Withdraw</div>
+        <div class="nav-item" onclick="tg.showAlert('Daily Bonus: Join our Group!')"><i class="fas fa-gift"></i>Invite</div>
         <div class="nav-item active"><i class="fas fa-tasks"></i>Web Task</div>
-        <div class="nav-item" onclick="tg.showAlert('Daily Bonus Unlocked at $5')"><i class="fas fa-star"></i>Daily Task</div>
+        <div class="nav-item" onclick="openModal('daily-modal')"><i class="fas fa-star"></i>Daily Task</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Load User Info
-        if(tg.initDataUnsafe.user) {
-            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
-            if(tg.initDataUnsafe.user.photo_url) {
-                document.getElementById('user-avatar').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" class="rounded-full w-full h-full object-cover">`;
-            } else {
-                document.getElementById('user-avatar').innerText = tg.initDataUnsafe.user.first_name.charAt(0);
-            }
-        }
-
         let balance = 3.200;
         let adsCount = 10;
+        let referralCount = 0;
 
-        // আপনার দেওয়া অ্যাড লিঙ্ক দুটি এখানে সেট করা হয়েছে
-        const adLinks = [
-            "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", // Adsterra
-            "https://omg10.com/4/10199976" // Monetag
-        ];
+        // User Data
+        if(tg.initDataUnsafe.user) {
+            document.getElementById('u-name').innerText = tg.initDataUnsafe.user.first_name;
+        }
 
-        function startTask() {
-            if(adsCount >= 15) {
-                tg.showAlert("Today's limit reached! Come back tomorrow.");
-                return;
-            }
+        function openModal(id) { document.getElementById(id).style.display = 'block'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+        function startAdTask() {
             let btn = document.getElementById('ad-btn');
-            let timeLeft = 10;
+            let timeLeft = 30; // ৩০ সেকেন্ড
             btn.disabled = true;
-            btn.style.opacity = "0.6";
 
             let timer = setInterval(() => {
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Ad Loading in ${timeLeft}s...`;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Watching... ${timeLeft}s`;
                 timeLeft--;
-
                 if(timeLeft < 0) {
                     clearInterval(timer);
-                    btn.innerHTML = `<i class="fas fa-play-circle mr-2"></i> Watch Ad (Earn $0.01)`;
+                    btn.innerHTML = `<i class="fas fa-play mr-2"></i> Watch Ad (30s) - $0.01`;
                     btn.disabled = false;
-                    btn.style.opacity = "1";
                     
-                    // অ্যাড ওপেন করা (একবার Adsterra, একবার Monetag)
-                    let currentAd = adLinks[adsCount % 2];
-                    tg.openLink(currentAd);
-
-                    // ব্যালেন্স আপডেট
+                    // Ad Link
+                    tg.openLink("https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac");
+                    
                     balance += 0.01;
                     adsCount += 1;
-                    document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
-                    document.getElementById('ads-count').innerText = adsCount;
-                    
-                    tg.showScanQrPopup({text: "Success! $0.01 added."}); // Success নোটিফিকেশন
-                    setTimeout(() => tg.closeScanQrPopup(), 2000);
+                    updateUI();
                 }
             }, 1000);
+        }
+
+        function startWebTask(url) {
+            tg.showAlert("Website এ ৩০ সেকেন্ড অপেক্ষা করুন!");
+            tg.openLink(url);
+            setTimeout(() => {
+                balance += 0.05;
+                updateUI();
+                tg.showAlert("Success! $0.05 added.");
+            }, 30000); // ৩০ সেকেন্ড পর ব্যালেন্স যোগ হবে
+        }
+
+        function updateUI() {
+            document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
+            document.getElementById('ads-count').innerText = adsCount;
+        }
+
+        function submitWithdraw() {
+            let amount = parseFloat(document.getElementById('p-amount').value);
+            let number = document.getElementById('p-number').value;
+            let method = document.getElementById('method').value;
+
+            if(balance < 3) return tg.showAlert("Insufficient balance! Minimum $3 required.");
+            if(amount < 3) return tg.showAlert("Minimum withdraw is $3.");
+            if(!number) return tg.showAlert("Please enter wallet number.");
+
+            tg.sendData(JSON.stringify({
+                "type": "withdraw",
+                "method": method,
+                "number": number,
+                "amount": amount
+            }));
+            
+            tg.showAlert("Withdraw request sent to Admin!");
+            closeModal('withdraw-modal');
         }
     </script>
 </body>
