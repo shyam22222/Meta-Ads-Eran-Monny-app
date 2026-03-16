@@ -13,9 +13,9 @@
         body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; }
         .balance-card { background: linear-gradient(135deg, #37b0ff 0%, #0076ff 100%); border-radius: 25px; box-shadow: 0 10px 30px rgba(0, 118, 255, 0.4); }
         .stats-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; transition: all 0.2s; }
-        .stats-card:active { transform: scale(0.95); background-color: #2c2c2e; }
         .btn-blue { background-color: #007aff; border-radius: 15px; color: #fff; width: 100%; padding: 16px; font-weight: bold; font-size: 16px; transition: opacity 0.2s; }
-        .btn-blue:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-blue:disabled { background-color: #2c2c2e; color: #666; cursor: not-allowed; }
+        .disabled-card { opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body class="p-4 pb-24">
@@ -23,7 +23,7 @@
     <div class="flex items-center mb-6 mt-2">
         <div id="user-photo" class="w-10 h-10 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold text-white shadow-lg">?</div>
         <div>
-            <h1 class="text-md font-bold leading-tight">Hello, <span id="u-name">Loading...</span></h1>
+            <h1 class="text-md font-bold leading-tight">Hello, <span id="u-name">User</span></h1>
             <p class="text-[10px] text-green-400 font-bold"><i class="fas fa-check-circle"></i> VERIFIED EARNER</p>
         </div>
     </div>
@@ -34,11 +34,11 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4 mb-6">
-        <div onclick="dailyBonus()" class="stats-card p-5 text-center cursor-pointer">
+        <div id="daily-card" onclick="dailyBonus()" class="stats-card p-5 text-center cursor-pointer">
             <i class="fas fa-gift text-3xl text-pink-500 mb-2"></i>
             <p class="text-[11px] font-bold uppercase">Daily Bonus</p>
         </div>
-        <div onclick="runSpin()" class="stats-card p-5 text-center cursor-pointer">
+        <div id="spin-card" onclick="runSpin()" class="stats-card p-5 text-center cursor-pointer">
             <i id="spin-icon" class="fas fa-dharmachakra text-3xl text-blue-400 mb-2"></i>
             <p class="text-[11px] font-bold uppercase">Lucky Spin</p>
         </div>
@@ -47,22 +47,17 @@
     <div class="stats-card p-6 mb-8">
         <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-blue-400 text-xs tracking-widest uppercase"><i class="fas fa-video mr-2"></i> Video Ad Task</h3>
-            <span class="text-[9px] bg-blue-900/50 text-blue-300 px-2 py-1 rounded border border-blue-800">HIGH CPM</span>
+            <span id="ad-status" class="text-[9px] bg-blue-900/50 text-blue-300 px-2 py-1 rounded border border-blue-800">READY</span>
         </div>
         <button id="ad-btn" onclick="startAdTask()" class="btn-blue">
             Watch Ad (30s) - $0.01
         </button>
-    </div>
-
-    <div class="fixed bottom-0 left-0 w-full bg-[#121212] border-t border-[#2c2c2e] flex justify-around py-4 z-50">
-        <div class="text-center text-white"><i class="fas fa-home block text-xl mb-1"></i><span class="text-[10px]">Home</span></div>
-        <div onclick="tg.showAlert('Referral system coming soon!')" class="text-center text-gray-500"><i class="fas fa-users block text-xl mb-1"></i><span class="text-[10px]">Invite</span></div>
-        <div onclick="tg.showAlert('Minimum Withdraw: $3.00')" class="text-center text-gray-500"><i class="fas fa-wallet block text-xl mb-1"></i><span class="text-[10px]">Wallet</span></div>
+        <p id="timer-msg" class="text-[10px] text-gray-500 mt-2 text-center hidden">অ্যাডটি সম্পূর্ণ না দেখলে রিওয়ার্ড পাবেন না!</p>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready(); // টেলিগ্রাম অ্যাপকে রেডি করা
+        tg.ready();
         tg.expand();
 
         // Firebase Configuration
@@ -74,19 +69,17 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // ইউজার ডাটা হ্যান্ডলিং
         const user = tg.initDataUnsafe.user;
-        const userId = user ? user.id : "test_user_123";
+        const userId = user ? user.id : "test_user";
         const fullName = user ? (user.first_name + " " + (user.last_name || "")) : "Guest User";
 
-        // UI-তে ইউজারের নাম বসানো
         document.getElementById('u-name').innerText = fullName;
         document.getElementById('user-photo').innerText = fullName.charAt(0);
 
         let currentBalance = 0;
         let lastBonusDate = 0;
+        let isSpinning = false;
 
-        // ডাটাবেস থেকে রিয়েল-টাইম ডাটা সিঙ্ক
         db.ref('users/' + userId).on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -94,75 +87,77 @@
                 lastBonusDate = data.lastBonus || 0;
                 document.getElementById('balance-text').innerText = "$" + currentBalance.toFixed(3);
             } else {
-                // নতুন ইউজারের জন্য ডাটা তৈরি
-                db.ref('users/' + userId).set({
-                    name: fullName,
-                    balance: 0,
-                    lastBonus: 0,
-                    totalAds: 0
-                });
+                db.ref('users/' + userId).set({ name: fullName, balance: 0, lastBonus: 0 });
             }
         });
 
-        // ভিডিও অ্যাড টাস্ক
+        // ১. অ্যাড টাস্ক এবং ৩০ সেকেন্ড ভেরিফিকেশন লজিক
         function startAdTask() {
-            // অ্যাড লিঙ্ক ওপেন করা (সরাসরি ব্রাউজারে)
+            const btn = document.getElementById('ad-btn');
+            const status = document.getElementById('ad-status');
+            const msg = document.getElementById('timer-msg');
+            
+            // অ্যাড লিঙ্ক ওপেন করা
             tg.openLink("https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac");
             
-            const btn = document.getElementById('ad-btn');
-            let timeLeft = 30;
             btn.disabled = true;
+            msg.classList.remove('hidden');
+            status.innerText = "WATCHING...";
+            status.classList.replace('text-blue-300', 'text-yellow-400');
 
+            let timeLeft = 30;
             const timer = setInterval(() => {
-                btn.innerText = `Verifying Reward... ${timeLeft}s`;
+                btn.innerText = `অপেক্ষা করুন: ${timeLeft}s`;
                 timeLeft--;
 
                 if (timeLeft < 0) {
                     clearInterval(timer);
+                    // ৩০ সেকেন্ড শেষ হলেই কেবল ব্যালেন্স আপডেট হবে
                     const newBalance = currentBalance + 0.010;
-                    db.ref('users/' + userId).update({ 
-                        balance: newBalance,
-                        totalAds: firebase.database.ServerValue.increment(1)
-                    });
+                    db.ref('users/' + userId).update({ balance: newBalance });
+                    
                     btn.innerText = "Watch Ad (30s) - $0.01";
                     btn.disabled = false;
-                    tg.showConfirm("Success! $0.01 reward added to your wallet.");
+                    msg.classList.add('hidden');
+                    status.innerText = "SUCCESS";
+                    status.classList.replace('text-yellow-400', 'text-green-400');
+                    tg.showAlert("অভিনন্দন! আপনি $0.01 রিওয়ার্ড পেয়েছেন।");
                 }
             }, 1000);
         }
 
-        // লাকি স্পিন
+        // ২. স্পিন লজিক (একবার ক্লিক করলে আর ক্লিক করা যাবে না যতক্ষণ না শেষ হয়)
         function runSpin() {
-            const icon = document.getElementById('spin-icon');
-            if (icon.classList.contains('fa-spin')) return;
+            if (isSpinning) return; // যদি অলরেডি চলতে থাকে তবে কাজ করবে না
 
+            const icon = document.getElementById('spin-icon');
+            const card = document.getElementById('spin-card');
+            
+            isSpinning = true;
+            card.classList.add('disabled-card'); // বাটনটি দেখতে ডিজেবল লাগবে
             icon.classList.add('fa-spin');
+
             const winAmount = (Math.random() * (0.005 - 0.001) + 0.001);
 
             setTimeout(() => {
-                icon.classList.remove('fa-spin');
                 const newBalance = currentBalance + winAmount;
                 db.ref('users/' + userId).update({ balance: newBalance });
-                tg.showAlert(`Lucky! You won $${winAmount.toFixed(3)}`);
-            }, 2000);
+                
+                icon.classList.remove('fa-spin');
+                card.classList.remove('disabled-card');
+                isSpinning = false; // আবার স্পিন করার সুযোগ দেওয়া হলো
+                tg.showAlert(`আপনি জিতেছেন $${winAmount.toFixed(3)}!`);
+            }, 3000); // ৩ সেকেন্ড ঘোরার পর রেজাল্ট আসবে
         }
 
-        // ডেইলি বোনাস
         function dailyBonus() {
             const now = new Date().getTime();
-            const oneDay = 24 * 60 * 60 * 1000;
-
-            if (now - lastBonusDate < oneDay) {
-                tg.showAlert("You already claimed your bonus! Come back tomorrow.");
+            if (now - lastBonusDate < 86400000) {
+                tg.showAlert("আজকের বোনাস নেওয়া হয়ে গেছে!");
                 return;
             }
-
-            const newBalance = currentBalance + 0.005;
-            db.ref('users/' + userId).update({ 
-                balance: newBalance,
-                lastBonus: now
-            });
-            tg.showAlert("Daily Bonus of $0.005 added!");
+            db.ref('users/' + userId).update({ balance: currentBalance + 0.005, lastBonus: now });
+            tg.showAlert("Daily Bonus $0.005 যোগ হয়েছে!");
         }
     </script>
 </body>
