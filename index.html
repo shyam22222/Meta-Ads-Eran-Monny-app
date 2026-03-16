@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ads Monny Pro</title>
+    <title>Meta Ads Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -12,29 +12,24 @@
     <style>
         body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; }
         .balance-card { background: linear-gradient(135deg, #37b0ff 0%, #0076ff 100%); border-radius: 25px; box-shadow: 0 10px 30px rgba(0, 118, 255, 0.4); }
-        .stats-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; transition: transform 0.2s; }
-        .stats-card:active { transform: scale(0.95); }
-        .btn-blue { background-color: #007aff; border-radius: 15px; color: #fff; width: 100%; padding: 16px; font-weight: bold; font-size: 16px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px; }
+        .stats-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; transition: all 0.2s; }
+        .stats-card:active { transform: scale(0.95); background-color: #2c2c2e; }
+        .btn-blue { background-color: #007aff; border-radius: 15px; color: #fff; width: 100%; padding: 16px; font-weight: bold; font-size: 16px; transition: opacity 0.2s; }
+        .btn-blue:disabled { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body class="p-4 pb-24">
 
-    <div class="flex justify-between items-center mb-6 mt-2">
-        <div class="flex items-center">
-            <div class="w-10 h-10 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold text-white shadow-lg">M</div>
-            <div>
-                <h1 class="text-md font-bold leading-tight">Hello, <span id="u-name">User</span></h1>
-                <p class="text-[10px] text-green-400"><i class="fas fa-check-circle"></i> Verified Earner</p>
-            </div>
+    <div class="flex items-center mb-6 mt-2">
+        <div id="user-photo" class="w-10 h-10 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold text-white shadow-lg">?</div>
+        <div>
+            <h1 class="text-md font-bold leading-tight">Hello, <span id="u-name">Loading...</span></h1>
+            <p class="text-[10px] text-green-400 font-bold"><i class="fas fa-check-circle"></i> VERIFIED EARNER</p>
         </div>
-        <button onclick="openModal('leaderboard-modal')" class="bg-[#1c1c1e] p-2 rounded-lg border border-[#2c2c2e]">
-            <i class="fas fa-trophy text-yellow-500"></i>
-        </button>
     </div>
 
     <div class="balance-card p-10 text-center mb-6">
-        <p class="text-xs opacity-80 uppercase tracking-widest font-bold">Total Earnings</p>
+        <p class="text-xs opacity-80 uppercase tracking-widest font-black">Total Earnings</p>
         <h2 id="balance-text" class="text-5xl font-black mt-2 tracking-tighter">$0.000</h2>
     </div>
 
@@ -43,56 +38,132 @@
             <i class="fas fa-gift text-3xl text-pink-500 mb-2"></i>
             <p class="text-[11px] font-bold uppercase">Daily Bonus</p>
         </div>
-        <div onclick="openModal('spin-modal')" class="stats-card p-5 text-center cursor-pointer">
-            <i class="fas fa-dharmachakra text-3xl text-blue-400 mb-2"></i>
+        <div onclick="runSpin()" class="stats-card p-5 text-center cursor-pointer">
+            <i id="spin-icon" class="fas fa-dharmachakra text-3xl text-blue-400 mb-2"></i>
             <p class="text-[11px] font-bold uppercase">Lucky Spin</p>
         </div>
     </div>
 
     <div class="stats-card p-6 mb-8">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-blue-400 text-sm"><i class="fas fa-video mr-2"></i> VIDEO AD TASK</h3>
-            <span class="text-[10px] bg-blue-900 text-blue-100 px-2 py-1 rounded">High CPM</span>
+            <h3 class="font-bold text-blue-400 text-xs tracking-widest uppercase"><i class="fas fa-video mr-2"></i> Video Ad Task</h3>
+            <span class="text-[9px] bg-blue-900/50 text-blue-300 px-2 py-1 rounded border border-blue-800">HIGH CPM</span>
         </div>
         <button id="ad-btn" onclick="startAdTask()" class="btn-blue">
             Watch Ad (30s) - $0.01
         </button>
     </div>
 
-    <div id="leaderboard-modal" class="modal">
-        <h2 class="text-2xl font-bold mb-6 text-yellow-500 text-center">Global Top 10</h2>
-        <div id="leader-list" class="space-y-3"></div>
-        <button onclick="closeModal('leaderboard-modal')" class="w-full text-gray-500 font-bold mt-8">Close</button>
-    </div>
-
-    <div id="spin-modal" class="modal">
-        <h2 class="text-2xl font-bold mb-6 text-blue-400 text-center">Lucky Spin</h2>
-        <div class="text-center mb-8">
-            <div class="w-40 h-40 border-4 border-blue-500 rounded-full mx-auto flex items-center justify-center bg-gray-900 shadow-2xl">
-                <i id="spin-icon" class="fas fa-star text-5xl text-yellow-400"></i>
-            </div>
-        </div>
-        <button id="spin-btn" onclick="runSpin()" class="btn-blue">SPIN ($0.001 - $0.005)</button>
-        <button onclick="closeModal('spin-modal')" class="w-full text-gray-500 font-bold mt-8">Close</button>
-    </div>
-
     <div class="fixed bottom-0 left-0 w-full bg-[#121212] border-t border-[#2c2c2e] flex justify-around py-4 z-50">
-        <div class="text-center text-white"><i class="fas fa-home block text-xl"></i><span class="text-[10px]">Home</span></div>
-        <div onclick="inviteFriend()" class="text-center text-gray-500"><i class="fas fa-users block text-xl"></i><span class="text-[10px]">Invite</span></div>
-        <div onclick="tg.showAlert('Minimum Withdraw: $3.00')" class="text-center text-gray-500"><i class="fas fa-wallet block text-xl"></i><span class="text-[10px]">Wallet</span></div>
+        <div class="text-center text-white"><i class="fas fa-home block text-xl mb-1"></i><span class="text-[10px]">Home</span></div>
+        <div onclick="tg.showAlert('Referral system coming soon!')" class="text-center text-gray-500"><i class="fas fa-users block text-xl mb-1"></i><span class="text-[10px]">Invite</span></div>
+        <div onclick="tg.showAlert('Minimum Withdraw: $3.00')" class="text-center text-gray-500"><i class="fas fa-wallet block text-xl mb-1"></i><span class="text-[10px]">Wallet</span></div>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
+        tg.ready(); // টেলিগ্রাম অ্যাপকে রেডি করা
         tg.expand();
 
-        // Firebase Setup using provided URL and API Key
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
-            databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/", 
+            databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
             projectId: "meta-ads-monny-bot"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let userId = tg.initDataUnsafe.user
+        // ইউজার ডাটা হ্যান্ডলিং
+        const user = tg.initDataUnsafe.user;
+        const userId = user ? user.id : "test_user_123";
+        const fullName = user ? (user.first_name + " " + (user.last_name || "")) : "Guest User";
+
+        // UI-তে ইউজারের নাম বসানো
+        document.getElementById('u-name').innerText = fullName;
+        document.getElementById('user-photo').innerText = fullName.charAt(0);
+
+        let currentBalance = 0;
+        let lastBonusDate = 0;
+
+        // ডাটাবেস থেকে রিয়েল-টাইম ডাটা সিঙ্ক
+        db.ref('users/' + userId).on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                currentBalance = data.balance || 0;
+                lastBonusDate = data.lastBonus || 0;
+                document.getElementById('balance-text').innerText = "$" + currentBalance.toFixed(3);
+            } else {
+                // নতুন ইউজারের জন্য ডাটা তৈরি
+                db.ref('users/' + userId).set({
+                    name: fullName,
+                    balance: 0,
+                    lastBonus: 0,
+                    totalAds: 0
+                });
+            }
+        });
+
+        // ভিডিও অ্যাড টাস্ক
+        function startAdTask() {
+            // অ্যাড লিঙ্ক ওপেন করা (সরাসরি ব্রাউজারে)
+            tg.openLink("https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac");
+            
+            const btn = document.getElementById('ad-btn');
+            let timeLeft = 30;
+            btn.disabled = true;
+
+            const timer = setInterval(() => {
+                btn.innerText = `Verifying Reward... ${timeLeft}s`;
+                timeLeft--;
+
+                if (timeLeft < 0) {
+                    clearInterval(timer);
+                    const newBalance = currentBalance + 0.010;
+                    db.ref('users/' + userId).update({ 
+                        balance: newBalance,
+                        totalAds: firebase.database.ServerValue.increment(1)
+                    });
+                    btn.innerText = "Watch Ad (30s) - $0.01";
+                    btn.disabled = false;
+                    tg.showConfirm("Success! $0.01 reward added to your wallet.");
+                }
+            }, 1000);
+        }
+
+        // লাকি স্পিন
+        function runSpin() {
+            const icon = document.getElementById('spin-icon');
+            if (icon.classList.contains('fa-spin')) return;
+
+            icon.classList.add('fa-spin');
+            const winAmount = (Math.random() * (0.005 - 0.001) + 0.001);
+
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+                const newBalance = currentBalance + winAmount;
+                db.ref('users/' + userId).update({ balance: newBalance });
+                tg.showAlert(`Lucky! You won $${winAmount.toFixed(3)}`);
+            }, 2000);
+        }
+
+        // ডেইলি বোনাস
+        function dailyBonus() {
+            const now = new Date().getTime();
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            if (now - lastBonusDate < oneDay) {
+                tg.showAlert("You already claimed your bonus! Come back tomorrow.");
+                return;
+            }
+
+            const newBalance = currentBalance + 0.005;
+            db.ref('users/' + userId).update({ 
+                balance: newBalance,
+                lastBonus: now
+            });
+            tg.showAlert("Daily Bonus of $0.005 added!");
+        }
+    </script>
+</body>
+</html>
