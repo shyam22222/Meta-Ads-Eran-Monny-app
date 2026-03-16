@@ -10,46 +10,50 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; }
+        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .balance-card { background: linear-gradient(135deg, #37b0ff 0%, #0076ff 100%); border-radius: 25px; }
-        .stats-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; }
-        .btn-blue { background-color: #007aff; border-radius: 15px; color: #fff; width: 100%; padding: 16px; font-weight: bold; }
-        .btn-blue:disabled { background-color: #2c2c2e; color: #666; }
+        
+        /* Spin Wheel Style */
+        .wheel-container { position: relative; width: 280px; height: 280px; margin: 0 auto; }
+        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #333; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); background: conic-gradient(
+            #ff3e3e 0deg 45deg, #ff9e3e 45deg 90deg, #ffeb3e 90deg 135deg, #3eff3e 135deg 180deg,
+            #3eebff 180deg 225deg, #3e3eff 225deg 270deg, #9e3eff 270deg 315deg, #ff3ecb 315deg 360deg
+        ); position: relative; }
+        .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 30px; height: 30px; background: white; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: #fff; border-radius: 50%; z-index: 5; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        
+        /* Button Style */
         .locked { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
     </style>
 </head>
-<body class="p-4 pb-24">
+<body class="p-4 pb-24 text-center">
 
-    <div class="flex items-center mb-6 mt-2">
-        <div id="user-photo" class="w-10 h-10 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold shadow-lg">?</div>
-        <div>
-            <h1 class="text-md font-bold">Hello, <span id="u-name">User</span></h1>
-            <p class="text-[10px] text-green-400 font-bold uppercase tracking-tighter">Verified Meta Earner</p>
-        </div>
+    <div class="flex items-center text-left mb-6">
+        <div id="user-photo" class="w-10 h-10 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold">?</div>
+        <h1 class="font-bold">Hello, <span id="u-name">User</span></h1>
     </div>
 
-    <div class="balance-card p-10 text-center mb-6 shadow-xl shadow-blue-900/20">
-        <p class="text-xs opacity-80 uppercase font-black">Current Balance</p>
-        <h2 id="balance-text" class="text-5xl font-black mt-2 tracking-tighter">$0.000</h2>
+    <div class="balance-card p-8 mb-8">
+        <p class="text-xs font-bold opacity-80 uppercase">Wallet Balance</p>
+        <h2 id="balance-text" class="text-4xl font-black mt-1">$0.000</h2>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-6">
-        <div id="daily-card" onclick="dailyBonus()" class="stats-card p-5 text-center cursor-pointer">
-            <i class="fas fa-gift text-3xl text-pink-500 mb-2"></i>
-            <p class="text-[11px] font-bold uppercase">Daily Bonus</p>
+    <div class="mb-8">
+        <h3 class="text-yellow-400 font-bold mb-4 uppercase text-sm">Lucky Spin (Daily 1 Time)</h3>
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <div class="wheel-center"></div>
+            <div id="wheel"></div>
         </div>
-        <div id="spin-card" onclick="runSpin()" class="stats-card p-5 text-center cursor-pointer">
-            <i id="spin-icon" class="fas fa-dharmachakra text-3xl text-blue-400 mb-2"></i>
-            <p id="spin-label" class="text-[11px] font-bold uppercase">Lucky Spin</p>
-        </div>
+        <button id="spin-btn" onclick="startSpin()" class="bg-blue-600 px-10 py-3 rounded-full font-bold mt-6 shadow-lg shadow-blue-500/30">SPIN NOW</button>
+        <p id="spin-msg" class="text-[10px] text-gray-500 mt-2"></p>
     </div>
 
-    <div class="stats-card p-6 mb-8">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-blue-400 text-xs tracking-widest uppercase">Video Task</h3>
-            <span id="ad-status" class="text-[9px] bg-blue-900/50 text-blue-300 px-2 py-1 rounded border border-blue-800">READY</span>
-        </div>
-        <button id="ad-btn" onclick="startAdTask()" class="btn-blue">Watch Ad (30s) - $0.01</button>
+    <hr class="border-gray-800 mb-8">
+
+    <div class="bg-[#1c1c1e] p-6 rounded-2xl border border-gray-800 text-left">
+        <h3 class="text-blue-400 font-bold text-xs mb-4 uppercase">Earning Task</h3>
+        <button id="ad-btn" onclick="startAdTask()" class="w-full bg-blue-600 py-4 rounded-xl font-bold">Watch Ad (30s) - $0.01</button>
     </div>
 
     <script>
@@ -67,94 +71,84 @@
 
         const user = tg.initDataUnsafe.user;
         const userId = user ? user.id : "test_user";
-        const fullName = user ? (user.first_name + " " + (user.last_name || "")) : "Guest User";
+        const fullName = user ? (user.first_name + " " + (user.last_name || "")) : "Guest";
 
         document.getElementById('u-name').innerText = fullName;
         document.getElementById('user-photo').innerText = fullName.charAt(0);
 
         let currentBalance = 0;
-        let lastBonusDate = 0;
         let lastSpinDate = 0;
+        let isSpinning = false;
 
         db.ref('users/' + userId).on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 currentBalance = data.balance || 0;
-                lastBonusDate = data.lastBonus || 0;
                 lastSpinDate = data.lastSpin || 0;
                 document.getElementById('balance-text').innerText = "$" + currentBalance.toFixed(3);
-                checkSpinStatus();
+                checkLock();
             } else {
-                db.ref('users/' + userId).set({ name: fullName, balance: 0, lastBonus: 0, lastSpin: 0 });
+                db.ref('users/' + userId).set({ name: fullName, balance: 0, lastSpin: 0 });
             }
         });
 
-        // ১. টেলিগ্রামের ভেতরেই অ্যাড ওপেন লজিক
-        function startAdTask() {
-            const btn = document.getElementById('ad-btn');
-            const status = document.getElementById('ad-status');
-            
-            // সরাসরি টেলিগ্রাম বটের ভেতরের ব্রাউজারে ওপেন
-            tg.openLink("https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", {try_instant_view: true});
-            
-            btn.disabled = true;
-            status.innerText = "WATCHING...";
-
-            let timeLeft = 30;
-            const timer = setInterval(() => {
-                btn.innerText = `Wait ${timeLeft}s to get reward`;
-                timeLeft--;
-
-                if (timeLeft < 0) {
-                    clearInterval(timer);
-                    db.ref('users/' + userId).update({ balance: currentBalance + 0.010 });
-                    btn.innerText = "Watch Ad (30s) - $0.01";
-                    btn.disabled = false;
-                    status.innerText = "SUCCESS";
-                    tg.showAlert("Success! $0.01 added.");
-                }
-            }, 1000);
-        }
-
-        // ২. স্পিন স্ট্যাটাস চেক (প্রতিদিন ১ বার)
-        function checkSpinStatus() {
+        function checkLock() {
             const now = new Date().getTime();
-            const spinCard = document.getElementById('spin-card');
-            const spinLabel = document.getElementById('spin-label');
-            
             if (now - lastSpinDate < 86400000) {
-                spinCard.classList.add('locked');
-                spinLabel.innerText = "Unlocked Tomorrow";
-            } else {
-                spinCard.classList.remove('locked');
-                spinLabel.innerText = "Lucky Spin";
+                document.getElementById('spin-btn').classList.add('locked');
+                document.getElementById('spin-btn').innerText = "Locked";
+                document.getElementById('spin-msg').innerText = "পরের বার স্পিন করতে আগামীকাল আসুন।";
             }
         }
 
-        function runSpin() {
+        // স্পিন লজিক
+        function startSpin() {
+            if (isSpinning) return;
             const now = new Date().getTime();
             if (now - lastSpinDate < 86400000) return;
 
-            const icon = document.getElementById('spin-icon');
-            icon.classList.add('fa-spin');
+            isSpinning = true;
+            const wheel = document.getElementById('wheel');
+            
+            // ১০০ বার স্পিনের মধ্যে লজিক
+            let winAmount;
+            const chance = Math.floor(Math.random() * 100);
+            
+            if (chance === 7) winAmount = 0.50; // ১০০ বারে ১ বার ৫০ সেন্ট
+            else if (chance < 10) winAmount = 0.10; // ১০% চান্স ১০ সেন্ট
+            else if (chance < 30) winAmount = 0.05; // ২০% চান্স ৫ সেন্ট
+            else winAmount = 0.01; // বাকি সব ১ সেন্ট
 
-            const winAmount = (Math.random() * (0.005 - 0.001) + 0.001);
+            const rotation = Math.floor(Math.random() * 360) + 1440; // অন্তত ৪ বার ঘুরবে
+            wheel.style.transform = `rotate(${rotation}deg)`;
 
             setTimeout(() => {
+                isSpinning = false;
                 db.ref('users/' + userId).update({ 
                     balance: currentBalance + winAmount,
                     lastSpin: now 
                 });
-                icon.classList.remove('fa-spin');
-                tg.showAlert(`Congrats! You won $${winAmount.toFixed(3)}`);
-            }, 3000);
+                tg.showAlert(`অভিনন্দন! আপনি জিতেছেন $${winAmount.toFixed(2)}`);
+            }, 4100);
         }
 
-        function dailyBonus() {
-            const now = new Date().getTime();
-            if (now - lastBonusDate < 86400000) return tg.showAlert("Already claimed today!");
-            db.ref('users/' + userId).update({ balance: currentBalance + 0.005, lastBonus: now });
-            tg.showAlert("Daily Bonus Added!");
+        function startAdTask() {
+            const btn = document.getElementById('ad-btn');
+            tg.openLink("https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac", {try_instant_view: true});
+            
+            btn.disabled = true;
+            let time = 30;
+            const timer = setInterval(() => {
+                btn.innerText = `অপেক্ষা করুন: ${time}s`;
+                time--;
+                if (time < 0) {
+                    clearInterval(timer);
+                    db.ref('users/' + userId).update({ balance: currentBalance + 0.01 });
+                    btn.innerText = "Watch Ad (30s) - $0.01";
+                    btn.disabled = false;
+                    tg.showAlert("Reward Added!");
+                }
+            }, 1000);
         }
     </script>
 </body>
