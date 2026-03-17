@@ -17,7 +17,7 @@
         .balance-card { background: linear-gradient(135deg, #37b0ff 0%, #0076ff 100%); border-radius: 25px; box-shadow: 0 10px 30px rgba(0, 118, 255, 0.3); }
         .stats-card { background-color: #1c1c1e; border-radius: 20px; border: 1px solid #2c2c2e; }
         
-        /* Spin Wheel */
+        /* Spin Wheel Style */
         .wheel-container { position: relative; width: 280px; height: 280px; margin: 0 auto; }
         #wheel { 
             width: 100%; height: 100%; border-radius: 50%; border: 8px solid #333; 
@@ -30,7 +30,6 @@
         .segment-text { position: absolute; width: 50%; height: 50%; transform-origin: 100% 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #000; }
         .p1 { transform: rotate(22deg); } .p2 { transform: rotate(67deg); } .p3 { transform: rotate(112deg); } .p4 { transform: rotate(157deg); }
         .p5 { transform: rotate(202deg); } .p6 { transform: rotate(247deg); } .p7 { transform: rotate(292deg); } .p8 { transform: rotate(337deg); }
-        
         .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 25px; height: 25px; background: white; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 20; }
         .locked { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
     </style>
@@ -41,17 +40,16 @@
         <div id="u-pic" class="w-10 h-10 bg-blue-600 rounded-full mr-3 flex items-center justify-center font-bold text-white shadow-lg">?</div>
         <div>
             <h1 class="text-sm font-bold">Hello, <span id="u-name">User</span></h1>
-            <p class="text-[9px] text-green-400 font-bold uppercase"><i class="fas fa-check-circle"></i> Verified Earner</p>
+            <p class="text-[9px] text-green-400 font-bold uppercase"><i class="fas fa-check-circle"></i> Verified Meta Earner</p>
         </div>
     </div>
 
     <div class="balance-card p-10 mb-8">
-        <p class="text-xs font-bold opacity-80 uppercase tracking-widest">Total Earnings</p>
+        <p class="text-xs font-bold opacity-80 uppercase tracking-widest">Available Balance</p>
         <h2 id="balance-text" class="text-5xl font-black mt-2 tracking-tighter">$0.000</h2>
     </div>
 
     <div class="mb-10">
-        <h3 class="text-yellow-500 font-bold mb-4 uppercase text-xs tracking-widest">Lucky Spin (Daily 1)</h3>
         <div class="wheel-container">
             <div class="pointer"></div>
             <div id="wheel" class="relative overflow-hidden">
@@ -61,25 +59,23 @@
                 <div class="segment-text p7"><b>10¢</b></div> <div class="segment-text p8"><b>05¢</b></div>
             </div>
         </div>
-        <button id="spin-btn" onclick="runSpin()" class="bg-blue-600 px-12 py-3 rounded-full font-bold mt-6 shadow-lg shadow-blue-500/40 transition-transform active:scale-95">SPIN NOW</button>
+        <button id="spin-btn" onclick="runSpin()" class="bg-blue-600 px-12 py-3 rounded-full font-bold mt-6 shadow-lg shadow-blue-500/40">SPIN NOW</button>
     </div>
 
-    <div class="stats-card p-6 text-left border-blue-900/30">
+    <div class="stats-card p-6 text-left">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-blue-400 font-bold text-[10px] uppercase tracking-widest">Video Ad Task</h3>
+            <h3 class="text-blue-400 font-bold text-[10px] uppercase tracking-widest">Rewarded Video Task</h3>
             <span class="text-[8px] bg-blue-900/40 text-blue-300 px-2 py-1 rounded border border-blue-800">5¢ REWARD</span>
         </div>
-        <button id="ad-btn" onclick="showRewardAd()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-white shadow-lg transition-all active:opacity-80">
+        <button id="ad-btn" onclick="showRandomAd()" class="w-full bg-blue-600 py-4 rounded-xl font-bold text-white shadow-lg active:opacity-80">
             Watch Ad (30s) - $0.05
         </button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        tg.ready(); tg.expand();
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
             databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
@@ -89,8 +85,8 @@
         const db = firebase.database();
 
         const user = tg.initDataUnsafe.user;
-        const userId = user ? user.id : "guest_123";
-        const name = user ? user.first_name : "Guest";
+        const userId = user ? user.id : "guest_user";
+        const name = user ? user.first_name : "User";
 
         document.getElementById('u-name').innerText = name;
         document.getElementById('u-pic').innerText = name.charAt(0);
@@ -98,15 +94,12 @@
         let balance = 0;
         let lastSpin = 0;
 
-        // Data Sync
         db.ref('users/' + userId).on('value', (s) => {
             const d = s.val();
             if (d) {
                 balance = d.balance || 0;
                 lastSpin = d.lastSpin || 0;
                 document.getElementById('balance-text').innerText = "$" + balance.toFixed(3);
-                
-                // Daily Spin Lock Check
                 const now = new Date().getTime();
                 if (now - lastSpin < 86400000) {
                     const btn = document.getElementById('spin-btn');
@@ -118,67 +111,54 @@
             }
         });
 
-        // ১. Monetag SDK ব্যবহার করে অ্যাড শো করার ফাংশন
-        function showRewardAd() {
-            const btn = document.getElementById('ad-btn');
-            
-            // Monetag SDK চেক
-            if (typeof show_10741886 === 'function') {
-                show_10741886().then(() => {
-                    // অ্যাড দেখা সফল হলে টাইমার শুরু
-                    startVerification(btn);
-                }).catch(() => {
-                    tg.showAlert("অ্যাড লোড হচ্ছে না, আবার চেষ্টা করুন।");
-                });
-            } else {
-                tg.showAlert("SDK লোড হয়নি। দয়া করে অ্যাপটি পুনরায় চালু করুন।");
-            }
-        }
+        // আপনার দেওয়া সমস্ত অ্যাড লিঙ্ক
+        const adLinks = [
+            "https://omg10.com/4/10742061", "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac",
+            "https://omg10.com/4/10741957", "https://www.effectivegatecpm.com/e3icg0yc?key=34838b697cff95cb4259720733741245",
+            "https://omg10.com/4/10742063", "https://www.effectivegatecpm.com/a771zn3ch?key=4f550e605f792b6e4926408dad579c46",
+            "https://omg10.com/4/10742064", "https://www.effectivegatecpm.com/v4dctgq4ja?key=6a78657df2fb4f1f124b35f428ff4bc8",
+            "https://omg10.com/4/10199976", "https://www.effectivegatecpm.com/s5dx27y4nj?key=af57e60d259aecb356babdf60afaec30",
+            "https://omg10.com/4/10742065", "https://www.effectivegatecpm.com/qa90i6eu6?key=34662c4bfdcae6396c60cf711f35b6ed",
+            "https://omg10.com/4/10741959", "https://www.effectivegatecpm.com/asfye22psb?key=a6036657fb671ad7244c668631e0aba6",
+            "https://omg10.com/4/10742062"
+        ];
 
-        function startVerification(btn) {
+        function showRandomAd() {
+            const btn = document.getElementById('ad-btn');
+            const randomLink = adLinks[Math.floor(Math.random() * adLinks.length)];
+            
+            // টেলিগ্রামের ভেতরে লিঙ্কটি ওপেন করার চেষ্টা
+            tg.openLink(randomLink, {try_instant_view: true});
+            
             btn.disabled = true;
             let time = 30;
             const timer = setInterval(() => {
-                btn.innerText = `Verifying Reward... ${time}s`;
+                btn.innerText = `Verify Reward... ${time}s`;
                 time--;
                 if (time < 0) {
                     clearInterval(timer);
-                    const newBal = balance + 0.05;
-                    db.ref('users/' + userId).update({ balance: newBal });
+                    db.ref('users/' + userId).update({ balance: balance + 0.05 });
                     btn.disabled = false;
                     btn.innerText = "Watch Ad (30s) - $0.05";
                     tg.showPopup({
-                        title: 'Reward Success!',
-                        message: 'আপনি $0.05 বোনাস পেয়েছেন।',
+                        title: 'Success!',
+                        message: 'আপনি $0.05 রিওয়ার্ড পেয়েছেন।',
                         buttons: [{type: 'ok'}]
                     });
                 }
             }, 1000);
         }
 
-        // ২. লাকি স্পিন (প্রতিদিন ১ বার)
         function runSpin() {
             const now = new Date().getTime();
             if (now - lastSpin < 86400000) return;
-
             const wheel = document.getElementById('wheel');
-            const btn = document.getElementById('spin-btn');
-            btn.disabled = true;
-
-            // প্রাইজ লজিক
-            let win = 0.01;
-            const chance = Math.random() * 100;
-            if (chance < 1) win = 0.50;      // 1% Chance
-            else if (chance < 10) win = 0.10; // 9% Chance
-            else win = 0.01;                 // Default
-
             const rotate = Math.floor(Math.random() * 360) + 1800;
             wheel.style.transform = `rotate(${rotate}deg)`;
-
             setTimeout(() => {
+                const win = Math.random() < 0.1 ? 0.10 : 0.01;
                 db.ref('users/' + userId).update({ balance: balance + win, lastSpin: now });
-                tg.showAlert(`Congrats! You won $${win.toFixed(2)}`);
-                btn.disabled = false;
+                tg.showAlert(`Congrats! Won $${win.toFixed(2)}`);
             }, 4100);
         }
     </script>
