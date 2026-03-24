@@ -164,20 +164,32 @@
             const list = document.getElementById('task-list');
             list.innerHTML = '';
             
-            // স্মার্টলিঙ্ক কনফিগারেশন
             const config = type === 'smart' 
-                ? { count: 15, reward: 0.05, time: 30, name: 'Daily Smart', link: 'https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac' } 
-                : { count: 10, reward: 0.10, time: 60, name: 'Web Task', link: 'https://www.google.com' };
+                ? { count: 15, reward: 0.05, time: 30, name: 'Free Claim $0.05', link: 'https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac' } 
+                : { count: 10, reward: 0.10, time: 60, name: 'Free Claim $0.10', link: 'https://google.com' };
 
             for(let i=1; i<=config.count; i++) {
+                // মাল্টিপ্লায়ার অনুযায়ী রিওয়ার্ড হিসাব
+                const actualReward = (config.reward * (uData.mult || 1)).toFixed(3);
+                
                 const div = document.createElement('div');
-                div.className = "glass p-4 flex justify-between items-center";
+                div.className = "glass p-4 flex justify-between items-center border border-white/5";
                 div.innerHTML = `
-                    <div><p class="text-xs font-bold">${config.name} #${i}</p></div>
-                    <button onclick="handleSmartTask(this, '${config.link}', ${config.reward}, ${config.time})" class="bg-blue-600 text-[10px] px-4 py-2 rounded-lg font-bold">START</button>
+                    <div>
+                        <p class="text-xs font-bold text-gray-200">${config.name} #${i}</p>
+                        <p class="text-[10px] text-green-400 font-bold mt-1">Reward: $${actualReward}</p>
+                    </div>
+                    <button onclick="handleSmartTask(this, '${config.link}', ${config.reward}, ${config.time})" 
+                            class="bg-blue-600 text-[10px] px-4 py-2 rounded-lg font-bold">
+                        START
+                    </button>
                 `;
                 list.appendChild(div);
             }
+            
+            document.getElementById('smart-tab').className = type === 'smart' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm";
+            document.getElementById('web-tab').className = type === 'web' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm";
+        }
             
             document.getElementById('smart-tab').className = type === 'smart' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm";
             document.getElementById('web-tab').className = type === 'web' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm";
