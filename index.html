@@ -99,15 +99,38 @@
     </div>
 </div>
         
-        <div id="pay-box" class="hidden glass p-5 border-yellow-500/50">
-    <h4 class="text-center font-bold mb-3 underline">Payment Info</h4>
-    <div class="text-[11px] space-y-2 mb-4">
-        <p>বিকাশ/নগদ (পার্সোনাল): <span class="text-yellow-400 font-bold">01XXXXXXXXX</span></p>
-        <p class="text-green-400 font-bold italic">বিকাশে পেমেন্ট করলে: $1 = 125 টাকা</p> 
-        
-        <p>Binance ID: <span class="text-yellow-400 font-bold">87654321</span></p>
+        <div id="pay-box" class="hidden glass p-5 border-yellow-500/50 shadow-2xl">
+    <h4 class="text-center font-bold mb-4 underline text-yellow-500">Payment Information</h4>
+    
+    <div class="text-[11px] space-y-4 mb-4">
+        <div class="bg-white/5 p-3 rounded-xl border border-white/10">
+            <p class="text-gray-400 mb-1 flex items-center"><i class="fas fa-mobile-alt mr-2"></i> বিকাশ/নগদ (পার্সোনাল):</p>
+            <div class="flex justify-between items-center bg-black/30 p-2 rounded-lg">
+                <span class="text-yellow-400 font-bold text-sm" id="bkash-num">01XXXXXXXXX</span>
+                <button onclick="copyToClip('bkash-num')" class="text-[9px] bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md transition-all">COPY</button>
+            </div>
+            <p class="text-green-400 font-black mt-2 text-center animate-pulse">বিকাশ রেট: $1 = 125 টাকা</p>
+        </div>
+
+        <div class="bg-white/5 p-3 rounded-xl border border-white/10 text-center">
+            <p class="text-gray-400 mb-1 flex justify-center items-center"><i class="fab fa-ethereum mr-2"></i> USDT (TRC20) Address:</p>
+            <div class="bg-black/30 p-2 rounded-lg mb-3">
+                <p class="text-yellow-400 font-mono text-[9px] break-all leading-tight mb-2" id="trc20-addr">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
+                <button onclick="copyToClip('trc20-addr')" class="w-full text-[10px] bg-blue-600 hover:bg-blue-700 py-2 rounded-md font-bold transition-all">COPY ADDRESS</button>
+            </div>
+            
+            <div class="mt-2 py-2 border-t border-white/5">
+                <p class="text-[9px] text-gray-500 mb-2 italic">Scan QR to Pay Instantly</p>
+                <div class="bg-white p-1 inline-block rounded-lg shadow-lg">
+                    <img src="YOUR_QR_IMAGE_URL_HERE" alt="TRC20 QR Code" class="w-28 h-28 object-contain">
+                </div>
+            </div>
+        </div>
     </div>
-    <button onclick="tg.openTelegramLink('https://t.me/meta_support')" class="w-full bg-blue-500 py-2 rounded-lg font-bold text-xs">SEND SCREENSHOT</button>
+
+    <button onclick="tg.openTelegramLink('https://t.me/meta_support')" class="w-full bg-gradient-to-r from-blue-600 to-blue-400 py-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg hover:scale-95 transition-transform">
+        <i class="fas fa-paper-plane mr-2"></i> Send Screenshot to Support
+    </button>
 </div>
 
     <div id="refer" class="page-section p-4">
@@ -255,18 +278,32 @@
             }, 1000);
         }
 
-        function openPay(p, m) {
-    // p = দাম (৫, ১০, ২৫, ৫০), m = মাল্টিপ্লায়ার (কত গুণ ইনকাম বাড়বে)
+// ১. পেমেন্ট পপআপ এবং রেট ক্যালকুলেশন ফাংশন
+function openPay(p, m) {
+    // পেমেন্ট বক্সটি প্রদর্শন করবে
     document.getElementById('pay-box').classList.remove('hidden');
     
-    let planName = "";
-    if(p === '5') planName = "SILVER (2X)";
-    else if(p === '10') planName = "GOLD (3X)";
-    else if(p === '25') planName = "PLATINUM (5X)";
-    else if(p === '50') planName = "DIAMOND (10X)";
+    // প্যাকেজের নাম নির্ধারণ (৫, ১০, ২৫ বা ৫০ ডলার অনুযায়ী)
+    let planName = (p === '5') ? "SILVER (2X)" : (p === '10') ? "GOLD (3X)" : (p === '25') ? "PLATINUM (5X)" : "DIAMOND (10X)";
+    
+    // বিকাশ রেট ১২৫ টাকা হিসেবে মোট কত টাকা পাঠাতে হবে তা হিসাব করা
+    const bdtAmount = p * 125;
+    
+    // টেলিগ্রাম অ্যালার্টে বিস্তারিত তথ্য দেখানো
+    tg.showAlert(`${planName} প্যাকেজটি কেনা হচ্ছে।\n\nবিকাশ পেমেন্ট করলে: ${bdtAmount} টাকা।\nরেট: $1 = 125 টাকা।\n\nপেমেন্ট শেষে স্ক্রিনশট পাঠিয়ে দিন।`);
+}
 
-    // পপআপ মেসেজ
-    tg.showAlert(`${planName} প্যাকেজটি সক্রিয় করতে $${p} আমাদের অফিশিয়াল নাম্বারে পাঠিয়ে ট্রানজেকশন আইডি দিন। এটি আপনার ইনকাম ${m} গুণ বাড়িয়ে দিবে।`);
+// ২. টেক্সট কপি করার ফাংশন (বিকাশ নম্বর বা TRC20 অ্যাড্রেস কপি হবে)
+function copyToClip(id) {
+    const textElement = document.getElementById(id);
+    const text = textElement.innerText || textElement.textContent;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        tg.showAlert("কপি হয়েছে: " + text);
+    }).catch(err => {
+        // ব্রাউজার বা ডিভাইসের সীমাবদ্ধতা থাকলে এই মেসেজটি দেখাবে
+        tg.showAlert("কপি করা যায়নি! দয়া করে ম্যানুয়ালি কপি করুন।");
+    });
 }
 
         function submitWithdraw() {
