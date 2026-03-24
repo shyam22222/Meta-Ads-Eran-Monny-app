@@ -18,7 +18,7 @@
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
         .grad-blue { background: linear-gradient(135deg, #0076ff 0%, #00d1ff 100%); }
         .grad-gold { background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%); color: black; }
-        .btn-disabled { opacity: 0.5; cursor: not-allowed !important; }
+        .btn-disabled { opacity: 0.5; cursor: not-allowed !important; pointer-events: none; }
     </style>
 </head>
 <body class="p-4 pb-24">
@@ -49,8 +49,8 @@
                 <h3 class="font-bold text-sm">Special Sign-up</h3>
                 <span class="bg-green-600 text-[10px] px-2 py-1 rounded font-bold">$0.20</span>
             </div>
-            <button onclick="tg.openLink('https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac')" class="w-full bg-white/10 py-3 rounded-xl border border-white/20 mb-2 text-xs">Open Link & Register</button>
-            <button onclick="startVerification(this, 0.20, 60, 'signup')" id="signup-btn" class="w-full bg-green-600 py-2 rounded-xl text-xs font-bold">Verify Sign-up (60s)</button>
+            <button onclick="tg.openLink('https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac')" class="w-full bg-white/10 py-3 rounded-xl border border-white/20 mb-2 text-xs font-bold text-blue-400">Step 1: Open Link & Register</button>
+            <button onclick="startVerification(this, 0.20, 60, 'signup')" id="signup-btn" class="w-full bg-green-600 py-2 rounded-xl text-xs font-bold">Step 2: Verify Sign-up (60s)</button>
         </div>
     </div>
 
@@ -73,30 +73,22 @@
                 <div><h4 class="font-bold text-sm text-blue-400">GOLD (4X)</h4><p class="text-[10px] text-gray-400">$10.00</p></div>
                 <button onclick="openPay('10', '4')" class="bg-blue-600 px-4 py-2 rounded-lg font-bold text-xs">BUY</button>
             </div>
-            <div class="glass p-4 flex justify-between items-center border-purple-500/30">
-                <div><h4 class="font-bold text-sm text-purple-400">DIAMOND (8X)</h4><p class="text-[10px] text-gray-400">$25.00</p></div>
-                <button onclick="openPay('25', '8')" class="bg-purple-600 px-4 py-2 rounded-lg font-bold text-xs">BUY</button>
-            </div>
-            <div class="glass p-4 flex justify-between items-center border-red-500">
-                <div><h4 class="font-bold text-sm text-red-500">ULTIMATE (20X)</h4><p class="text-[10px] text-gray-400">$50.00</p></div>
-                <button onclick="openPay('50', '20')" class="bg-red-600 px-4 py-2 rounded-lg font-bold text-xs">BUY</button>
-            </div>
         </div>
         <div id="pay-box" class="hidden glass p-5 border-yellow-500/50">
-            <h4 class="text-center font-bold mb-3 underline">Payment Methods</h4>
+            <h4 class="text-center font-bold mb-3 underline">Payment Info</h4>
             <div class="text-[11px] space-y-2 mb-4">
                 <p>বিকাশ/নগদ (পার্সোনাল): <span class="text-yellow-400 font-bold">01XXXXXXXXX</span></p>
                 <p>Binance ID: <span class="text-yellow-400 font-bold">87654321</span></p>
-                <p>USDT (TRC20): <span class="text-yellow-400 font-bold text-[9px]">TXXXXXXXXXXXXXXX</span></p>
             </div>
-            <button onclick="tg.openTelegramLink('https://t.me/meta_support')" class="w-full bg-blue-500 py-2 rounded-lg font-bold text-xs">SEND SCREENSHOT TO SUPPORT</button>
+            <button onclick="tg.openTelegramLink('https://t.me/meta_support')" class="w-full bg-blue-500 py-2 rounded-lg font-bold text-xs">SEND SCREENSHOT</button>
         </div>
     </div>
 
     <div id="refer" class="page-section p-4">
         <div class="glass p-8 text-center">
-            <h2 class="text-xl font-bold mb-2">Referral System</h2>
-            <div class="bg-black/40 p-3 rounded-lg text-[10px] mb-4 break-all select-all" id="ref-url">Loading...</div>
+            <h2 class="text-xl font-bold mb-2 text-blue-400">Refer & Earn</h2>
+            <p class="text-[11px] text-gray-400 mb-6">প্রতি রেফারে $১.০০ বোনাস পান।</p>
+            <div class="bg-black/40 p-3 rounded-lg text-[10px] mb-4 break-all select-all border border-white/10" id="ref-url">Loading...</div>
             <button onclick="copyRef()" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-xs">COPY INVITE LINK</button>
         </div>
     </div>
@@ -109,9 +101,9 @@
                 <option value="nagad">Nagad (Personal)</option>
                 <option value="usdt">USDT (TRC20)</option>
             </select>
-            <input id="w-addr" type="text" placeholder="Wallet Number / Address" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-4 text-xs">
-            <input id="w-amount" type="number" placeholder="Amount ($)" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-6 text-xs">
-            <button onclick="submitWithdraw()" class="w-full bg-green-600 py-3 rounded-xl font-bold">CONFIRM REQUEST</button>
+            <input id="w-addr" type="text" placeholder="বিকাশ/নগদ নাম্বার বা USDT এড্রেস" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-4 text-xs">
+            <input id="w-amount" type="number" placeholder="টাকার পরিমাণ ($)" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-6 text-xs">
+            <button onclick="submitWithdraw()" class="w-full bg-green-600 py-3 rounded-xl font-bold shadow-lg">CONFIRM WITHDRAW</button>
         </div>
     </div>
 
@@ -119,6 +111,7 @@
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
             databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
@@ -130,6 +123,7 @@
         
         let uData = { balance: 0, mult: 1, adCount: 0, lastSignup: "" };
 
+        // Realtime Data Sync
         db.ref('users/' + userId).on('value', (s) => {
             const data = s.val();
             if(data) {
@@ -138,10 +132,11 @@
                 document.getElementById('multiplier-text').innerText = `Earning Rate: ${data.mult || 1}X`;
                 document.getElementById('ref-url').innerText = `https://t.me/metaadsmonnybot?start=${userId}`;
                 document.getElementById('ad-count-info').innerText = `Today's Limit: ${15 - (data.adCount || 0)} Left`;
+                
                 const today = new Date().toDateString();
                 if(data.lastSignup === today) document.getElementById('signup-box').style.display = 'none';
             } else {
-                db.ref('users/' + userId).set({ balance: 0, mult: 1, adCount: 0, name: tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "User", lastSignup: "" });
+                db.ref('users/' + userId).set({ balance: 0, mult: 1, adCount: 0, name: (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "User"), lastSignup: "" });
             }
         });
 
@@ -151,39 +146,50 @@
             if(id === 'tasks') toggleTaskType('smart');
         }
 
-        // 🟢 MAIN AD FIX
+        // 🟢 MAIN SDK AD FUNCTION
         function showMainAd() {
             if((uData.adCount || 0) >= 15) return tg.showAlert("আজকের লিমিট শেষ!");
+            
             if (typeof show_10741886 === 'function') {
                 show_10741886().then(() => {
                     startVerification(document.getElementById('main-ad-btn'), 0.05, 30, 'main');
-                });
+                }).catch(() => tg.showAlert("Ad failed to load!"));
+            } else {
+                tg.showAlert("SDK not ready!");
             }
         }
 
-        // 🟢 TASK GENERATOR WITH LINK FIX
+        // 🟢 SMART LINK & TASK HANDLER
         function toggleTaskType(type) {
             const list = document.getElementById('task-list');
             list.innerHTML = '';
+            
+            // স্মার্টলিঙ্ক কনফিগারেশন
             const config = type === 'smart' 
-                ? { count: 15, reward: 0.05, time: 30, name: 'Free Claim $0.05', link: 'https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac' } 
-                : { count: 10, reward: 0.10, time: 60, name: 'Free Claim $0.10', link: 'https://www.google.com' };
+                ? { count: 15, reward: 0.05, time: 30, name: 'Daily Smart', link: 'https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac' } 
+                : { count: 10, reward: 0.10, time: 60, name: 'Web Task', link: 'https://www.google.com' };
 
             for(let i=1; i<=config.count; i++) {
                 const div = document.createElement('div');
                 div.className = "glass p-4 flex justify-between items-center";
-                div.innerHTML = `<div><p class="text-xs font-bold">${config.name} #${i}</p></div>
-                <button onclick="handleTask(this, '${config.link}', ${config.reward}, ${config.time})" class="bg-blue-600 text-[10px] px-4 py-2 rounded-lg font-bold">START</button>`;
+                div.innerHTML = `
+                    <div><p class="text-xs font-bold">${config.name} #${i}</p></div>
+                    <button onclick="handleSmartTask(this, '${config.link}', ${config.reward}, ${config.time})" class="bg-blue-600 text-[10px] px-4 py-2 rounded-lg font-bold">START</button>
+                `;
                 list.appendChild(div);
             }
+            
+            document.getElementById('smart-tab').className = type === 'smart' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm";
+            document.getElementById('web-tab').className = type === 'web' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm";
         }
 
-        function handleTask(btn, url, reward, time) {
-            tg.openLink(url);
+        // স্মার্টলিঙ্ক ওপেন এবং টাইমার শুরুর ফাংশন
+        function handleSmartTask(btn, url, reward, time) {
+            tg.openLink(url); // এটি নতুন ব্রাউজারে লিঙ্কটি খুলবে
             startVerification(btn, reward, time, 'task');
         }
 
-        // 🟢 VERIFICATION ENGINE (FULLY RESETTABLE)
+        // 🟢 VERIFICATION & DATABASE UPDATE
         function startVerification(btn, reward, time, type) {
             btn.disabled = true;
             btn.classList.add('btn-disabled');
@@ -195,26 +201,53 @@
 
                 if(timeLeft < 0) {
                     clearInterval(timer);
+                    
                     const bonus = reward * (uData.mult || 1);
                     const updates = { balance: (uData.balance || 0) + bonus };
+                    
                     if(type === 'main') updates.adCount = (uData.adCount || 0) + 1;
                     if(type === 'signup') updates.lastSignup = new Date().toDateString();
 
                     db.ref('users/' + userId).update(updates).then(() => {
-                        tg.showAlert(`Success! $${bonus.toFixed(3)} added.`);
+                        tg.showAlert(`Success! $${bonus.toFixed(3)} added to balance.`);
+                        
                         if(type === 'main') {
                             btn.disabled = false;
                             btn.classList.remove('btn-disabled');
                             btn.innerText = "Watch & Earn $0.05";
                         } else {
-                            btn.innerText = "DONE";
+                            btn.innerText = "COMPLETED";
                             btn.className = "bg-green-600 text-[10px] px-4 py-2 rounded-lg font-bold";
                         }
-                    });
+                    }).catch(e => tg.showAlert("Database Error!"));
                 }
             }, 1000);
         }
 
         function openPay(p, m) {
             document.getElementById('pay-box').classList.remove('hidden');
-            tg.showAlert
+            tg.showAlert(`প্যাকেজটি কিনতে $${p} সেন্ড করে সাপোর্টে স্ক্রিনশট দিন।`);
+        }
+
+        function submitWithdraw() {
+            const addr = document.getElementById('w-addr').value;
+            const amt = parseFloat(document.getElementById('w-amount').value);
+            const method = document.getElementById('w-method').value;
+            
+            if(amt >= 5 && amt <= uData.balance && addr.length > 5) {
+                db.ref('withdraw_requests').push({ userId, method, addr, amt, status: 'pending', date: new Date().toLocaleString() });
+                db.ref('users/' + userId).update({ balance: uData.balance - amt });
+                tg.showAlert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+            } else {
+                tg.showAlert("ব্যালেন্স কম অথবা সঠিক তথ্য দিন (কমপক্ষে $৫)!");
+            }
+        }
+
+        function copyRef() {
+            const url = document.getElementById('ref-url').innerText;
+            navigator.clipboard.writeText(url);
+            tg.showAlert("Referral Link Copied!");
+        }
+    </script>
+</body>
+</html>
