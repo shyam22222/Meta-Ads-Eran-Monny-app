@@ -208,31 +208,53 @@
         }
 
         function startVerification(btn, reward, time, type, taskId) {
+            // ১. ডাবল ক্লিক বা পুনরায় ক্লিক আটকানো (Security Lock)
+            if (btn.disabled || btn.getAttribute('data-active') === 'true') return;
+            
+            // ২. বাটন লক করা এবং স্টাইল পরিবর্তন
+            btn.setAttribute('data-active', 'true');
             btn.disabled = true;
-            btn.classList.add('btn-disabled');
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+            
             let timeLeft = time;
-
             const timer = setInterval(() => {
                 btn.innerText = `Wait ${timeLeft}s`;
                 timeLeft--;
 
                 if(timeLeft < 0) {
                     clearInterval(timer);
+                    
                     const bonus = reward * (uData.mult || 1);
                     const updates = {};
                     updates['balance'] = (uData.balance || 0) + bonus;
                     
-                    if(taskId) updates['completedTasks/' + taskId] = true;
+                    // ৩. টাস্ক সম্পন্ন হিসেবে ডাটাবেজে মার্ক করা
+                    if(taskId) {
+                        updates['completedTasks/' + taskId] = true;
+                    }
+
                     if(type === 'main') updates['adCount'] = (uData.adCount || 0) + 1;
                     if(type === 'signup') updates['lastSignup'] = new Date().toDateString();
 
+                    // ৪. ডাটাবেজ আপডেট সফল হলে বাটন মুছে ফেলা
                     db.ref('users/' + userId).update(updates).then(() => {
                         tg.showAlert(`Success! $${bonus.toFixed(3)} added.`);
                         btn.innerText = "DONE";
                         btn.className = "bg-green-600 text-[10px] px-4 py-2 rounded-lg font-bold";
+                        
+                        // টাস্কটি সাথে সাথে স্ক্রিন থেকে সরিয়ে ফেলা যেন ইউজার সুযোগ না পায়
                         if(type === 'task') {
-                            setTimeout(() => { btn.parentElement.style.display = 'none'; }, 1000);
+                            setTimeout(() => {
+                                if(btn.parentElement) btn.parentElement.remove();
+                            }, 500);
                         }
+                    }).catch((e) => {
+                        // এরর হলে বাটন আবার সচল করা
+                        btn.disabled = false;
+                        btn.setAttribute('data-active', 'false');
+                        btn.style.opacity = "1";
+                        btn.innerText = "RETRY";
                     });
                 }
             }, 1000);
