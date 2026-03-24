@@ -9,7 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src='//libtl.com/sdk.js' data-zone='10741886' data-sdk='show_10741886'></script>
 
     <style>
         body { background-color: #0b0e11; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
@@ -41,7 +40,7 @@
         <div class="glass p-5 mb-4 text-center border-blue-500/30">
             <h3 class="font-bold text-sm mb-1">Daily Main Video</h3>
             <p id="ad-count-info" class="text-[9px] text-gray-400 mb-3">Today's Limit: 15 Left</p>
-            <button onclick="showMainAd()" id="main-ad-btn" class="w-full bg-blue-600 py-3 rounded-xl font-bold">Watch & Earn $0.05</button>
+            <button onclick="startVerification(this, 0.05, 30, 'main')" id="main-ad-btn" class="w-full bg-blue-600 py-3 rounded-xl font-bold">Watch & Earn $0.05</button>
         </div>
 
         <div id="signup-box" class="glass p-5 border-green-500/30">
@@ -73,14 +72,23 @@
                 <div><h4 class="font-bold text-sm text-blue-400">GOLD (4X)</h4><p class="text-[10px] text-gray-400">$10.00</p></div>
                 <button onclick="openPay('10', '4')" class="bg-blue-600 px-4 py-2 rounded-lg font-bold text-xs">BUY</button>
             </div>
+            <div class="glass p-4 flex justify-between items-center border-green-500/30">
+                <div><h4 class="font-bold text-sm text-green-400">PLATINUM (5X)</h4><p class="text-[10px] text-gray-400">$25.00</p></div>
+                <button onclick="openPay('25', '5')" class="bg-green-600 px-4 py-2 rounded-lg font-bold text-xs text-white">BUY</button>
+            </div>
+            <div class="glass p-4 flex justify-between items-center border-purple-500/30">
+                <div><h4 class="font-bold text-sm text-purple-400">DIAMOND (10X)</h4><p class="text-[10px] text-gray-400">$50.00</p></div>
+                <button onclick="openPay('50', '10')" class="bg-purple-600 px-4 py-2 rounded-lg font-bold text-xs text-white">BUY</button>
+            </div>
         </div>
+        
         <div id="pay-box" class="hidden glass p-5 border-yellow-500/50">
             <h4 class="text-center font-bold mb-3 underline">Payment Info</h4>
             <div class="text-[11px] space-y-2 mb-4">
                 <p>বিকাশ/নগদ (পার্সোনাল): <span class="text-yellow-400 font-bold">01XXXXXXXXX</span></p>
                 <p>Binance ID: <span class="text-yellow-400 font-bold">87654321</span></p>
             </div>
-            <button onclick="tg.openTelegramLink('https://t.me/meta_support')" class="w-full bg-blue-500 py-2 rounded-lg font-bold text-xs">SEND SCREENSHOT</button>
+            <button onclick="tg.openTelegramLink('https://t.me/meta_support')" class="w-full bg-blue-500 py-2 rounded-lg font-bold text-xs text-white">SEND SCREENSHOT</button>
         </div>
     </div>
 
@@ -101,8 +109,8 @@
                 <option value="nagad">Nagad (Personal)</option>
                 <option value="usdt">USDT (TRC20)</option>
             </select>
-            <input id="w-addr" type="text" placeholder="বিকাশ/নগদ নাম্বার বা USDT এড্রেস" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-4 text-xs">
-            <input id="w-amount" type="number" placeholder="টাকার পরিমাণ ($)" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-6 text-xs">
+            <input id="w-addr" type="text" placeholder="বিকাশ/নগদ নাম্বার বা USDT এড্রেস" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-4 text-xs text-white">
+            <input id="w-amount" type="number" placeholder="টাকার পরিমাণ ($)" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-6 text-xs text-white">
             <button onclick="submitWithdraw()" class="w-full bg-green-600 py-3 rounded-xl font-bold shadow-lg">CONFIRM WITHDRAW</button>
         </div>
     </div>
@@ -111,7 +119,6 @@
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
             databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
@@ -122,100 +129,108 @@
         const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "12345";
 
         let uData = { balance: 0, mult: 1, adCount: 0, lastSignup: "" };
-   let isTaskRunning = false; 
-let uData = { balance: 0, mult: 1, adCount: 0, lastSignup: "" };
+        let isTaskRunning = false;
 
-        // Realtime Data Sync
+        // Data Sync
         db.ref('users/' + userId).on('value', (s) => {
-@@ -160,7 +161,7 @@
+            const data = s.val();
+            if(data) {
+                uData = data;
+                document.getElementById('balance-text').innerText = "$" + (data.balance || 0).toFixed(3);
+                document.getElementById('multiplier-text').innerText = `Rate: ${data.mult || 1}X`;
+                document.getElementById('ref-url').innerText = `https://t.me/metaadsmonnybot?start=${userId}`;
+                document.getElementById('ad-count-info').innerText = `Today's Limit: ${15 - (data.adCount || 0)} Left`;
+                
+                const today = new Date().toDateString();
+                if(data.lastSignup === today) document.getElementById('signup-box').style.display = 'none';
+            } else {
+                db.ref('users/' + userId).set({ balance: 0, mult: 1, adCount: 0, name: tg.initDataUnsafe.user?.first_name || "User" });
+            }
+        });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-section'));
+            document.getElementById(pageId).classList.add('active-section');
+            if(pageId === 'tasks') toggleTaskType('smart');
         }
 
-        // 🟢 SMART LINK & TASK HANDLER
-        // 🟢 টাস্ক জেনারেটর (একই টাস্ক বারবার করা বন্ধ করবে)
-       // 🟢 টাস্ক জেনারেটর (একই টাস্ক বারবার করা এবং চিটিং রোধ করবে)
         function toggleTaskType(type) {
             const list = document.getElementById('task-list');
             list.innerHTML = '<p class="text-center text-[10px] opacity-50 py-4">Loading tasks...</p>';
-@@ -169,12 +170,15 @@
+            
+            const config = type === 'smart' 
                 ? { count: 15, reward: 0.05, time: 30, name: 'Daily Smart', link: 'https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac' } 
                 : { count: 10, reward: 0.10, time: 60, name: 'Web Task', link: 'https://google.com' };
 
-            // ডাটাবেজ থেকে সম্পন্ন হওয়া টাস্ক চেক করা হচ্ছে
             db.ref('users/' + userId + '/completedTasks').once('value', (snapshot) => {
                 const doneTasks = snapshot.val() || {};
                 list.innerHTML = ''; 
 
                 for(let i=1; i<=config.count; i++) {
                     const taskId = `${type}_${i}`;
-                    
-                    // যদি এই টাস্ক আইডি ডাটাবেজে থাকে, তবে বাটন দেখাবে না
                     if (doneTasks[taskId]) continue;
 
                     const actualReward = (config.reward * (uData.mult || 1)).toFixed(3);
-@@ -202,22 +206,25 @@
+                    const div = document.createElement('div');
+                    div.className = "glass p-4 flex justify-between items-center border border-white/5 mb-2";
+                    div.innerHTML = `
+                        <div>
+                            <p class="text-xs font-bold text-gray-200">${config.name} #${i}</p>
+                            <p class="text-[10px] text-green-400 font-bold mt-1">Reward: $${actualReward}</p>
+                        </div>
+                        <button onclick="handleSmartTask(this, '${config.link}', ${config.reward}, ${config.time}, '${taskId}')" 
+                                class="bg-blue-600 text-[10px] px-4 py-2 rounded-lg font-bold">
+                            START
+                        </button>
+                    `;
+                    list.appendChild(div);
+                }
+            });
+
+            document.getElementById('smart-tab').className = type === 'smart' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm opacity-50";
             document.getElementById('web-tab').className = type === 'web' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm opacity-50";
         }
 
-        // 🟢 স্মার্টলিঙ্ক হ্যান্ডলার (লক চেক করবে)
         function handleSmartTask(btn, url, reward, time, taskId) {
             if (isTaskRunning) {
-                tg.showAlert("একটি টাস্ক অলরেডি চলছে! সেটি শেষ হওয়া পর্যন্ত অপেক্ষা করুন।");
+                tg.showAlert("একটি টাস্ক অলরেডি চলছে!");
                 return;
             }
             tg.openLink(url);
             startVerification(btn, reward, time, 'task', taskId);
         }
 
-        // 🟢 ভেরিফিকেশন এবং ডাটাবেজ সেভ
         function startVerification(btn, reward, time, type, taskId) {
-            // ১. ডাবল ক্লিক বা পুনরায় ক্লিক আটকানো (Security Lock)
-            if (btn.disabled || btn.getAttribute('data-active') === 'true') return;
             if (isTaskRunning || btn.disabled) return;
-
-            // ২. বাটন লক করা এবং স্টাইল পরিবর্তন
-            btn.setAttribute('data-active', 'true');
-            isTaskRunning = true; // গ্লোবাল লক সক্রিয় করা হলো
+            
+            isTaskRunning = true; 
             btn.disabled = true;
             btn.style.opacity = "0.5";
-            btn.style.cursor = "not-allowed";
-            
             let timeLeft = time;
 
             const timer = setInterval(() => {
                 btn.innerText = `Wait ${timeLeft}s`;
                 timeLeft--;
-@@ -229,60 +236,56 @@
+
+                if(timeLeft < 0) {
+                    clearInterval(timer);
+                    const bonus = reward * (uData.mult || 1);
                     const updates = {};
                     updates['balance'] = (uData.balance || 0) + bonus;
-
-                    // ৩. টাস্ক সম্পন্ন হিসেবে ডাটাবেজে মার্ক করা
-                    // টাস্ক আইডি ডাটাবেজে মার্ক করা হচ্ছে
-                    if(taskId) {
-                        updates['completedTasks/' + taskId] = true;
-                    }
-
+                    if(taskId) updates['completedTasks/' + taskId] = true;
                     if(type === 'main') updates['adCount'] = (uData.adCount || 0) + 1;
                     if(type === 'signup') updates['lastSignup'] = new Date().toDateString();
 
-                    // ৪. ডাটাবেজ আপডেট সফল হলে বাটন মুছে ফেলা
                     db.ref('users/' + userId).update(updates).then(() => {
                         tg.showAlert(`Success! $${bonus.toFixed(3)} added.`);
+                        isTaskRunning = false; 
                         btn.innerText = "DONE";
-                        btn.className = "bg-green-600 text-[10px] px-4 py-2 rounded-lg font-bold";
-                        isTaskRunning = false; // কাজ শেষ, লক খুলে দেওয়া হলো
-
-                        // টাস্কটি সাথে সাথে স্ক্রিন থেকে সরিয়ে ফেলা যেন ইউজার সুযোগ না পায়
                         if(type === 'task') {
-                            setTimeout(() => {
-                                if(btn.parentElement) btn.parentElement.remove();
-                            }, 500);
+                            setTimeout(() => { if(btn.parentElement) btn.parentElement.remove(); }, 500);
                         }
-                    }).catch((e) => {
-                        // এরর হলে বাটন আবার সচল করা
-                        isTaskRunning = false; // এরর হলেও লক খুলে দেওয়া হলো
+                    }).catch(() => {
+                        isTaskRunning = false;
                         btn.disabled = false;
-                        btn.setAttribute('data-active', 'false');
-                        btn.style.opacity = "1";
                         btn.innerText = "RETRY";
                     });
                 }
@@ -232,12 +247,12 @@ let uData = { balance: 0, mult: 1, adCount: 0, lastSignup: "" };
             const amt = parseFloat(document.getElementById('w-amount').value);
             const method = document.getElementById('w-method').value;
 
-            if(amt >= 5 && amt <= uData.balance && addr.length > 5) {
+            if((amt === 5 || amt === 10 || amt === 25 || amt === 50) && amt <= uData.balance && addr.length > 5) {
                 db.ref('withdraw_requests').push({ userId, method, addr, amt, status: 'pending', date: new Date().toLocaleString() });
                 db.ref('users/' + userId).update({ balance: uData.balance - amt });
-                tg.showAlert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+                tg.showAlert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
             } else {
-                tg.showAlert("ব্যালেন্স কম অথবা সঠিক তথ্য দিন (কমপক্ষে $৫)!");
+                tg.showAlert("সঠিক পরিমাণ ($৫, $১০, $২৫, $৫০) এবং তথ্য দিন!");
             }
         }
 
@@ -248,3 +263,4 @@ let uData = { balance: 0, mult: 1, adCount: 0, lastSignup: "" };
         }
     </script>
 </body>
+</html>
