@@ -160,46 +160,54 @@
         }
 
         // 🟢 SMART LINK & TASK HANDLER
+        // 🟢 টাস্ক জেনারেটর (একই টাস্ক বারবার করা বন্ধ করবে)
         function toggleTaskType(type) {
             const list = document.getElementById('task-list');
-            list.innerHTML = '';
+            list.innerHTML = '<p class="text-center text-[10px] opacity-50 py-4">Loading tasks...</p>';
             
-            // রিওয়ার্ড কনফিগারেশন
             const config = type === 'smart' 
                 ? { count: 15, reward: 0.05, time: 30, name: 'Daily Smart', link: 'https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac' } 
                 : { count: 10, reward: 0.10, time: 60, name: 'Web Task', link: 'https://google.com' };
 
-            for(let i=1; i<=config.count; i++) {
-                // বুস্টার অনুযায়ী রিওয়ার্ড ক্যালকুলেশন
-                const actualReward = (config.reward * (uData.mult || 1)).toFixed(3);
+            db.ref('users/' + userId + '/completedTasks').once('value', (snapshot) => {
+                const doneTasks = snapshot.val() || {};
+                list.innerHTML = ''; 
+
+                for(let i=1; i<=config.count; i++) {
+                    const taskId = `${type}_${i}`;
+                    if (doneTasks[taskId]) continue;
+
+                    const actualReward = (config.reward * (uData.mult || 1)).toFixed(3);
+                    const div = document.createElement('div');
+                    div.className = "glass p-4 flex justify-between items-center border border-white/5 mb-2";
+                    div.innerHTML = `
+                        <div>
+                            <p class="text-xs font-bold text-gray-200">${config.name} #${i}</p>
+                            <p class="text-[10px] text-green-400 font-bold mt-1">Reward: $${actualReward}</p>
+                        </div>
+                        <button onclick="handleSmartTask(this, '${config.link}', ${config.reward}, ${config.time}, '${taskId}')" 
+                                class="bg-blue-600 text-[10px] px-4 py-2 rounded-lg font-bold">
+                            START
+                        </button>
+                    `;
+                    list.appendChild(div);
+                }
                 
-                const div = document.createElement('div');
-                div.className = "glass p-4 flex justify-between items-center border border-white/5 mb-2";
-                div.innerHTML = `
-                    <div>
-                        <p class="text-xs font-bold text-gray-200">${config.name} #${i}</p>
-                        <p class="text-[10px] text-green-400 font-bold mt-1">Reward: $${actualReward}</p>
-                    </div>
-                    <button onclick="handleSmartTask(this, '${config.link}', ${config.reward}, ${config.time})" 
-                            class="bg-blue-600 text-[10px] px-4 py-2 rounded-lg font-bold">
-                        START
-                    </button>
-                `;
-                list.appendChild(div);
-            }
-            
-            // ট্যাব ডিজাইন আপডেট
-            document.getElementById('smart-tab').className = type === 'smart' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm";
-            document.getElementById('web-tab').className = type === 'web' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm";
-        }
-        // স্মার্টলিঙ্ক ওপেন এবং টাইমার শুরুর ফাংশন
-        function handleSmartTask(btn, url, reward, time) {
-            tg.openLink(url); // এটি নতুন ব্রাউজারে লিঙ্কটি খুলবে
-            startVerification(btn, reward, time, 'task');
+                if(list.innerHTML === '') {
+                    list.innerHTML = '<div class="glass p-8 text-center"><p class="text-xs text-yellow-500 font-bold">সব টাস্ক শেষ! <br>আগামীকাল আবার আসুন।</p></div>';
+                }
+            });
+
+            document.getElementById('smart-tab').className = type === 'smart' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm opacity-50";
+            document.getElementById('web-tab').className = type === 'web' ? "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm" : "flex-1 py-3 rounded-xl glass font-bold text-sm opacity-50";
         }
 
-        // 🟢 VERIFICATION & DATABASE UPDATE
-        function startVerification(btn, reward, time, type) {
+        function handleSmartTask(btn, url, reward, time, taskId) {
+            tg.openLink(url);
+            startVerification(btn, reward, time, 'task', taskId);
+        }
+
+        function startVerification(btn, reward, time, type, taskId) {
             btn.disabled = true;
             btn.classList.add('btn-disabled');
             let timeLeft = time;
@@ -210,25 +218,22 @@
 
                 if(timeLeft < 0) {
                     clearInterval(timer);
-                    
                     const bonus = reward * (uData.mult || 1);
-                    const updates = { balance: (uData.balance || 0) + bonus };
+                    const updates = {};
+                    updates['balance'] = (uData.balance || 0) + bonus;
                     
-                    if(type === 'main') updates.adCount = (uData.adCount || 0) + 1;
-                    if(type === 'signup') updates.lastSignup = new Date().toDateString();
+                    if(taskId) updates['completedTasks/' + taskId] = true;
+                    if(type === 'main') updates['adCount'] = (uData.adCount || 0) + 1;
+                    if(type === 'signup') updates['lastSignup'] = new Date().toDateString();
 
                     db.ref('users/' + userId).update(updates).then(() => {
-                        tg.showAlert(`Success! $${bonus.toFixed(3)} added to balance.`);
-                        
-                        if(type === 'main') {
-                            btn.disabled = false;
-                            btn.classList.remove('btn-disabled');
-                            btn.innerText = "Watch & Earn $0.05";
-                        } else {
-                            btn.innerText = "COMPLETED";
-                            btn.className = "bg-green-600 text-[10px] px-4 py-2 rounded-lg font-bold";
+                        tg.showAlert(`Success! $${bonus.toFixed(3)} added.`);
+                        btn.innerText = "DONE";
+                        btn.className = "bg-green-600 text-[10px] px-4 py-2 rounded-lg font-bold";
+                        if(type === 'task') {
+                            setTimeout(() => { btn.parentElement.style.display = 'none'; }, 1000);
                         }
-                    }).catch(e => tg.showAlert("Database Error!"));
+                    });
                 }
             }, 1000);
         }
