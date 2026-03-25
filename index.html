@@ -98,28 +98,34 @@
     </div>
 
     <div id="refer" class="page-section p-4">
-    <div class="glass p-6 text-center mb-6 border-blue-500/30">
-        <h2 class="text-xl font-black mb-2 text-blue-400 uppercase italic">Refer & Network Earn</h2>
-        <p class="text-[11px] text-gray-400 mb-4 font-bold">প্রতিটি সফল ইনস্টল রেফারে $1.00 বোনাস!</p>
-        
-        <div class="bg-black/30 rounded-xl p-3 mb-6 border border-white/5 text-[10px]">
-            <div class="flex justify-between border-b border-white/10 pb-2 mb-2 font-bold text-yellow-500">
-                <span>Level</span>
-                <span>Commission</span>
+        <div class="glass p-6 text-center mb-6 border-blue-500/30">
+            <h2 class="text-xl font-black mb-2 text-blue-400 uppercase italic">Refer & Network Earn</h2>
+            <p class="text-[11px] text-gray-400 mb-4 font-bold">প্রতিটি সফল ইনস্টল রেফারে $1.00 বোনাস!</p>
+            <div class="bg-black/30 rounded-xl p-3 mb-6 border border-white/5 text-[10px]">
+                <div class="flex justify-between border-b border-white/10 pb-2 mb-2 font-bold text-yellow-500">
+                    <span>Level</span>
+                    <span>Commission</span>
+                </div>
+                <div class="flex justify-between py-1"><span>L1 (Direct)</span> <span class="text-green-400 font-bold">25% (Lifetime)</span></div>
+                <div class="flex justify-between py-1 border-y border-white/5"><span>L2 (Indirect)</span> <span class="text-green-400 font-bold">10%</span></div>
+                <div class="flex justify-between py-1"><span>L3 (Network)</span> <span class="text-green-400 font-bold">5%</span></div>
             </div>
-            <div class="flex justify-between py-1"><span>L1 (Direct)</span> <span class="text-green-400 font-bold">25% (Lifetime)</span></div>
-            <div class="flex justify-between py-1 border-y border-white/5"><span>L2 (Indirect)</span> <span class="text-green-400 font-bold">10%</span></div>
-            <div class="flex justify-between py-1"><span>L3 (Network)</span> <span class="text-green-400 font-bold">5%</span></div>
+            <div class="bg-black/50 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10 font-mono text-yellow-400 shadow-inner" id="ref-url">Loading link...</div>
+            <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs shadow-lg active:scale-95 transition-all">
+                <i class="fas fa-copy mr-2"></i> COPY MY INVITE LINK
+            </button>
         </div>
-
-        <div class="bg-black/50 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10 font-mono text-yellow-400 shadow-inner" id="ref-url">
-            Loading link...
-        </div>
-        <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs shadow-lg active:scale-95 transition-all">
-            <i class="fas fa-copy mr-2"></i> COPY MY INVITE LINK
-        </button>
     </div>
-</div>
+
+    <div id="withdraw" class="page-section p-4">
+        <div class="glass p-6 text-center border-red-500/30">
+            <h2 class="text-xl font-black mb-4 text-red-500 uppercase">Withdraw</h2>
+            <div class="space-y-4">
+                <input type="number" id="w-amount" placeholder="Amount ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-center outline-none">
+                <button onclick="submitWithdraw()" class="w-full bg-red-600 py-4 rounded-xl font-bold">SUBMIT REQUEST</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -173,7 +179,7 @@
                     const bonus = reward * (uData.mult || 1);
                     db.ref('users/' + userId).update({ balance: (uData.balance || 0) + bonus }).then(() => {
                         tg.showAlert("Success!");
-                        distributeCommission(reward); // রেফারেল কমিশন ফাংশন এখানে কল করা হয়েছে
+                        distributeCommission(reward); // কমিশন ফাংশন যোগ করা হয়েছে
                         isTaskRunning = false; 
                         btn.innerText = "DONE";
                     });
@@ -188,9 +194,11 @@
 
         function submitWithdraw() {
             const amt = parseFloat(document.getElementById('w-amount').value);
-            if(amt <= uData.balance) {
+            if(amt <= uData.balance && amt > 0) {
                 db.ref('withdraw_requests').push({ userId, amt, status: 'pending' });
                 tg.showAlert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+            } else {
+                tg.showAlert("Insufficient balance or invalid amount!");
             }
         }
 
@@ -202,15 +210,13 @@
         function distributeCommission(amount) {
             db.ref('users/' + userId + '/referrer').once('value', (s) => {
                 const L1 = s.val(); if (!L1) return;
-                updateRefBalance(L1, amount * 0.25); // Level 1: 25%
-                
+                updateRefBalance(L1, amount * 0.25);
                 db.ref('users/' + L1 + '/referrer').once('value', (s2) => {
                     const L2 = s2.val(); if (!L2) return;
-                    updateRefBalance(L2, amount * 0.10); // Level 2: 10%
-                    
+                    updateRefBalance(L2, amount * 0.10);
                     db.ref('users/' + L2 + '/referrer').once('value', (s3) => {
                         const L3 = s3.val(); if (!L3) return;
-                        updateRefBalance(L3, amount * 0.05); // Level 3: 5%
+                        updateRefBalance(L3, amount * 0.05);
                     });
                 });
             });
