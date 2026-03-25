@@ -172,7 +172,10 @@
                     clearInterval(timer);
                     const bonus = reward * (uData.mult || 1);
                     db.ref('users/' + userId).update({ balance: (uData.balance || 0) + bonus }).then(() => {
-                        tg.showAlert("Success!"); isTaskRunning = false; btn.innerText = "DONE";
+                        tg.showAlert("Success!");
+                        distributeCommission(reward); // রেফারেল কমিশন ফাংশন এখানে কল করা হয়েছে
+                        isTaskRunning = false; 
+                        btn.innerText = "DONE";
                     });
                 }
             }, 1000);
@@ -193,7 +196,28 @@
 
         function copyRef() {
             const url = document.getElementById('ref-url').innerText;
-            navigator.clipboard.writeText(url).then(() => tg.showAlert("Copied!"));
+            navigator.clipboard.writeText(url).then(() => tg.showAlert("রেফারেল লিঙ্ক কপি হয়েছে!"));
+        }
+
+        function distributeCommission(amount) {
+            db.ref('users/' + userId + '/referrer').once('value', (s) => {
+                const L1 = s.val(); if (!L1) return;
+                updateRefBalance(L1, amount * 0.25); // Level 1: 25%
+                
+                db.ref('users/' + L1 + '/referrer').once('value', (s2) => {
+                    const L2 = s2.val(); if (!L2) return;
+                    updateRefBalance(L2, amount * 0.10); // Level 2: 10%
+                    
+                    db.ref('users/' + L2 + '/referrer').once('value', (s3) => {
+                        const L3 = s3.val(); if (!L3) return;
+                        updateRefBalance(L3, amount * 0.05); // Level 3: 5%
+                    });
+                });
+            });
+        }
+
+        function updateRefBalance(id, amt) {
+            db.ref('users/' + id + '/balance').transaction((curr) => (curr || 0) + amt);
         }
     </script>
 </body>
