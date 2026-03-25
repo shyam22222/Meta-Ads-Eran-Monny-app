@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ads Pro - Premium</title>
+    <title>Meta Ads Pro - Premium v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -13,106 +13,112 @@
     <script src='//libtl.com/sdk.js' data-zone='10741886' data-sdk='show_10741886'></script>
 
     <style>
-        body { background-color: #0b0e11; color: white; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 15px; }
+        body { background-color: #0d1117; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; }
         .page-section { display: none; }
         .active-section { display: block; }
-        .grad-blue { background: linear-gradient(135deg, #0076ff 0%, #00d1ff 100%); }
-        .disabled-btn { background: #1a1d21 !important; color: #4a4d51 !important; pointer-events: none !important; opacity: 0.5; border: none !important; }
-        .verify-text { font-size: 11px; color: #f1c40f; font-weight: bold; }
+        .grad-primary { background: linear-gradient(135deg, #1e90ff 0%, #00bfff 100%); }
+        .disabled-btn { background: #21262d !important; color: #8b949e !important; pointer-events: none; border: none !important; opacity: 0.7; }
+        .timer-anim { animation: pulse 1s infinite; color: #ffcc00; font-weight: bold; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="p-4 pb-28">
 
-    <nav class="fixed bottom-0 left-0 right-0 glass h-16 flex justify-around items-center z-50 border-t border-white/5 mx-2 mb-2">
-        <button onclick="showPage('home')" class="flex flex-col items-center"><i class="fas fa-home"></i><span class="text-[10px]">Home</span></button>
-        <button onclick="showPage('tasks')" class="flex flex-col items-center"><i class="fas fa-bolt"></i><span class="text-[10px]">Tasks</span></button>
-        <button onclick="showPage('premium')" class="flex flex-col items-center text-yellow-500"><i class="fas fa-crown"></i><span class="text-[10px]">VIP</span></button>
-        <button onclick="showPage('refer')" class="flex flex-col items-center"><i class="fas fa-users"></i><span class="text-[10px]">Refer</span></button>
-        <button onclick="showPage('withdraw')" class="flex flex-col items-center"><i class="fas fa-wallet"></i><span class="text-[10px]">Wallet</span></button>
+    <nav class="fixed bottom-0 left-0 right-0 glass h-18 flex justify-around items-center z-50 border-t border-white/5 mx-2 mb-2 px-2">
+        <button onclick="showPage('home')" class="flex flex-col items-center py-2"><i class="fas fa-home text-lg"></i><span class="text-[9px] mt-1">Home</span></button>
+        <button onclick="showPage('tasks')" class="flex flex-col items-center py-2"><i class="fas fa-tasks text-lg"></i><span class="text-[9px] mt-1">Tasks</span></button>
+        <button onclick="showPage('premium')" class="flex flex-col items-center text-yellow-500 py-2"><i class="fas fa-crown text-lg"></i><span class="text-[9px] mt-1">Premium</span></button>
+        <button onclick="showPage('refer')" class="flex flex-col items-center py-2"><i class="fas fa-user-plus text-lg"></i><span class="text-[9px] mt-1">Refer</span></button>
+        <button onclick="showPage('withdraw')" class="flex flex-col items-center py-2"><i class="fas fa-wallet text-lg"></i><span class="text-[9px] mt-1">Wallet</span></button>
     </nav>
 
     <div id="home" class="page-section active-section">
-        <div class="glass p-8 text-center mb-6 grad-blue shadow-lg">
-            <p class="text-[10px] uppercase font-bold opacity-80">Total Balance</p>
+        <div class="glass p-8 text-center mb-6 grad-primary shadow-xl">
+            <p class="text-[10px] uppercase font-bold tracking-wider opacity-90">Available Balance</p>
             <h1 id="balance-text" class="text-4xl font-black mt-1">$0.000</h1>
-            <p id="multiplier-text" class="text-[9px] mt-2 font-bold bg-white/20 inline-block px-3 py-1 rounded">Rate: 1X Speed</p>
+            <div id="multiplier-tag" class="text-[9px] mt-3 bg-black/30 px-4 py-1.5 rounded-full inline-block font-bold italic">Status: 1X Earning Speed</div>
         </div>
 
         <div class="glass p-5 mb-4 border-l-4 border-blue-500">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="font-bold text-xs uppercase">Main Video Task</h3>
-                <span class="text-[9px] bg-blue-600/30 px-2 py-1 rounded">Limit: 15 / <span id="rem-count">15</span></span>
+                <span class="text-[11px] font-bold uppercase">Main Video Task</span>
+                <span class="text-[10px] bg-blue-500/20 px-2 py-0.5 rounded text-blue-300">Daily: 15 / <span id="rem-count">15</span></span>
             </div>
-            <button onclick="handleMainTask(this)" class="w-full bg-blue-600 py-3.5 rounded-xl font-black text-sm shadow-lg active:scale-95 transition-all">WATCH ADS & EARN $0.05</button>
+            <button id="main-video-btn" onclick="handleMainVideo(this)" class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs shadow-lg active:scale-95 transition-transform">WATCH ADS & EARN $0.05</button>
         </div>
 
         <div class="glass p-5 border-l-4 border-green-500">
-            <h3 class="font-bold text-xs text-green-400 mb-1">Daily Special Signup</h3>
-            <p id="signup-notice" class="text-[9px] text-gray-400 mb-4">সাইন-আপ করে ৬০ সেকেন্ড অপেক্ষা করুন। ($0.20)</p>
+            <h3 class="font-black text-xs text-green-400 mb-1 tracking-wide">Daily Special Signup ($0.20)</h3>
+            <p id="signup-info" class="text-[9px] text-gray-400 mb-4">নিচের এডে ক্লিক করে সাইন-আপ করুন এবং ৬০ সেকেন্ড ওয়েট করুন।</p>
             <div class="flex gap-2">
-                <button id="signup-btn-1" onclick="openSignupLink()" class="flex-1 bg-white/5 py-3 rounded-lg text-[10px] font-bold border border-white/10">১. লিংক ওপেন</button>
-                <button id="signup-btn-2" onclick="handleSignupVerify(this)" class="flex-[1.5] bg-green-600 py-3 rounded-lg text-[10px] font-bold">২. ভেরিফাই ও ক্লেম</button>
+                <button id="signup-link-btn" onclick="openSignupUrl()" class="flex-1 bg-white/5 py-3 rounded-lg text-[10px] font-bold border border-white/10 uppercase">Open Ad</button>
+                <button id="signup-claim-btn" onclick="verifySignupTask(this)" class="flex-[1.5] bg-green-600 py-3 rounded-lg text-[10px] font-bold uppercase">Verify & Claim</button>
             </div>
         </div>
     </div>
 
     <div id="tasks" class="page-section">
-        <div class="flex p-1 bg-white/5 rounded-xl mb-6">
-            <button onclick="toggleType('smart')" id="tab-smart" class="flex-1 py-3 rounded-lg bg-blue-600 font-bold text-xs">Ads View</button>
-            <button onclick="toggleType('web')" id="tab-web" class="flex-1 py-3 rounded-lg font-bold text-xs">Web View</button>
+        <div class="flex p-1 bg-white/5 rounded-2xl mb-6 border border-white/10">
+            <button onclick="loadTasks('smart')" id="tab-smart" class="flex-1 py-3 rounded-xl bg-blue-600 font-bold text-xs transition-all">Ads View</button>
+            <button onclick="loadTasks('web')" id="tab-web" class="flex-1 py-3 rounded-xl font-bold text-xs transition-all">Web View</button>
         </div>
-        <div id="task-list" class="space-y-3"></div>
+        <div id="task-container" class="space-y-3"></div>
     </div>
 
     <div id="premium" class="page-section">
-        <h2 class="text-xl font-black mb-6 text-center text-yellow-500 uppercase tracking-widest">VIP Membership</h2>
-        <div id="plans" class="space-y-3 mb-6"></div>
+        <h2 class="text-xl font-black mb-6 text-center text-yellow-500 italic uppercase">Premium Membership</h2>
+        <div id="plan-list" class="space-y-3 mb-8"></div>
 
-        <div id="pay-box" class="hidden glass p-6 border-yellow-500/30 animate-pulse">
-            <h4 class="text-center font-bold text-yellow-500 mb-4">Payment Method</h4>
-            <div class="space-y-4 text-[11px]">
-                <div class="bg-black/40 p-3 rounded-lg border border-white/5">
-                    <p class="text-gray-400 mb-1">বিকাশ/নগদ (১ ডলার = ১২৫ টাকা)</p>
-                    <p class="text-lg font-black text-white">বিকাশ_নগদ_নম্বর_এখানে_দিন</p>
+        <div id="payment-panel" class="hidden glass p-6 border-yellow-500/30">
+            <h4 class="text-center font-bold text-yellow-500 mb-5 underline uppercase tracking-widest">Select Payment Method</h4>
+            <div class="space-y-4 text-xs">
+                <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                    <p class="text-gray-400 mb-1">Bkash / Nagad (১ ডলার = ১২৫ টাকা)</p>
+                    <p class="text-lg font-black text-white">আপনার_বিকাশ_নম্বর_এখানে</p>
+                    <p class="text-[9px] text-yellow-600 mt-1 italic font-bold">সেন্ড মানি করার পর ট্রানজেকশন আইডি দিন।</p>
                 </div>
-                <div class="bg-black/40 p-3 rounded-lg border border-white/5 text-center">
-                    <p class="text-gray-400 mb-2 font-bold italic">USDT Address (TRC20)</p>
-                    <p id="trc-addr" class="font-mono text-[9px] break-all text-blue-400 mb-2">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
-                    <button onclick="copy('trc-addr')" class="bg-blue-600 px-4 py-1 rounded text-[9px] font-bold">COPY</button>
-                    <div class="mt-4"><img src="কিউআর_কোড_লিংক" class="w-32 h-32 mx-auto rounded border border-white/20"></div>
+                <div class="bg-black/40 p-4 rounded-xl border border-white/5 text-center">
+                    <p class="text-gray-400 mb-2 font-bold">USDT Address (TRC20)</p>
+                    <p id="trc-id" class="font-mono text-[9px] break-all text-blue-400 mb-4">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
+                    <button onclick="copyToClipboard('trc-id')" class="bg-blue-600/20 text-blue-400 border border-blue-500 px-6 py-1.5 rounded-lg text-[10px] font-bold">COPY ADDRESS</button>
+                    <div class="mt-6"><img src="কিউআর_কোড_লিংক" class="w-32 h-32 mx-auto rounded-lg border border-white/10 shadow-lg"></div>
                 </div>
-                <button onclick="tg.openTelegramLink('https://t.me/সাপোর্ট_আইডি')" class="w-full bg-blue-500 py-3 rounded-xl font-bold">পেমেন্ট স্ক্রিনশট দিন</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="withdraw" class="page-section">
-        <div class="glass p-6 border-red-500/20">
-            <h2 class="text-xl font-black mb-6 text-center text-red-500 italic">CASH OUT</h2>
-            <div class="bg-red-500/10 p-3 rounded-lg mb-6 text-[10px] text-center border border-red-500/20">
-                মিনিমাম উইথড্র <b>$10.00</b> (১২৫০ টাকা)
-            </div>
-            <div class="space-y-4">
-                <input type="number" id="w-amt" placeholder="পরিমাণ ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none font-bold">
-                <select id="w-method" class="w-full bg-black border border-white/10 p-4 rounded-xl font-bold text-xs">
-                    <option value="Bkash">Bkash</option>
-                    <option value="Nagad">Nagad</option>
-                    <option value="Binance">Binance Pay ID</option>
-                    <option value="USDT">USDT (TRC20)</option>
-                </select>
-                <input type="text" id="w-num" placeholder="হিসাব নম্বর / এড্রেস" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none font-bold">
-                <button onclick="submitW()" class="w-full bg-red-600 py-4 rounded-xl font-black shadow-xl">WITHDRAW REQUEST</button>
+                <button onclick="tg.openTelegramLink('https://t.me/Support_Admin_ID')" class="w-full bg-blue-500 py-4 rounded-xl font-black uppercase text-[11px] shadow-lg">Submit Payment Screenshot</button>
             </div>
         </div>
     </div>
 
     <div id="refer" class="page-section">
-        <div class="glass p-6 text-center border-blue-500/20">
-            <h2 class="text-xl font-black text-blue-400 mb-4">REFFER NETWORK</h2>
-            <div class="bg-blue-500/10 p-3 rounded-lg mb-4 text-[10px] font-bold">প্রতি রেফারে $1.00 বোনাস + ৫ লেভেল কমিশন</div>
-            <div id="ref-url" class="bg-black/50 p-4 rounded-xl text-[10px] mb-6 break-all border border-white/5 text-yellow-500 font-mono italic">Loading...</div>
-            <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-xl font-bold">COPY MY LINK</button>
+        <div class="glass p-8 text-center border-blue-500/20">
+            <h2 class="text-2xl font-black text-blue-400 mb-4 italic uppercase">Affiliate Link</h2>
+            <div class="bg-blue-500/10 p-4 rounded-xl mb-6 border border-blue-500/20">
+                <p class="text-xs font-bold text-blue-200">১ ডলার বোনাস প্রতি সাকসেসফুল রেফার!</p>
+                <p class="text-[9px] text-gray-500 mt-2">Lifetime Commission: L1: 25%, L2: 10%, L3-L5: 5%</p>
+            </div>
+            <div id="referral-link" class="bg-black/50 p-4 rounded-xl text-[10px] mb-6 break-all border border-white/5 text-yellow-500 font-mono italic">Loading Link...</div>
+            <button onclick="copyRefLink()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase shadow-xl tracking-tighter">Copy Referral Link</button>
+        </div>
+    </div>
+
+    <div id="withdraw" class="page-section">
+        <div class="glass p-6 border-red-500/20">
+            <h2 class="text-xl font-black mb-6 text-center text-red-500 italic uppercase">Withdraw Funds</h2>
+            <div class="bg-red-500/10 p-4 rounded-xl mb-6 text-center border border-red-500/20">
+                <p class="text-xs font-bold text-red-400">Minimum Withdraw: $10.00</p>
+                <p class="text-[9px] text-gray-500 mt-1">বিকাশ/নগদ রেট: ১$ = ১২৫ টাকা (১২৫০৳ মিনিমাম)</p>
+            </div>
+            <div class="space-y-4">
+                <input type="number" id="wd-amount" placeholder="উত্তোলন পরিমাণ ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none font-bold focus:border-red-500">
+                <select id="wd-method" class="w-full bg-black border border-white/10 p-4 rounded-xl font-bold text-xs outline-none">
+                    <option value="Bkash">Bkash</option>
+                    <option value="Nagad">Nagad</option>
+                    <option value="Binance Pay">Binance Pay ID</option>
+                    <option value="USDT TRC20">USDT (TRC20)</option>
+                </select>
+                <input type="text" id="wd-address" placeholder="হিসাব নম্বর বা এড্রেস দিন" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none font-bold">
+                <button onclick="processWithdrawal()" class="w-full bg-red-600 py-4 rounded-xl font-black shadow-xl active:scale-95 transition-transform uppercase text-xs">Confirm Request</button>
+            </div>
         </div>
     </div>
 
@@ -120,6 +126,7 @@
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
             databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
@@ -127,12 +134,12 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "12345";
+        const uid = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "TEST_USER";
 
-        let uData = { balance: 0, mult: 1, adCount: 15, lastSignup: "", done: {} };
-        let isWorking = false;
+        let user = { balance: 0, mult: 1, dailyAds: 15, lastSignup: "", tasksDone: {} };
+        let activeProcess = false;
 
-        const links = [
+        const smartLinks = [
             "https://omg10.com/4/10742061", "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac",
             "https://omg10.com/4/10741957", "https://www.effectivegatecpm.com/e3icg0yc?key=34838b697cff95cb4259720733741245",
             "https://omg10.com/4/10742063", "https://www.effectivegatecpm.com/a771zn3ch?key=4f550e605f792b6e4926408dad579c46",
@@ -143,148 +150,162 @@
             "https://omg10.com/4/10742062"
         ];
 
-        db.ref('users/' + userId).on('value', (s) => {
-            uData = s.val() || { balance: 0, mult: 1, adCount: 15, lastSignup: "", done: {} };
-            document.getElementById('balance-text').innerText = "$" + (uData.balance || 0).toFixed(3);
-            document.getElementById('multiplier-text').innerText = `Rate: ${uData.mult || 1}X Speed`;
-            document.getElementById('rem-count').innerText = uData.adCount || 0;
-            document.getElementById('ref-url').innerText = `https://t.me/metaadsmonnybot?start=${userId}`;
+        // Database Listener
+        db.ref('users/' + uid).on('value', (snap) => {
+            user = snap.val() || { balance: 0, mult: 1, dailyAds: 15, lastSignup: "", tasksDone: {} };
+            document.getElementById('balance-text').innerText = "$" + (user.balance || 0).toFixed(3);
+            document.getElementById('multiplier-tag').innerText = `Status: ${user.mult || 1}X Earning Speed`;
+            document.getElementById('rem-count').innerText = user.dailyAds || 0;
+            document.getElementById('referral-link').innerText = `https://t.me/metaadsmonnybot?start=${uid}`;
             
-            if(uData.lastSignup === new Date().toDateString()) {
-                document.getElementById('signup-btn-1').classList.add('disabled-btn');
-                document.getElementById('signup-btn-2').classList.add('disabled-btn');
-                document.getElementById('signup-notice').innerText = "✅ আজকের সাইন-আপ সম্পন্ন হয়েছে!";
+            // Check Daily Signup
+            const today = new Date().toDateString();
+            if(user.lastSignup === today) {
+                document.getElementById('signup-link-btn').classList.add('disabled-btn');
+                document.getElementById('signup-claim-btn').classList.add('disabled-btn');
+                document.getElementById('signup-claim-btn').innerText = "DONE FOR TODAY";
+                document.getElementById('signup-info').innerText = "✅ আজকের সাইন-আপ টাস্ক সম্পন্ন হয়েছে!";
             }
         });
 
         function showPage(p) {
             document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
             document.getElementById(p).style.display = 'block';
-            if(p === 'tasks') toggleType('smart');
-            if(p === 'premium') renderPlans();
+            if(p === 'tasks') loadTasks('smart');
+            if(p === 'premium') showPlans();
         }
 
-        // --- মেইন ভিডিও টাস্ক ---
-        function handleMainTask(btn) {
-            if(uData.adCount <= 0 || isWorking) return;
-            isWorking = true; btn.disabled = true;
+        // --- Main Video Function ---
+        function handleMainVideo(btn) {
+            if(user.dailyAds <= 0 || activeProcess) return;
+            activeProcess = true; btn.disabled = true;
 
+            // Trigger Adsterra SDK
             if(typeof show_10741886 === 'function') show_10741886();
             tg.openTelegramLink("https://t.me/metaadsmonnybot");
 
-            let left = 30;
-            const t = setInterval(() => {
-                btn.innerText = `WAIT ${left}s`;
-                if(left-- <= 0) {
-                    clearInterval(t);
-                    const bonus = 0.05 * (uData.mult || 1);
-                    db.ref('users/' + userId).update({ 
-                        balance: (uData.balance || 0) + bonus,
-                        adCount: uData.adCount - 1
+            let countdown = 30;
+            const timer = setInterval(() => {
+                btn.innerHTML = `<span class="timer-anim">WAIT ${countdown}s</span>`;
+                if(countdown-- <= 0) {
+                    clearInterval(timer);
+                    const reward = 0.05 * (user.mult || 1);
+                    db.ref('users/' + uid).update({ 
+                        balance: (user.balance || 0) + reward,
+                        dailyAds: user.dailyAds - 1
                     });
                     tg.showAlert("Success! $0.05 Added.");
-                    isWorking = false; btn.disabled = false; btn.innerText = "WATCH ADS & EARN $0.05";
+                    activeProcess = false; btn.disabled = false; btn.innerText = "WATCH ADS & EARN $0.05";
                 }
             }, 1000);
         }
 
-        // --- ডেইলি সাইন-আপ ---
-        function openSignupLink() {
-            const idx = new Date().getDate() % 15;
-            tg.openLink(links[idx]);
+        // --- Daily Signup Logic ---
+        function openSignupUrl() {
+            // Daily rotation based on date
+            const dayIndex = new Date().getDate() % 15;
+            tg.openLink(smartLinks[dayIndex]);
         }
 
-        function handleSignupVerify(btn) {
-            if(uData.lastSignup === new Date().toDateString()) return;
-            startLogic(btn, 0.20, 60, 'daily_signup', 'signup');
+        function verifySignupTask(btn) {
+            if(user.lastSignup === new Date().toDateString() || activeProcess) return;
+            runTaskLogic(btn, 0.20, 60, 'signup_daily', 'signup');
         }
 
-        // --- টাস্ক মাস্টার লজিক ---
-        function startLogic(btn, reward, time, tid, type) {
-            if(isWorking || (uData.done && uData.done[tid])) return;
-            isWorking = true; btn.disabled = true;
+        // --- Universal Task Handler ---
+        function runTaskLogic(btn, reward, timeSec, taskId, type) {
+            if(activeProcess || (user.tasksDone && user.tasksDone[taskId])) return;
+            activeProcess = true; btn.disabled = true;
 
-            if(type !== 'signup') tg.openLink(links[Math.floor(Math.random()*15)]);
+            // Open random smart link if it's a view task
+            if(type !== 'signup') {
+                const randLink = smartLinks[Math.floor(Math.random()*15)];
+                tg.openLink(randLink);
+            }
 
-            let left = time;
+            let left = timeSec;
             const t = setInterval(() => {
-                btn.innerHTML = `<span class="verify-text">Wait ${left}s</span>`;
+                btn.innerHTML = `<span class="timer-anim">CHECKING ${left}s</span>`;
                 if(left-- <= 0) {
                     clearInterval(t);
-                    const bonus = reward * (uData.mult || 1);
-                    let upd = { balance: (uData.balance || 0) + bonus };
+                    const finalReward = reward * (user.mult || 1);
+                    let updateData = { balance: (user.balance || 0) + finalReward };
                     
-                    if(type === 'signup') upd.lastSignup = new Date().toDateString();
-                    else {
-                        if(!upd.done) upd.done = uData.done || {};
-                        upd.done[tid] = true;
+                    if(type === 'signup') {
+                        updateData.lastSignup = new Date().toDateString();
+                    } else {
+                        if(!updateData.tasksDone) updateData.tasksDone = user.tasksDone || {};
+                        updateData.tasksDone[taskId] = true;
                     }
 
-                    db.ref('users/' + userId).update(upd).then(() => {
-                        tg.showAlert("Bonus Added!");
-                        isWorking = false;
-                        btn.innerText = "DONE";
+                    db.ref('users/' + uid).update(updateData).then(() => {
+                        tg.showAlert("Verified! Reward Added.");
+                        activeProcess = false;
+                        btn.innerText = "COMPLETED";
                         btn.classList.add('disabled-btn');
                     });
                 }
             }, 1000);
         }
 
-        function toggleType(type) {
-            const list = document.getElementById('task-list');
+        function loadTasks(mode) {
+            const container = document.getElementById('task-container');
             const tabS = document.getElementById('tab-smart');
             const tabW = document.getElementById('tab-web');
-            list.innerHTML = "";
+            container.innerHTML = "";
 
-            if(type === 'smart') {
+            if(mode === 'smart') {
                 tabS.classList.add('bg-blue-600'); tabW.classList.remove('bg-blue-600');
                 for(let i=1; i<=15; i++) {
-                    const tid = `ads_${i}`;
-                    const isDone = uData.done && uData.done[tid];
-                    list.innerHTML += `<div class="glass p-4 flex justify-between items-center">
-                        <span class="text-[10px] font-bold uppercase">Ads View 30s Earn $0.05</span>
-                        <button onclick="startLogic(this, 0.05, 30, '${tid}', 'ads')" class="px-4 py-2 rounded-lg text-[10px] font-black ${isDone ? 'disabled-btn' : 'bg-blue-600'}">${isDone ? 'DONE' : 'CLAIM'}</button>
+                    const tid = `smart_task_${i}`;
+                    const done = user.tasksDone && user.tasksDone[tid];
+                    container.innerHTML += `<div class="glass p-4 flex justify-between items-center border-l-2 border-blue-500/50">
+                        <div><p class="text-[10px] font-black uppercase">Ads View 30s Earn $0.05</p><p class="text-[8px] text-gray-500 mt-1">ID: #SMART-${i}</p></div>
+                        <button onclick="runTaskLogic(this, 0.05, 30, '${tid}', 'ads')" class="px-5 py-2 rounded-lg text-[9px] font-black ${done ? 'disabled-btn' : 'bg-blue-600 shadow-lg'}">${done ? 'DONE' : 'CLAIM'}</button>
                     </div>`;
                 }
             } else {
                 tabW.classList.add('bg-blue-600'); tabS.classList.remove('bg-blue-600');
                 for(let i=1; i<=15; i++) {
-                    const tid = `web_${i}`;
-                    const isDone = uData.done && uData.done[tid];
-                    list.innerHTML += `<div class="glass p-4 flex justify-between items-center border-l-2 border-white/10">
-                        <span class="text-[10px] font-bold uppercase">Web View 60s Earn $0.10</span>
-                        <button onclick="startLogic(this, 0.10, 30, '${tid}', 'web')" class="px-4 py-2 rounded-lg text-[10px] font-black ${isDone ? 'disabled-btn' : 'bg-white/10 border border-white/10'}">${isDone ? 'DONE' : 'VIEW'}</button>
+                    const tid = `web_task_${i}`;
+                    const done = user.tasksDone && user.tasksDone[tid];
+                    container.innerHTML += `<div class="glass p-4 flex justify-between items-center border-l-2 border-white/20">
+                        <div><p class="text-[10px] font-black uppercase">Web View 60s Earn $0.10</p><p class="text-[8px] text-gray-500 mt-1">ID: #WEB-${i}</p></div>
+                        <button onclick="runTaskLogic(this, 0.10, 30, '${tid}', 'web')" class="px-5 py-2 rounded-lg text-[9px] font-black ${done ? 'disabled-btn' : 'bg-white/10 border border-white/10'}">${done ? 'DONE' : 'START'}</button>
                     </div>`;
                 }
             }
         }
 
-        function renderPlans() {
-            const p = [{id:5,m:2,n:'SILVER'},{id:10,m:3,n:'GOLD'},{id:25,m:5,n:'PLATINUM'},{id:50,m:10,n:'DIAMOND'}];
-            document.getElementById('plans').innerHTML = p.map(x => `
+        function showPlans() {
+            const list = [{val:5,m:2,n:'SILVER'},{val:10,m:3,n:'GOLD'},{val:25,m:5,n:'PLATINUM'},{val:50,m:10,n:'DIAMOND'}];
+            document.getElementById('plan-list').innerHTML = list.map(p => `
                 <div class="glass p-4 flex justify-between items-center border-white/5">
-                    <div><h4 class="font-black text-xs text-yellow-500">${x.n}</h4><p class="text-[9px] text-gray-500">${x.m}X Speed - $${x.id}.00</p></div>
-                    <button onclick="showPay('${x.id}')" class="bg-yellow-500 text-black px-5 py-2 rounded-lg font-black text-[10px]">BUY</button>
+                    <div><h4 class="font-black text-xs text-yellow-500 tracking-widest">${p.n}</h4><p class="text-[9px] text-gray-500">${p.m}X Earning - Cost: $${p.val}.00</p></div>
+                    <button onclick="initPayment('${p.val}')" class="bg-yellow-500 text-black px-6 py-2 rounded-lg font-black text-[9px] shadow-lg">UPGRADE</button>
                 </div>
             `).join('');
         }
 
-        function showPay(p) { document.getElementById('pay-box').classList.remove('hidden'); tg.showAlert(`পেমেন্ট করুন: ${p*125} টাকা`); }
+        function initPayment(val) {
+            document.getElementById('payment-panel').classList.remove('hidden');
+            tg.showAlert(`বিকাশ/নগদে ${val * 125} টাকা পেমেন্ট করুন।`);
+        }
 
-        function submitW() {
-            const amt = parseFloat(document.getElementById('w-amt').value);
-            const num = document.getElementById('w-num').value;
-            if(amt >= 10 && amt <= uData.balance && num) {
-                db.ref('withdraw_requests').push({ userId, amt, num, method: document.getElementById('w-method').value, status: 'pending', time: Date.now() });
-                db.ref('users/' + userId).update({ balance: uData.balance - amt });
-                tg.showAlert("Request Submitted!");
+        function processWithdrawal() {
+            const amount = parseFloat(document.getElementById('wd-amount').value);
+            const address = document.getElementById('wd-address').value;
+            if(amount >= 10 && amount <= user.balance && address) {
+                db.ref('withdraw_requests').push({ uid, amount, address, method: document.getElementById('wd-method').value, status: 'pending', date: Date.now() });
+                db.ref('users/' + uid).update({ balance: user.balance - amount });
+                tg.showAlert("উইথড্র রিকোয়েস্ট সাকসেসফুল!");
             } else {
-                tg.showAlert("মিনিমাম উইথড্র ১০ ডলার!");
+                tg.showAlert("মিনিমাম উইথড্র ১০ ডলার এবং সঠিক ব্যালেন্স প্রয়োজন!");
             }
         }
 
-        function copy(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Copied!"); }
-        function copyRef() { navigator.clipboard.writeText(document.getElementById('ref-url').innerText); tg.showAlert("Link Copied!"); }
+        function copyToClipboard(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Copied!"); }
+        function copyRefLink() { navigator.clipboard.writeText(document.getElementById('referral-link').innerText); tg.showAlert("Link Copied!"); }
     </script>
 </body>
 </html>
