@@ -40,10 +40,6 @@
             <p id="ad-count-info" class="text-[9px] text-gray-400 mb-3">Today's Limit: 15 Left</p>
             <button onclick="startVerification(this, 0.05, 30, 'main')" id="main-ad-btn" class="w-full bg-blue-600 py-3 rounded-xl font-bold">Watch & Earn $0.05</button>
         </div>
-        <div id="signup-box" class="glass p-5 border-green-500/30">
-            <button onclick="tg.openLink('https://www.effectivegatecpm.com/san2vs080')" class="w-full bg-white/10 py-3 rounded-xl border border-white/20 mb-2 text-xs font-bold text-blue-400">Step 1: Open Link & Register</button>
-            <button onclick="startVerification(this, 0.20, 60, 'signup')" id="signup-btn" class="w-full bg-green-600 py-2 rounded-xl text-xs font-bold">Step 2: Verify Sign-up (60s)</button>
-        </div>
     </div>
 
     <div id="tasks" class="page-section">
@@ -74,23 +70,14 @@
                 <button onclick="openPay('50', '10')" class="bg-purple-600 px-4 py-2 rounded-lg font-bold text-xs text-white">BUY</button>
             </div>
         </div>
-
         <div id="pay-box" class="hidden glass p-5 border-yellow-500/50 shadow-2xl">
             <h4 class="text-center font-bold mb-4 underline text-yellow-500">Payment Info</h4>
             <div class="text-[11px] space-y-4 mb-4">
                 <div class="bg-white/5 p-3 rounded-xl border border-white/10">
-                    <p class="text-gray-400 mb-1">বিকাশ/নগদ (পার্সোনাল):</p>
-                    <div class="flex justify-between items-center bg-black/30 p-2 rounded-lg">
-                        <span class="text-yellow-400 font-bold text-sm" id="bkash-num">আপনার নম্বর দিন</span>
-                        <button onclick="copyToClip('bkash-num')" class="text-[9px] bg-blue-600 px-3 py-1 rounded-md">COPY</button>
-                    </div>
+                    <p class="text-gray-400 mb-1">বিকাশ/নগদ (পার্সোনাল): 01XXXXXXXXX</p>
                 </div>
-                <div class="bg-white/5 p-3 rounded-xl border border-white/10">
-                    <p class="text-gray-400 mb-1">USDT (TRC20):</p>
-                    <div class="bg-black/30 p-2 rounded-lg">
-                        <p class="text-yellow-400 font-mono text-[9px] break-all mb-2" id="trc20-addr">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
-                        <button onclick="copyToClip('trc20-addr')" class="w-full text-[10px] bg-blue-600 py-2 rounded-md font-bold">COPY ADDRESS</button>
-                    </div>
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 text-xs break-all">
+                    USDT (TRC20): TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR
                 </div>
             </div>
             <button onclick="tg.openTelegramLink('https://t.me/meta_support')" class="w-full bg-blue-500 py-3 rounded-xl font-bold text-xs">SEND SCREENSHOT</button>
@@ -99,30 +86,29 @@
 
     <div id="refer" class="page-section p-4">
         <div class="glass p-6 text-center mb-6 border-blue-500/30">
-            <h2 class="text-xl font-black mb-2 text-blue-400 uppercase italic">Refer & Network Earn</h2>
-            <p class="text-[11px] text-gray-400 mb-4 font-bold">প্রতিটি সফল ইনস্টল রেফারে $1.00 বোনাস!</p>
-            <div class="bg-black/30 rounded-xl p-3 mb-6 border border-white/5 text-[10px]">
-                <div class="flex justify-between border-b border-white/10 pb-2 mb-2 font-bold text-yellow-500">
-                    <span>Level</span>
-                    <span>Commission</span>
-                </div>
-                <div class="flex justify-between py-1"><span>L1 (Direct)</span> <span class="text-green-400 font-bold">25% (Lifetime)</span></div>
-                <div class="flex justify-between py-1 border-y border-white/5"><span>L2 (Indirect)</span> <span class="text-green-400 font-bold">10%</span></div>
-                <div class="flex justify-between py-1"><span>L3 (Network)</span> <span class="text-green-400 font-bold">5%</span></div>
+            <h2 class="text-xl font-black mb-2 text-blue-400 italic">Refer & Network</h2>
+            <div class="bg-black/30 rounded-xl p-3 mb-6 text-[10px]">
+                <div class="flex justify-between py-1"><span>L1 (Direct)</span> <span class="text-green-400">25%</span></div>
+                <div class="flex justify-between py-1 border-y border-white/5"><span>L2 (Indirect)</span> <span class="text-green-400">10%</span></div>
+                <div class="flex justify-between py-1"><span>L3 (Network)</span> <span class="text-green-400">5%</span></div>
             </div>
-            <div class="bg-black/50 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10 font-mono text-yellow-400 shadow-inner" id="ref-url">Loading link...</div>
-            <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs shadow-lg active:scale-95 transition-all">
-                <i class="fas fa-copy mr-2"></i> COPY MY INVITE LINK
-            </button>
+            <div class="bg-black/50 p-3 rounded-lg text-[10px] mb-4 break-all text-yellow-400 font-mono" id="ref-url">Loading link...</div>
+            <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs">COPY INVITE LINK</button>
         </div>
     </div>
 
     <div id="withdraw" class="page-section p-4">
-        <div class="glass p-6 text-center border-red-500/30">
-            <h2 class="text-xl font-black mb-4 text-red-500 uppercase">Withdraw</h2>
+        <div class="glass p-6 text-center border-red-500/30 shadow-xl">
+            <h2 class="text-xl font-black mb-6 text-red-500 uppercase">Withdraw Funds</h2>
             <div class="space-y-4">
-                <input type="number" id="w-amount" placeholder="Amount ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-center outline-none">
-                <button onclick="submitWithdraw()" class="w-full bg-red-600 py-4 rounded-xl font-bold">SUBMIT REQUEST</button>
+                <input type="number" id="w-amount" placeholder="Amount ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-center outline-none focus:border-blue-500">
+                <select id="w-method" class="w-full bg-black border border-white/10 p-4 rounded-xl outline-none text-white text-center">
+                    <option value="Bkash">Bkash</option>
+                    <option value="Nagad">Nagad</option>
+                    <option value="USDT (TRC20)">USDT (TRC20)</option>
+                </select>
+                <input type="text" id="w-number" placeholder="Account Number / Address" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-center outline-none focus:border-blue-500">
+                <button onclick="submitWithdraw()" class="w-full bg-red-600 py-4 rounded-xl font-bold active:scale-95 transition-all shadow-lg">SUBMIT WITHDRAW</button>
             </div>
         </div>
     </div>
@@ -140,11 +126,22 @@
         const db = firebase.database();
         const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "12345";
 
-        let uData = { balance: 0, mult: 1, adCount: 0 };
+        let uData = { balance: 0, mult: 1 };
         let isTaskRunning = false;
 
+        const smartLinks = [
+            "https://omg10.com/4/10742061", "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac",
+            "https://omg10.com/4/10741957", "https://www.effectivegatecpm.com/e3icg0yc?key=34838b697cff95cb4259720733741245",
+            "https://omg10.com/4/10742063", "https://www.effectivegatecpm.com/a771zn3ch?key=4f550e605f792b6e4926408dad579c46",
+            "https://omg10.com/4/10742064", "https://www.effectivegatecpm.com/v4dctgq4ja?key=6a78657df2fb4f1f124b35f428ff4bc8",
+            "https://omg10.com/4/10199976", "https://www.effectivegatecpm.com/s5dx27y4nj?key=af57e60d259aecb356babdf60afaec30",
+            "https://omg10.com/4/10742065", "https://www.effectivegatecpm.com/qa90i6eu6?key=34662c4bfdcae6396c60cf711f35b6ed",
+            "https://omg10.com/4/10741959", "https://www.effectivegatecpm.com/asfye22psb?key=a6036657fb671ad7244c668631e0aba6",
+            "https://omg10.com/4/10742062"
+        ];
+
         db.ref('users/' + userId).on('value', (s) => {
-            uData = s.val() || { balance: 0, mult: 1, adCount: 0 };
+            uData = s.val() || { balance: 0, mult: 1 };
             document.getElementById('balance-text').innerText = "$" + (uData.balance || 0).toFixed(3);
             document.getElementById('multiplier-text').innerText = `Rate: ${uData.mult || 1}X`;
             document.getElementById('ref-url').innerText = `https://t.me/metaadsmonnybot?start=${userId}`;
@@ -153,24 +150,29 @@
         function showPage(pageId) {
             document.querySelectorAll('.page-section').forEach(p => p.style.display = 'none');
             document.getElementById(pageId).style.display = 'block';
-            document.getElementById('pay-box').classList.add('hidden');
             if(pageId === 'tasks') toggleTaskType('smart');
         }
 
-        function openPay(p, m) {
-            document.getElementById('pay-box').classList.remove('hidden');
-            const bdtAmount = p * 125;
-            tg.showAlert(`বিকাশ পেমেন্ট: ${bdtAmount} টাকা।\nরেট: $1 = 125 টাকা।`);
+        function toggleTaskType(type) {
+            const list = document.getElementById('task-list');
+            list.innerHTML = "";
+            if(type === 'smart') {
+                document.getElementById('smart-tab').classList.replace('glass', 'bg-blue-600');
+                document.getElementById('web-tab').classList.replace('bg-blue-600', 'glass');
+                smartLinks.forEach((link, i) => {
+                    list.innerHTML += `<div class="glass p-4 flex justify-between items-center"><span class="text-xs font-bold">Smart Task #${i+1}</span><button onclick="startVerification(this, 0.05, 30, '${link}')" class="bg-blue-600 px-4 py-2 rounded-lg text-xs font-bold">START ($0.05)</button></div>`;
+                });
+            } else {
+                document.getElementById('web-tab').classList.replace('glass', 'bg-blue-600');
+                document.getElementById('smart-tab').classList.replace('bg-blue-600', 'glass');
+                list.innerHTML = `<div class="glass p-4 flex justify-between items-center border-yellow-500/30"><span class="text-xs font-bold text-yellow-400 text-xs">Web Premium Task</span><button onclick="startVerification(this, 0.10, 60, 'https://omg10.com/4/10742062')" class="bg-yellow-600 px-4 py-2 rounded-lg text-xs font-bold">START ($0.10)</button></div>`;
+            }
         }
 
-        function copyToClip(id) {
-            const text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text).then(() => tg.showAlert("Copied: " + text));
-        }
-
-        function startVerification(btn, reward, time, type, taskId) {
+        function startVerification(btn, reward, time, url) {
             if (isTaskRunning) return;
             isTaskRunning = true; btn.disabled = true;
+            if(url.startsWith('http')) tg.openLink(url);
             let timeLeft = time;
             const timer = setInterval(() => {
                 btn.innerText = `Wait ${timeLeft}s`;
@@ -178,52 +180,39 @@
                     clearInterval(timer);
                     const bonus = reward * (uData.mult || 1);
                     db.ref('users/' + userId).update({ balance: (uData.balance || 0) + bonus }).then(() => {
-                        tg.showAlert("Success!");
-                        distributeCommission(reward); // কমিশন ফাংশন যোগ করা হয়েছে
-                        isTaskRunning = false; 
-                        btn.innerText = "DONE";
+                        tg.showAlert("Success! Earned: $" + bonus.toFixed(3));
+                        distributeCommission(reward);
+                        isTaskRunning = false; btn.innerText = "DONE";
                     });
                 }
             }, 1000);
         }
 
-        function toggleTaskType(type) {
-            const list = document.getElementById('task-list');
-            list.innerHTML = `<button onclick="startVerification(this, 0.05, 30, 'task')" class="w-full glass p-4 text-xs font-bold">START TASK #1</button>`;
-        }
-
         function submitWithdraw() {
             const amt = parseFloat(document.getElementById('w-amount').value);
-            if(amt <= uData.balance && amt > 0) {
-                db.ref('withdraw_requests').push({ userId, amt, status: 'pending' });
-                tg.showAlert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+            const method = document.getElementById('w-method').value;
+            const num = document.getElementById('w-number').value;
+            if(amt <= uData.balance && amt > 0 && num) {
+                db.ref('withdraw_requests').push({ userId, amt, method, num, status: 'pending', date: Date.now() });
+                tg.showAlert("Withdraw Request Sent!");
             } else {
-                tg.showAlert("Insufficient balance or invalid amount!");
+                tg.showAlert("Invalid amount or missing information!");
             }
         }
 
         function copyRef() {
-            const url = document.getElementById('ref-url').innerText;
-            navigator.clipboard.writeText(url).then(() => tg.showAlert("রেফারেল লিঙ্ক কপি হয়েছে!"));
+            navigator.clipboard.writeText(document.getElementById('ref-url').innerText).then(() => tg.showAlert("Link Copied!"));
         }
 
         function distributeCommission(amount) {
             db.ref('users/' + userId + '/referrer').once('value', (s) => {
                 const L1 = s.val(); if (!L1) return;
-                updateRefBalance(L1, amount * 0.25);
+                db.ref('users/' + L1 + '/balance').transaction(c => (c || 0) + (amount * 0.25));
                 db.ref('users/' + L1 + '/referrer').once('value', (s2) => {
                     const L2 = s2.val(); if (!L2) return;
-                    updateRefBalance(L2, amount * 0.10);
-                    db.ref('users/' + L2 + '/referrer').once('value', (s3) => {
-                        const L3 = s3.val(); if (!L3) return;
-                        updateRefBalance(L3, amount * 0.05);
-                    });
+                    db.ref('users/' + L2 + '/balance').transaction(c => (c || 0) + (amount * 0.10));
                 });
             });
-        }
-
-        function updateRefBalance(id, amt) {
-            db.ref('users/' + id + '/balance').transaction((curr) => (curr || 0) + amt);
         }
     </script>
 </body>
