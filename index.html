@@ -97,13 +97,29 @@
         </div>
     </div>
 
-    <div id="refer" class="page-section p-4">
-        <div class="glass p-8 text-center">
-            <h2 class="text-xl font-bold mb-2 text-blue-400">Refer & Earn</h2>
-            <div class="bg-black/40 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10" id="ref-url">Loading...</div>
-            <button onclick="copyRef()" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-xs">COPY LINK</button>
+   <div id="refer" class="page-section p-4">
+    <div class="glass p-6 text-center mb-6 border-blue-500/30">
+        <h2 class="text-xl font-black mb-2 text-blue-400 uppercase">Refer & Multi-Level Earn</h2>
+        <p class="text-[11px] text-gray-400 mb-4">প্রতিটি সফল ইনস্টল রেফারে $1.00 বোনাস!</p>
+        
+        <div class="bg-black/30 rounded-xl p-3 mb-6 border border-white/5 text-[10px]">
+            <div class="flex justify-between border-b border-white/10 pb-2 mb-2 font-bold text-yellow-500">
+                <span>Refer Level</span>
+                <span>Commission</span>
+            </div>
+            <div class="flex justify-between py-1"><span>Direct Refer (L1)</span> <span class="text-green-400">25% (Lifetime)</span></div>
+            <div class="flex justify-between py-1"><span>Level 2 (L2)</span> <span class="text-green-400">10% Commission</span></div>
+            <div class="flex justify-between py-1"><span>Level 3 (L3)</span> <span class="text-green-400">5% Commission</span></div>
         </div>
+
+        <div class="bg-black/50 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10 font-mono text-yellow-400" id="ref-url">
+            Loading link...
+        </div>
+        <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs shadow-lg active:scale-95 transition-all">
+            <i class="fas fa-copy mr-2"></i> COPY MY INVITE LINK
+        </button>
     </div>
+</div>
 
     <div id="withdraw" class="page-section p-4">
         <h2 class="text-xl font-bold mb-6">Withdraw</h2>
@@ -164,7 +180,12 @@
                 if(timeLeft-- < 0) {
                     clearInterval(timer);
                     const bonus = reward * (uData.mult || 1);
-                    db.ref('users/' + userId).update({ balance: (uData.balance || 0) + bonus }).then(() => {
+                    db.ref('users/' + userId).update({ balance: (uData.balance || 0) + bonus }).then((.then(() => {
+    tg.showAlert("Success!");
+    distributeCommission(reward); // <--- আপনার বসানো লাইন
+    isTaskRunning = false;
+    btn.innerText = "DONE";
+});) => {
                         tg.showAlert("Success!"); isTaskRunning = false; btn.innerText = "DONE";
                     });
                 }
