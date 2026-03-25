@@ -98,21 +98,28 @@
     </div>
 
     <div id="refer" class="page-section p-4">
-        <div class="glass p-8 text-center">
-            <h2 class="text-xl font-bold mb-2 text-blue-400">Refer & Earn</h2>
-            <div class="bg-black/40 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10" id="ref-url">Loading...</div>
-            <button onclick="copyRef()" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-xs">COPY LINK</button>
+    <div class="glass p-6 text-center mb-6 border-blue-500/30">
+        <h2 class="text-xl font-black mb-2 text-blue-400 uppercase italic">Refer & Network Earn</h2>
+        <p class="text-[11px] text-gray-400 mb-4 font-bold">প্রতিটি সফল ইনস্টল রেফারে $1.00 বোনাস!</p>
+        
+        <div class="bg-black/30 rounded-xl p-3 mb-6 border border-white/5 text-[10px]">
+            <div class="flex justify-between border-b border-white/10 pb-2 mb-2 font-bold text-yellow-500">
+                <span>Level</span>
+                <span>Commission</span>
+            </div>
+            <div class="flex justify-between py-1"><span>L1 (Direct)</span> <span class="text-green-400 font-bold">25% (Lifetime)</span></div>
+            <div class="flex justify-between py-1 border-y border-white/5"><span>L2 (Indirect)</span> <span class="text-green-400 font-bold">10%</span></div>
+            <div class="flex justify-between py-1"><span>L3 (Network)</span> <span class="text-green-400 font-bold">5%</span></div>
         </div>
-    </div>
 
-    <div id="withdraw" class="page-section p-4">
-        <h2 class="text-xl font-bold mb-6">Withdraw</h2>
-        <div class="glass p-6">
-            <input id="w-addr" type="text" placeholder="Number or Address" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-4 text-xs text-white">
-            <input id="w-amount" type="number" placeholder="Amount ($)" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-6 text-xs text-white">
-            <button onclick="submitWithdraw()" class="w-full bg-green-600 py-3 rounded-xl font-bold">CONFIRM</button>
+        <div class="bg-black/50 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10 font-mono text-yellow-400 shadow-inner" id="ref-url">
+            Loading link...
         </div>
+        <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs shadow-lg active:scale-95 transition-all">
+            <i class="fas fa-copy mr-2"></i> COPY MY INVITE LINK
+        </button>
     </div>
+</div>
 
     <script>
         const tg = window.Telegram.WebApp;
