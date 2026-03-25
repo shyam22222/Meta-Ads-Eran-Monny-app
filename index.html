@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ads Pro - Premium v2.0</title>
+    <title>Meta Ads Pro - Premium Network</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -13,120 +13,148 @@
     <script src='//libtl.com/sdk.js' data-zone='10741886' data-sdk='show_10741886'></script>
 
     <style>
-        body { background-color: #0d1117; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; }
-        .page-section { display: none; }
+        body { background-color: #05070a; color: #e1e1e1; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
+        .nav-active { color: #3b82f6; transform: translateY(-4px); transition: all 0.3s ease; }
+        .page-section { display: none; animation: fadeIn 0.4s ease-out; }
         .active-section { display: block; }
-        .grad-primary { background: linear-gradient(135deg, #1e90ff 0%, #00bfff 100%); }
-        .disabled-btn { background: #21262d !important; color: #8b949e !important; pointer-events: none; border: none !important; opacity: 0.7; }
-        .timer-anim { animation: pulse 1s infinite; color: #ffcc00; font-weight: bold; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .disabled-btn { background: #1a1d23 !important; color: #4b5563 !important; pointer-events: none; opacity: 0.6; border: none !important; }
+        .timer-badge { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.2); }
     </style>
 </head>
-<body class="p-4 pb-28">
+<body class="p-4 pb-24">
 
-    <nav class="fixed bottom-0 left-0 right-0 glass h-18 flex justify-around items-center z-50 border-t border-white/5 mx-2 mb-2 px-2">
-        <button onclick="showPage('home')" class="flex flex-col items-center py-2"><i class="fas fa-home text-lg"></i><span class="text-[9px] mt-1">Home</span></button>
-        <button onclick="showPage('tasks')" class="flex flex-col items-center py-2"><i class="fas fa-tasks text-lg"></i><span class="text-[9px] mt-1">Tasks</span></button>
-        <button onclick="showPage('premium')" class="flex flex-col items-center text-yellow-500 py-2"><i class="fas fa-crown text-lg"></i><span class="text-[9px] mt-1">Premium</span></button>
-        <button onclick="showPage('refer')" class="flex flex-col items-center py-2"><i class="fas fa-user-plus text-lg"></i><span class="text-[9px] mt-1">Refer</span></button>
-        <button onclick="showPage('withdraw')" class="flex flex-col items-center py-2"><i class="fas fa-wallet text-lg"></i><span class="text-[9px] mt-1">Wallet</span></button>
-    </nav>
+    <div class="flex justify-between items-center mb-6 px-2">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full grad-primary flex items-center justify-center bg-blue-600 shadow-lg">
+                <i class="fas fa-robot text-white"></i>
+            </div>
+            <div>
+                <h2 id="user-name" class="font-bold text-sm tracking-tight">Premium User</h2>
+                <p class="text-[9px] text-gray-500 uppercase tracking-widest font-black">Meta Ads Pro v3.0</p>
+            </div>
+        </div>
+        <div class="glass px-4 py-2 flex items-center gap-2 border-blue-500/20">
+            <i class="fas fa-coins text-yellow-500 text-xs"></i>
+            <span id="balance-top" class="font-black text-sm">$0.000</span>
+        </div>
+    </div>
 
     <div id="home" class="page-section active-section">
-        <div class="glass p-8 text-center mb-6 grad-primary shadow-xl">
-            <p class="text-[10px] uppercase font-bold tracking-wider opacity-90">Available Balance</p>
-            <h1 id="balance-text" class="text-4xl font-black mt-1">$0.000</h1>
-            <div id="multiplier-tag" class="text-[9px] mt-3 bg-black/30 px-4 py-1.5 rounded-full inline-block font-bold italic">Status: 1X Earning Speed</div>
-        </div>
-
-        <div class="glass p-5 mb-4 border-l-4 border-blue-500">
-            <div class="flex justify-between items-center mb-3">
-                <span class="text-[11px] font-bold uppercase">Main Video Task</span>
-                <span class="text-[10px] bg-blue-500/20 px-2 py-0.5 rounded text-blue-300">Daily: 15 / <span id="rem-count">15</span></span>
+        <div class="glass p-10 text-center mb-6 relative overflow-hidden bg-gradient-to-br from-blue-600/20 to-transparent">
+            <p class="text-[10px] uppercase font-bold text-blue-400 mb-2">My Total Earning</p>
+            <h1 id="balance-main" class="text-5xl font-black text-white">$0.000</h1>
+            <div class="mt-4 flex justify-center">
+                <div id="speed-tag" class="text-[9px] font-bold bg-white/5 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    1.0X MULTIPLIER ACTIVE
+                </div>
             </div>
-            <button id="main-video-btn" onclick="handleMainVideo(this)" class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs shadow-lg active:scale-95 transition-transform">WATCH ADS & EARN $0.05</button>
         </div>
 
-        <div class="glass p-5 border-l-4 border-green-500">
-            <h3 class="font-black text-xs text-green-400 mb-1 tracking-wide">Daily Special Signup ($0.20)</h3>
-            <p id="signup-info" class="text-[9px] text-gray-400 mb-4">নিচের এডে ক্লিক করে সাইন-আপ করুন এবং ৬০ সেকেন্ড ওয়েট করুন।</p>
-            <div class="flex gap-2">
-                <button id="signup-link-btn" onclick="openSignupUrl()" class="flex-1 bg-white/5 py-3 rounded-lg text-[10px] font-bold border border-white/10 uppercase">Open Ad</button>
-                <button id="signup-claim-btn" onclick="verifySignupTask(this)" class="flex-[1.5] bg-green-600 py-3 rounded-lg text-[10px] font-bold uppercase">Verify & Claim</button>
+        <div class="glass p-6 mb-4 border-l-4 border-blue-500 bg-blue-500/5">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-black text-xs uppercase tracking-tighter">Main Video Task</h3>
+                <span class="text-[10px] timer-badge px-3 py-1 rounded-full">Daily: 15 / <span id="rem-ads">15</span></span>
+            </div>
+            <button id="main-ad-btn" onclick="triggerVideoTask(this)" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-black text-xs shadow-xl transition-all active:scale-95">WATCH ADS & EARN $0.05</button>
+        </div>
+
+        <div class="glass p-6 border-l-4 border-green-500 bg-green-500/5">
+            <div class="flex items-center gap-2 mb-2 text-green-400">
+                <i class="fas fa-star-of-life animate-spin text-[10px]"></i>
+                <h3 class="font-black text-xs uppercase tracking-tighter">Daily Signup Reward</h3>
+            </div>
+            <p id="signup-desc" class="text-[9px] text-gray-400 mb-5 leading-relaxed">এই টাস্কটি দিনে একবারই করতে পারবেন। লিংকে গিয়ে সাইন-আপ করে ৬০ সেকেন্ড অপেক্ষা করুন।</p>
+            <div class="flex gap-3">
+                <button id="signup-open" onclick="openDailySignup()" class="flex-1 bg-white/5 border border-white/10 py-3.5 rounded-xl font-bold text-[10px] hover:bg-white/10">OPEN AD LINK</button>
+                <button id="signup-claim" onclick="verifySignup(this)" class="flex-[1.5] bg-green-600 py-3.5 rounded-xl font-black text-[10px] shadow-lg">VERIFY & CLAIM $0.20</button>
             </div>
         </div>
     </div>
 
     <div id="tasks" class="page-section">
-        <div class="flex p-1 bg-white/5 rounded-2xl mb-6 border border-white/10">
-            <button onclick="loadTasks('smart')" id="tab-smart" class="flex-1 py-3 rounded-xl bg-blue-600 font-bold text-xs transition-all">Ads View</button>
-            <button onclick="loadTasks('web')" id="tab-web" class="flex-1 py-3 rounded-xl font-bold text-xs transition-all">Web View</button>
+        <div class="flex p-1.5 bg-white/5 rounded-2xl mb-8 border border-white/5">
+            <button onclick="tabSwitcher('smart')" id="tab-s" class="flex-1 py-3.5 rounded-xl bg-blue-600 font-black text-[11px] transition-all">ADS VIEW</button>
+            <button onclick="tabSwitcher('web')" id="tab-w" class="flex-1 py-3.5 rounded-xl font-black text-[11px] transition-all text-gray-400">WEB VIEW</button>
         </div>
-        <div id="task-container" class="space-y-3"></div>
+        <div id="task-grid" class="space-y-4"></div>
     </div>
 
     <div id="premium" class="page-section">
-        <h2 class="text-xl font-black mb-6 text-center text-yellow-500 italic uppercase">Premium Membership</h2>
-        <div id="plan-list" class="space-y-3 mb-8"></div>
+        <h2 class="text-2xl font-black text-center mb-8 text-yellow-500 italic">UPGRADE TO PREMIUM</h2>
+        <div id="plan-grid" class="space-y-4 mb-8"></div>
+        
+        <div id="payment-gateway" class="hidden glass p-6 border-yellow-500/30">
+            <h4 class="text-center font-black text-yellow-500 mb-6 uppercase tracking-tighter">Secure Payment Details</h4>
+            <div class="space-y-4">
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[10px] text-gray-500 mb-2 uppercase font-bold">বিকাশ / নগদ পার্সোনাল</p>
+                    <p class="text-lg font-black text-white tracking-widest">নম্বর_এখানে_বসাবেন</p>
+                    <p class="text-[9px] text-blue-400 mt-2 italic">* প্রতি ১ ডলার = ১২৫ টাকা</p>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                    <p class="text-[10px] text-gray-500 mb-3 uppercase font-bold">USDT Address (TRC20)</p>
+                    <p id="wallet-addr" class="font-mono text-[10px] break-all text-blue-300 bg-black/40 p-3 rounded-lg border border-white/5 mb-4">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
+                    <button onclick="copy('wallet-addr')" class="bg-blue-600 px-6 py-2 rounded-lg font-bold text-[10px]">COPY ADDRESS</button>
+                    <div class="mt-6 p-3 bg-white rounded-2xl inline-block shadow-2xl">
+                        <img src="কিউআর_কোড_লিংক" class="w-32 h-32">
+                    </div>
+                </div>
+                <button onclick="tg.openTelegramLink('https://t.me/admin_support')" class="w-full bg-blue-500 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">Contact Admin & Send ScreenShot</button>
+            </div>
+        </div>
+    </div>
 
-        <div id="payment-panel" class="hidden glass p-6 border-yellow-500/30">
-            <h4 class="text-center font-bold text-yellow-500 mb-5 underline uppercase tracking-widest">Select Payment Method</h4>
-            <div class="space-y-4 text-xs">
-                <div class="bg-black/40 p-4 rounded-xl border border-white/5">
-                    <p class="text-gray-400 mb-1">Bkash / Nagad (১ ডলার = ১২৫ টাকা)</p>
-                    <p class="text-lg font-black text-white">আপনার_বিকাশ_নম্বর_এখানে</p>
-                    <p class="text-[9px] text-yellow-600 mt-1 italic font-bold">সেন্ড মানি করার পর ট্রানজেকশন আইডি দিন।</p>
+    <div id="withdraw" class="page-section">
+        <div class="glass p-8 border-red-500/20">
+            <h2 class="text-2xl font-black text-center mb-8 text-red-500">WITHDRAWAL</h2>
+            <div class="bg-red-500/10 p-4 rounded-2xl mb-8 text-center border border-red-500/30">
+                <p class="text-xs font-black text-red-400 italic">Minimum: $10.00 (1250 BDT)</p>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="text-[9px] font-black text-gray-500 ml-2 mb-2 block uppercase">Select Method</label>
+                    <select id="w-meth" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl font-bold text-xs outline-none focus:border-red-500">
+                        <option value="Bkash">Bkash (Personal)</option>
+                        <option value="Nagad">Nagad (Personal)</option>
+                        <option value="Binance">Binance Pay ID</option>
+                        <option value="USDT">USDT (TRC20)</option>
+                    </select>
                 </div>
-                <div class="bg-black/40 p-4 rounded-xl border border-white/5 text-center">
-                    <p class="text-gray-400 mb-2 font-bold">USDT Address (TRC20)</p>
-                    <p id="trc-id" class="font-mono text-[9px] break-all text-blue-400 mb-4">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
-                    <button onclick="copyToClipboard('trc-id')" class="bg-blue-600/20 text-blue-400 border border-blue-500 px-6 py-1.5 rounded-lg text-[10px] font-bold">COPY ADDRESS</button>
-                    <div class="mt-6"><img src="কিউআর_কোড_লিংক" class="w-32 h-32 mx-auto rounded-lg border border-white/10 shadow-lg"></div>
-                </div>
-                <button onclick="tg.openTelegramLink('https://t.me/Support_Admin_ID')" class="w-full bg-blue-500 py-4 rounded-xl font-black uppercase text-[11px] shadow-lg">Submit Payment Screenshot</button>
+                <input type="number" id="w-val" placeholder="Amount ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl font-bold text-sm outline-none">
+                <input type="text" id="w-adr" placeholder="Account Number / Wallet Address" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl font-bold text-sm outline-none">
+                <button onclick="submitWithdraw()" class="w-full bg-red-600 py-4 rounded-xl font-black shadow-2xl active:scale-95 transition-all text-xs">CONFIRM WITHDRAWAL</button>
             </div>
         </div>
     </div>
 
     <div id="refer" class="page-section">
         <div class="glass p-8 text-center border-blue-500/20">
-            <h2 class="text-2xl font-black text-blue-400 mb-4 italic uppercase">Affiliate Link</h2>
-            <div class="bg-blue-500/10 p-4 rounded-xl mb-6 border border-blue-500/20">
-                <p class="text-xs font-bold text-blue-200">১ ডলার বোনাস প্রতি সাকসেসফুল রেফার!</p>
-                <p class="text-[9px] text-gray-500 mt-2">Lifetime Commission: L1: 25%, L2: 10%, L3-L5: 5%</p>
+            <h2 class="text-2xl font-black text-blue-400 mb-6 italic">NETWORK EARNING</h2>
+            <div class="bg-blue-600/10 p-4 rounded-2xl mb-8 border border-blue-500/10">
+                <p class="text-xs font-black text-blue-300">Invite Friends & Earn $1.00 Bonus!</p>
+                <p class="text-[9px] text-gray-500 mt-2 font-bold uppercase">L1: 25% | L2: 10% | L3-L5: 5% COMMISSION</p>
             </div>
-            <div id="referral-link" class="bg-black/50 p-4 rounded-xl text-[10px] mb-6 break-all border border-white/5 text-yellow-500 font-mono italic">Loading Link...</div>
-            <button onclick="copyRefLink()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase shadow-xl tracking-tighter">Copy Referral Link</button>
+            <div id="ref-link" class="bg-black p-4 rounded-2xl text-[10px] mb-6 border border-white/10 text-yellow-500 font-mono tracking-tighter overflow-hidden">Loading...</div>
+            <button onclick="copyRef()" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95 transition-all">Copy My Referral Link</button>
         </div>
     </div>
 
-    <div id="withdraw" class="page-section">
-        <div class="glass p-6 border-red-500/20">
-            <h2 class="text-xl font-black mb-6 text-center text-red-500 italic uppercase">Withdraw Funds</h2>
-            <div class="bg-red-500/10 p-4 rounded-xl mb-6 text-center border border-red-500/20">
-                <p class="text-xs font-bold text-red-400">Minimum Withdraw: $10.00</p>
-                <p class="text-[9px] text-gray-500 mt-1">বিকাশ/নগদ রেট: ১$ = ১২৫ টাকা (১২৫০৳ মিনিমাম)</p>
-            </div>
-            <div class="space-y-4">
-                <input type="number" id="wd-amount" placeholder="উত্তোলন পরিমাণ ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none font-bold focus:border-red-500">
-                <select id="wd-method" class="w-full bg-black border border-white/10 p-4 rounded-xl font-bold text-xs outline-none">
-                    <option value="Bkash">Bkash</option>
-                    <option value="Nagad">Nagad</option>
-                    <option value="Binance Pay">Binance Pay ID</option>
-                    <option value="USDT TRC20">USDT (TRC20)</option>
-                </select>
-                <input type="text" id="wd-address" placeholder="হিসাব নম্বর বা এড্রেস দিন" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none font-bold">
-                <button onclick="processWithdrawal()" class="w-full bg-red-600 py-4 rounded-xl font-black shadow-xl active:scale-95 transition-transform uppercase text-xs">Confirm Request</button>
-            </div>
-        </div>
-    </div>
+    <nav class="fixed bottom-4 left-4 right-4 glass h-20 flex justify-around items-center z-50 px-2 border border-white/10 shadow-2xl">
+        <button onclick="showPage('home')" class="flex flex-col items-center gap-1 opacity-70 transition-all"><i class="fas fa-home text-lg"></i><span class="text-[9px] font-bold">Home</span></button>
+        <button onclick="showPage('tasks')" class="flex flex-col items-center gap-1 opacity-70 transition-all"><i class="fas fa-layer-group text-lg"></i><span class="text-[9px] font-bold">Earn</span></button>
+        <button onclick="showPage('premium')" class="flex flex-col items-center gap-1 text-yellow-500 scale-110"><i class="fas fa-crown text-xl"></i><span class="text-[9px] font-bold">VIP</span></button>
+        <button onclick="showPage('refer')" class="flex flex-col items-center gap-1 opacity-70 transition-all"><i class="fas fa-users text-lg"></i><span class="text-[9px] font-bold">Refer</span></button>
+        <button onclick="showPage('withdraw')" class="flex flex-col items-center gap-1 opacity-70 transition-all"><i class="fas fa-wallet text-lg"></i><span class="text-[9px] font-bold">Wallet</span></button>
+    </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        // Firebase Configuration
+        // Firebase Setup
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
             databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
@@ -134,10 +162,10 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const uid = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "TEST_USER";
+        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "123456789";
 
-        let user = { balance: 0, mult: 1, dailyAds: 15, lastSignup: "", tasksDone: {} };
-        let activeProcess = false;
+        let userData = { balance: 0, mult: 1, dailyAds: 15, lastSignupDate: "", completedTasks: {} };
+        let isProcessing = false;
 
         const smartLinks = [
             "https://omg10.com/4/10742061", "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac",
@@ -150,162 +178,171 @@
             "https://omg10.com/4/10742062"
         ];
 
-        // Database Listener
-        db.ref('users/' + uid).on('value', (snap) => {
-            user = snap.val() || { balance: 0, mult: 1, dailyAds: 15, lastSignup: "", tasksDone: {} };
-            document.getElementById('balance-text').innerText = "$" + (user.balance || 0).toFixed(3);
-            document.getElementById('multiplier-tag').innerText = `Status: ${user.mult || 1}X Earning Speed`;
-            document.getElementById('rem-count').innerText = user.dailyAds || 0;
-            document.getElementById('referral-link').innerText = `https://t.me/metaadsmonnybot?start=${uid}`;
-            
-            // Check Daily Signup
-            const today = new Date().toDateString();
-            if(user.lastSignup === today) {
-                document.getElementById('signup-link-btn').classList.add('disabled-btn');
-                document.getElementById('signup-claim-btn').classList.add('disabled-btn');
-                document.getElementById('signup-claim-btn').innerText = "DONE FOR TODAY";
-                document.getElementById('signup-info').innerText = "✅ আজকের সাইন-আপ টাস্ক সম্পন্ন হয়েছে!";
-            }
+        db.ref('users/' + userId).on('value', (snap) => {
+            userData = snap.val() || { balance: 0, mult: 1, dailyAds: 15, lastSignupDate: "", completedTasks: {} };
+            updateUI();
         });
 
-        function showPage(p) {
-            document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
-            document.getElementById(p).style.display = 'block';
-            if(p === 'tasks') loadTasks('smart');
-            if(p === 'premium') showPlans();
+        function updateUI() {
+            document.getElementById('balance-main').innerText = "$" + (userData.balance || 0).toFixed(3);
+            document.getElementById('balance-top').innerText = "$" + (userData.balance || 0).toFixed(3);
+            document.getElementById('balance-top').innerText = "$" + (userData.balance || 0).toFixed(3);
+            document.getElementById('speed-tag').innerText = (userData.mult || 1) + "X MULTIPLIER ACTIVE";
+            document.getElementById('rem-ads').innerText = userData.dailyAds || 0;
+            document.getElementById('ref-link').innerText = `https://t.me/metaadsmonnybot?start=${userId}`;
+            
+            const today = new Date().toDateString();
+            if(userData.lastSignupDate === today) {
+                document.getElementById('signup-open').classList.add('disabled-btn');
+                document.getElementById('signup-claim').classList.add('disabled-btn');
+                document.getElementById('signup-desc').innerText = "✅ আজকের সাইন-আপ শেষ! আগামীকাল আবার ট্রাই করুন।";
+            }
         }
 
-        // --- Main Video Function ---
-        function handleMainVideo(btn) {
-            if(user.dailyAds <= 0 || activeProcess) return;
-            activeProcess = true; btn.disabled = true;
+        function showPage(p) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-section'));
+            document.getElementById(p).classList.add('active-section');
+            if(p === 'tasks') tabSwitcher('smart');
+            if(p === 'premium') renderPlans();
+        }
 
-            // Trigger Adsterra SDK
+        // --- Main Video Logic ---
+        function triggerVideoTask(btn) {
+            if(userData.dailyAds <= 0 || isProcessing) return;
+            isProcessing = true;
+            btn.disabled = true;
+
+            // SDK Call
             if(typeof show_10741886 === 'function') show_10741886();
             tg.openTelegramLink("https://t.me/metaadsmonnybot");
 
-            let countdown = 30;
-            const timer = setInterval(() => {
-                btn.innerHTML = `<span class="timer-anim">WAIT ${countdown}s</span>`;
-                if(countdown-- <= 0) {
-                    clearInterval(timer);
-                    const reward = 0.05 * (user.mult || 1);
-                    db.ref('users/' + uid).update({ 
-                        balance: (user.balance || 0) + reward,
-                        dailyAds: user.dailyAds - 1
+            let timeLeft = 30;
+            const t = setInterval(() => {
+                btn.innerText = `WAITING... ${timeLeft}S`;
+                if(timeLeft-- <= 0) {
+                    clearInterval(t);
+                    const gain = 0.05 * (userData.mult || 1);
+                    db.ref('users/' + userId).update({
+                        balance: (userData.balance || 0) + gain,
+                        dailyAds: userData.dailyAds - 1
                     });
-                    tg.showAlert("Success! $0.05 Added.");
-                    activeProcess = false; btn.disabled = false; btn.innerText = "WATCH ADS & EARN $0.05";
+                    tg.showAlert("Success! $0.05 Credited.");
+                    isProcessing = false; btn.disabled = false; btn.innerText = "WATCH ADS & EARN $0.05";
                 }
             }, 1000);
         }
 
-        // --- Daily Signup Logic ---
-        function openSignupUrl() {
-            // Daily rotation based on date
-            const dayIndex = new Date().getDate() % 15;
-            tg.openLink(smartLinks[dayIndex]);
+        // --- Daily Signup ---
+        function openDailySignup() {
+            const index = new Date().getDate() % 15;
+            tg.openLink(smartLinks[index]);
         }
 
-        function verifySignupTask(btn) {
-            if(user.lastSignup === new Date().toDateString() || activeProcess) return;
-            runTaskLogic(btn, 0.20, 60, 'signup_daily', 'signup');
-        }
+        function verifySignup(btn) {
+            const today = new Date().toDateString();
+            if(userData.lastSignupDate === today || isProcessing) return;
+            isProcessing = true; btn.disabled = true;
 
-        // --- Universal Task Handler ---
-        function runTaskLogic(btn, reward, timeSec, taskId, type) {
-            if(activeProcess || (user.tasksDone && user.tasksDone[taskId])) return;
-            activeProcess = true; btn.disabled = true;
-
-            // Open random smart link if it's a view task
-            if(type !== 'signup') {
-                const randLink = smartLinks[Math.floor(Math.random()*15)];
-                tg.openLink(randLink);
-            }
-
-            let left = timeSec;
+            let timeLeft = 60;
             const t = setInterval(() => {
-                btn.innerHTML = `<span class="timer-anim">CHECKING ${left}s</span>`;
-                if(left-- <= 0) {
+                btn.innerText = `VERIFYING ${timeLeft}S`;
+                if(timeLeft-- <= 0) {
                     clearInterval(t);
-                    const finalReward = reward * (user.mult || 1);
-                    let updateData = { balance: (user.balance || 0) + finalReward };
-                    
-                    if(type === 'signup') {
-                        updateData.lastSignup = new Date().toDateString();
-                    } else {
-                        if(!updateData.tasksDone) updateData.tasksDone = user.tasksDone || {};
-                        updateData.tasksDone[taskId] = true;
-                    }
+                    const gain = 0.20 * (userData.mult || 1);
+                    db.ref('users/' + userId).update({
+                        balance: (userData.balance || 0) + gain,
+                        lastSignupDate: today
+                    });
+                    tg.showAlert("Daily Signup Approved! $0.20 Added.");
+                    isProcessing = false;
+                }
+            }, 1000);
+        }
 
-                    db.ref('users/' + uid).update(updateData).then(() => {
-                        tg.showAlert("Verified! Reward Added.");
-                        activeProcess = false;
-                        btn.innerText = "COMPLETED";
+        // --- Master Task Switcher ---
+        function tabSwitcher(type) {
+            const grid = document.getElementById('task-grid');
+            const ts = document.getElementById('tab-s');
+            const tw = document.getElementById('tab-w');
+            grid.innerHTML = "";
+
+            if(type === 'smart') {
+                ts.classList.add('bg-blue-600'); ts.classList.remove('text-gray-400');
+                tw.classList.remove('bg-blue-600'); tw.classList.add('text-gray-400');
+                for(let i=1; i<=15; i++) {
+                    const tid = `ads_v_${i}`;
+                    const done = userData.completedTasks && userData.completedTasks[tid];
+                    grid.innerHTML += `<div class="glass p-5 flex justify-between items-center border-l-2 border-blue-500/30">
+                        <div><p class="text-[11px] font-black uppercase">Ads View 30s Earn $0.05</p><p class="text-[8px] text-gray-500 mt-1 tracking-widest font-bold">#SMART_ADS_${i}</p></div>
+                        <button onclick="handleLogic(this, 0.05, 30, '${tid}', 'ads')" class="px-6 py-2 rounded-xl text-[10px] font-black ${done ? 'disabled-btn' : 'bg-blue-600 shadow-lg shadow-blue-500/20'}">${done ? 'DONE' : 'CLAIM'}</button>
+                    </div>`;
+                }
+            } else {
+                tw.classList.add('bg-blue-600'); tw.classList.remove('text-gray-400');
+                ts.classList.remove('bg-blue-600'); ts.classList.add('text-gray-400');
+                for(let i=1; i<=15; i++) {
+                    const tid = `web_v_${i}`;
+                    const done = userData.completedTasks && userData.completedTasks[tid];
+                    grid.innerHTML += `<div class="glass p-5 flex justify-between items-center border-l-2 border-white/10">
+                        <div><p class="text-[11px] font-black uppercase">Web View 60s Earn $0.10</p><p class="text-[8px] text-gray-500 mt-1 tracking-widest font-bold">#WEB_VIEW_${i}</p></div>
+                        <button onclick="handleLogic(this, 0.10, 30, '${tid}', 'web')" class="px-6 py-2 rounded-xl text-[10px] font-black ${done ? 'disabled-btn' : 'bg-white/10 border border-white/10'}">${done ? 'DONE' : 'START'}</button>
+                    </div>`;
+                }
+            }
+        }
+
+        function handleLogic(btn, reward, time, tid, type) {
+            if(isProcessing || (userData.completedTasks && userData.completedTasks[tid])) return;
+            isProcessing = true; btn.disabled = true;
+
+            tg.openLink(smartLinks[Math.floor(Math.random() * 15)]);
+
+            let timeLeft = time;
+            const t = setInterval(() => {
+                btn.innerText = `WAIT ${timeLeft}S`;
+                if(timeLeft-- <= 0) {
+                    clearInterval(t);
+                    const bonus = reward * (userData.mult || 1);
+                    let upd = { balance: (userData.balance || 0) + bonus };
+                    if(!upd.completedTasks) upd.completedTasks = userData.completedTasks || {};
+                    upd.completedTasks[tid] = true;
+
+                    db.ref('users/' + userId).update(upd).then(() => {
+                        tg.showAlert("Task Verified! Earnings Added.");
+                        isProcessing = false;
+                        btn.innerText = "DONE";
                         btn.classList.add('disabled-btn');
                     });
                 }
             }, 1000);
         }
 
-        function loadTasks(mode) {
-            const container = document.getElementById('task-container');
-            const tabS = document.getElementById('tab-smart');
-            const tabW = document.getElementById('tab-web');
-            container.innerHTML = "";
-
-            if(mode === 'smart') {
-                tabS.classList.add('bg-blue-600'); tabW.classList.remove('bg-blue-600');
-                for(let i=1; i<=15; i++) {
-                    const tid = `smart_task_${i}`;
-                    const done = user.tasksDone && user.tasksDone[tid];
-                    container.innerHTML += `<div class="glass p-4 flex justify-between items-center border-l-2 border-blue-500/50">
-                        <div><p class="text-[10px] font-black uppercase">Ads View 30s Earn $0.05</p><p class="text-[8px] text-gray-500 mt-1">ID: #SMART-${i}</p></div>
-                        <button onclick="runTaskLogic(this, 0.05, 30, '${tid}', 'ads')" class="px-5 py-2 rounded-lg text-[9px] font-black ${done ? 'disabled-btn' : 'bg-blue-600 shadow-lg'}">${done ? 'DONE' : 'CLAIM'}</button>
-                    </div>`;
-                }
-            } else {
-                tabW.classList.add('bg-blue-600'); tabS.classList.remove('bg-blue-600');
-                for(let i=1; i<=15; i++) {
-                    const tid = `web_task_${i}`;
-                    const done = user.tasksDone && user.tasksDone[tid];
-                    container.innerHTML += `<div class="glass p-4 flex justify-between items-center border-l-2 border-white/20">
-                        <div><p class="text-[10px] font-black uppercase">Web View 60s Earn $0.10</p><p class="text-[8px] text-gray-500 mt-1">ID: #WEB-${i}</p></div>
-                        <button onclick="runTaskLogic(this, 0.10, 30, '${tid}', 'web')" class="px-5 py-2 rounded-lg text-[9px] font-black ${done ? 'disabled-btn' : 'bg-white/10 border border-white/10'}">${done ? 'DONE' : 'START'}</button>
-                    </div>`;
-                }
-            }
-        }
-
-        function showPlans() {
-            const list = [{val:5,m:2,n:'SILVER'},{val:10,m:3,n:'GOLD'},{val:25,m:5,n:'PLATINUM'},{val:50,m:10,n:'DIAMOND'}];
-            document.getElementById('plan-list').innerHTML = list.map(p => `
-                <div class="glass p-4 flex justify-between items-center border-white/5">
-                    <div><h4 class="font-black text-xs text-yellow-500 tracking-widest">${p.n}</h4><p class="text-[9px] text-gray-500">${p.m}X Earning - Cost: $${p.val}.00</p></div>
-                    <button onclick="initPayment('${p.val}')" class="bg-yellow-500 text-black px-6 py-2 rounded-lg font-black text-[9px] shadow-lg">UPGRADE</button>
+        function renderPlans() {
+            const p = [{v:5,m:2,n:'SILVER'},{v:10,m:3,n:'GOLD'},{v:25,m:5,n:'PLATINUM'},{v:50,m:10,n:'DIAMOND'}];
+            document.getElementById('plan-grid').innerHTML = p.map(x => `
+                <div class="glass p-5 flex justify-between items-center border-white/5 bg-gradient-to-r from-yellow-500/5 to-transparent">
+                    <div><h4 class="font-black text-[12px] text-yellow-500 tracking-widest underline">${x.n} PACKAGE</h4><p class="text-[9px] text-gray-500 font-bold mt-1 uppercase">${x.m}X Speed - Cost: $${x.v}.00</p></div>
+                    <button onclick="showPay('${x.v}')" class="bg-yellow-500 text-black px-6 py-2 rounded-xl font-black text-[10px] shadow-lg">UPGRADE</button>
                 </div>
             `).join('');
         }
 
-        function initPayment(val) {
-            document.getElementById('payment-panel').classList.remove('hidden');
-            tg.showAlert(`বিকাশ/নগদে ${val * 125} টাকা পেমেন্ট করুন।`);
-        }
+        function showPay(v) { document.getElementById('payment-gateway').classList.remove('hidden'); tg.showAlert(`Total BDT: ${v*125} TK`); }
 
-        function processWithdrawal() {
-            const amount = parseFloat(document.getElementById('wd-amount').value);
-            const address = document.getElementById('wd-address').value;
-            if(amount >= 10 && amount <= user.balance && address) {
-                db.ref('withdraw_requests').push({ uid, amount, address, method: document.getElementById('wd-method').value, status: 'pending', date: Date.now() });
-                db.ref('users/' + uid).update({ balance: user.balance - amount });
-                tg.showAlert("উইথড্র রিকোয়েস্ট সাকসেসফুল!");
+        function submitWithdraw() {
+            const val = parseFloat(document.getElementById('w-val').value);
+            const adr = document.getElementById('w-adr').value;
+            if(val >= 10 && val <= userData.balance && adr) {
+                db.ref('withdraw_logs').push({ userId, val, adr, method: document.getElementById('w-meth').value, status: 'pending', time: Date.now() });
+                db.ref('users/' + userId).update({ balance: userData.balance - val });
+                tg.showAlert("Withdraw Success! Wait for Admin Review.");
             } else {
-                tg.showAlert("মিনিমাম উইথড্র ১০ ডলার এবং সঠিক ব্যালেন্স প্রয়োজন!");
+                tg.showAlert("Min Withdraw $10 and enough balance required!");
             }
         }
 
-        function copyToClipboard(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Copied!"); }
-        function copyRefLink() { navigator.clipboard.writeText(document.getElementById('referral-link').innerText); tg.showAlert("Link Copied!"); }
+        function copy(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Address Copied!"); }
+        function copyRef() { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); tg.showAlert("Ref Link Copied!"); }
     </script>
 </body>
 </html>
