@@ -40,10 +40,6 @@
             <p id="ad-count-info" class="text-[9px] text-gray-400 mb-3">Today's Limit: 15 Left</p>
             <button onclick="startVerification(this, 0.05, 30, 'main')" id="main-ad-btn" class="w-full bg-blue-600 py-3 rounded-xl font-bold">Watch & Earn $0.05</button>
         </div>
-        <div id="signup-box" class="glass p-5 border-green-500/30">
-            <button onclick="tg.openLink('https://www.effectivegatecpm.com/san2vs080')" class="w-full bg-white/10 py-3 rounded-xl border border-white/20 mb-2 text-xs font-bold text-blue-400">Step 1: Open Link & Register</button>
-            <button onclick="startVerification(this, 0.20, 60, 'signup')" id="signup-btn" class="w-full bg-green-600 py-2 rounded-xl text-xs font-bold">Step 2: Verify Sign-up (60s)</button>
-        </div>
     </div>
 
     <div id="tasks" class="page-section">
@@ -61,72 +57,49 @@
                 <div><h4 class="font-bold text-sm text-yellow-500">SILVER (2X)</h4><p class="text-[10px] text-gray-400">$5.00</p></div>
                 <button onclick="openPay('5', '2')" class="grad-gold px-4 py-2 rounded-lg font-bold text-xs">BUY</button>
             </div>
-            <div class="glass p-4 flex justify-between items-center border-blue-500/30">
-                <div><h4 class="font-bold text-sm text-blue-400">GOLD (3X)</h4><p class="text-[10px] text-gray-400">$10.00</p></div>
-                <button onclick="openPay('10', '3')" class="bg-blue-600 px-4 py-2 rounded-lg font-bold text-xs text-white">BUY</button>
-            </div>
-            <div class="glass p-4 flex justify-between items-center border-green-500/30">
-                <div><h4 class="font-bold text-sm text-green-400">PLATINUM (5X)</h4><p class="text-[10px] text-gray-400">$25.00</p></div>
-                <button onclick="openPay('25', '5')" class="bg-green-600 px-4 py-2 rounded-lg font-bold text-xs text-white">BUY</button>
-            </div>
-            <div class="glass p-4 flex justify-between items-center border-purple-500/30">
-                <div><h4 class="font-bold text-sm text-purple-400">DIAMOND (10X)</h4><p class="text-[10px] text-gray-400">$50.00</p></div>
-                <button onclick="openPay('50', '10')" class="bg-purple-600 px-4 py-2 rounded-lg font-bold text-xs text-white">BUY</button>
-            </div>
         </div>
-
         <div id="pay-box" class="hidden glass p-5 border-yellow-500/50 shadow-2xl">
             <h4 class="text-center font-bold mb-4 underline text-yellow-500">Payment Info</h4>
             <div class="text-[11px] space-y-4 mb-4">
                 <div class="bg-white/5 p-3 rounded-xl border border-white/10">
                     <p class="text-gray-400 mb-1">বিকাশ/নগদ (পার্সোনাল):</p>
                     <div class="flex justify-between items-center bg-black/30 p-2 rounded-lg">
-                        <span class="text-yellow-400 font-bold text-sm" id="bkash-num">আপনার নম্বর দিন</span>
+                        <span class="text-yellow-400 font-bold text-sm" id="bkash-num">01XXXXXXXXX</span>
                         <button onclick="copyToClip('bkash-num')" class="text-[9px] bg-blue-600 px-3 py-1 rounded-md">COPY</button>
                     </div>
                 </div>
-                <div class="bg-white/5 p-3 rounded-xl border border-white/10">
-                    <p class="text-gray-400 mb-1">USDT (TRC20):</p>
-                    <div class="bg-black/30 p-2 rounded-lg">
-                        <p class="text-yellow-400 font-mono text-[9px] break-all mb-2" id="trc20-addr">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
-                        <button onclick="copyToClip('trc20-addr')" class="w-full text-[10px] bg-blue-600 py-2 rounded-md font-bold">COPY ADDRESS</button>
-                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="refer" class="page-section p-4">
+        <div class="glass p-6 text-center mb-6 border-blue-500/30">
+            <h2 class="text-xl font-black mb-2 text-blue-400 uppercase">Refer & Multi-Level Earn</h2>
+            <p class="text-[11px] text-gray-400 mb-4 font-bold text-yellow-500 underline">সরাসরি রেফারে $1.00 বোনাস!</p>
+            <div class="bg-black/30 rounded-xl p-3 mb-6 border border-white/5 text-[10px]">
+                <div class="flex justify-between border-b border-white/10 pb-2 mb-2 font-bold text-yellow-500 uppercase italic">
+                    <span>Your Network</span>
+                    <span>Bonus Rate</span>
                 </div>
+                <div class="flex justify-between py-1.5 border-b border-white/5"><span>Level 1 (Direct)</span> <span class="text-green-400 font-bold">25% Commission</span></div>
+                <div class="flex justify-between py-1.5 border-b border-white/5"><span>Level 2 (Indirect)</span> <span class="text-green-400 font-bold">10% Commission</span></div>
+                <div class="flex justify-between py-1.5"><span>Level 3 (Affiliate)</span> <span class="text-green-400 font-bold">5% Commission</span></div>
             </div>
-            <button onclick="tg.openTelegramLink('https://t.me/meta_support')" class="w-full bg-blue-500 py-3 rounded-xl font-bold text-xs">SEND SCREENSHOT</button>
+            <div class="bg-black/50 p-4 rounded-xl text-[10px] mb-4 break-all border border-blue-500/20 font-mono text-yellow-400" id="ref-url">
+                Loading link...
+            </div>
+            <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs shadow-lg active:scale-95 transition-all">
+                <i class="fas fa-copy mr-2"></i> COPY MY INVITE LINK
+            </button>
         </div>
     </div>
-
-   <div id="refer" class="page-section p-4">
-    <div class="glass p-6 text-center mb-6 border-blue-500/30">
-        <h2 class="text-xl font-black mb-2 text-blue-400 uppercase">Refer & Multi-Level Earn</h2>
-        <p class="text-[11px] text-gray-400 mb-4">প্রতিটি সফল ইনস্টল রেফারে $1.00 বোনাস!</p>
-        
-        <div class="bg-black/30 rounded-xl p-3 mb-6 border border-white/5 text-[10px]">
-            <div class="flex justify-between border-b border-white/10 pb-2 mb-2 font-bold text-yellow-500">
-                <span>Refer Level</span>
-                <span>Commission</span>
-            </div>
-            <div class="flex justify-between py-1"><span>Direct Refer (L1)</span> <span class="text-green-400">25% (Lifetime)</span></div>
-            <div class="flex justify-between py-1"><span>Level 2 (L2)</span> <span class="text-green-400">10% Commission</span></div>
-            <div class="flex justify-between py-1"><span>Level 3 (L3)</span> <span class="text-green-400">5% Commission</span></div>
-        </div>
-
-        <div class="bg-black/50 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10 font-mono text-yellow-400" id="ref-url">
-            Loading link...
-        </div>
-        <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs shadow-lg active:scale-95 transition-all">
-            <i class="fas fa-copy mr-2"></i> COPY MY INVITE LINK
-        </button>
-    </div>
-</div>
 
     <div id="withdraw" class="page-section p-4">
-        <h2 class="text-xl font-bold mb-6">Withdraw</h2>
+        <h2 class="text-xl font-bold mb-6 italic">Withdraw Funds</h2>
         <div class="glass p-6">
-            <input id="w-addr" type="text" placeholder="Number or Address" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-4 text-xs text-white">
-            <input id="w-amount" type="number" placeholder="Amount ($)" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-6 text-xs text-white">
-            <button onclick="submitWithdraw()" class="w-full bg-green-600 py-3 rounded-xl font-bold">CONFIRM</button>
+            <input id="w-addr" type="text" placeholder="Bkash/Nagad Number" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-4 text-xs text-white">
+            <input id="w-amount" type="number" placeholder="Amount in USD ($)" class="w-full bg-black/50 p-4 rounded-xl border border-white/10 mb-6 text-xs text-white">
+            <button onclick="submitWithdraw()" class="w-full bg-green-600 py-3 rounded-xl font-bold">SUBMIT WITHDRAW</button>
         </div>
     </div>
 
@@ -157,13 +130,11 @@
             document.querySelectorAll('.page-section').forEach(p => p.style.display = 'none');
             document.getElementById(pageId).style.display = 'block';
             document.getElementById('pay-box').classList.add('hidden');
-            if(pageId === 'tasks') toggleTaskType('smart');
         }
 
         function openPay(p, m) {
             document.getElementById('pay-box').classList.remove('hidden');
-            const bdtAmount = p * 125;
-            tg.showAlert(`বিকাশ পেমেন্ট: ${bdtAmount} টাকা।\nরেট: $1 = 125 টাকা।`);
+            tg.showAlert(`বিকাশ পেমেন্ট: ${p * 125} টাকা।`);
         }
 
         function copyToClip(id) {
@@ -171,7 +142,7 @@
             navigator.clipboard.writeText(text).then(() => tg.showAlert("Copied: " + text));
         }
 
-        function startVerification(btn, reward, time, type, taskId) {
+        function startVerification(btn, reward, time, type) {
             if (isTaskRunning) return;
             isTaskRunning = true; btn.disabled = true;
             let timeLeft = time;
@@ -180,34 +151,52 @@
                 if(timeLeft-- < 0) {
                     clearInterval(timer);
                     const bonus = reward * (uData.mult || 1);
-                    db.ref('users/' + userId).update({ balance: (uData.balance || 0) + bonus }).then((.then(() => {
-    tg.showAlert("Success!");
-    distributeCommission(reward); // <--- আপনার বসানো লাইন
-    isTaskRunning = false;
-    btn.innerText = "DONE";
-});) => {
-                        tg.showAlert("Success!"); isTaskRunning = false; btn.innerText = "DONE";
+                    db.ref('users/' + userId).update({ balance: (uData.balance || 0) + bonus }).then(() => {
+                        tg.showAlert("Success! You earned reward.");
+                        distributeCommission(reward);
+                        isTaskRunning = false; 
+                        btn.innerText = "DONE";
                     });
                 }
             }, 1000);
         }
 
+        function distributeCommission(amount) {
+            db.ref('users/' + userId + '/referrer').once('value', (s) => {
+                const L1 = s.val(); if (!L1) return;
+                updateRefBalance(L1, amount * 0.25);
+                db.ref('users/' + L1 + '/referrer').once('value', (s2) => {
+                    const L2 = s2.val(); if (!L2) return;
+                    updateRefBalance(L2, amount * 0.10);
+                    db.ref('users/' + L2 + '/referrer').once('value', (s3) => {
+                        const L3 = s3.val(); if (!L3) return;
+                        updateRefBalance(L3, amount * 0.05);
+                    });
+                });
+            });
+        }
+
+        function updateRefBalance(id, amt) {
+            db.ref('users/' + id + '/balance').transaction((curr) => (curr || 0) + amt);
+        }
+
         function toggleTaskType(type) {
-            const list = document.getElementById('task-list');
-            list.innerHTML = `<button onclick="startVerification(this, 0.05, 30, 'task')" class="w-full glass p-4 text-xs font-bold">START TASK #1</button>`;
+            document.getElementById('task-list').innerHTML = `<button onclick="startVerification(this, 0.05, 30, 'task')" class="w-full glass p-4 text-xs font-bold">START TASK #1</button>`;
         }
 
         function submitWithdraw() {
             const amt = parseFloat(document.getElementById('w-amount').value);
-            if(amt <= uData.balance) {
+            if(amt <= uData.balance && amt > 0) {
                 db.ref('withdraw_requests').push({ userId, amt, status: 'pending' });
                 tg.showAlert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+            } else {
+                tg.showAlert("Insufficient balance!");
             }
         }
 
         function copyRef() {
             const url = document.getElementById('ref-url').innerText;
-            navigator.clipboard.writeText(url).then(() => tg.showAlert("Copied!"));
+            navigator.clipboard.writeText(url).then(() => tg.showAlert("রেফারেল লিঙ্ক কপি হয়েছে!"));
         }
     </script>
 </body>
