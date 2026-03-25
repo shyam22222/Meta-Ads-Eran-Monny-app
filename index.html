@@ -13,104 +13,115 @@
     <script src='//libtl.com/sdk.js' data-zone='10741886' data-sdk='show_10741886'></script>
 
     <style>
-        body { background-color: #0b0e11; color: white; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
+        body { background-color: #0b0e11; color: white; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; }
         .page-section { display: none; }
         .active-section { display: block; }
         .grad-blue { background: linear-gradient(135deg, #0076ff 0%, #00d1ff 100%); }
-        .disabled-btn { background: #1a1d21 !important; color: #4a4d51 !important; pointer-events: none; border-color: transparent !important; }
+        .disabled-btn { background: #1a1d21 !important; color: #4a4d51 !important; pointer-events: none; border: none !important; opacity: 0.6; }
+        .verify-text { font-size: 10px; color: #f1c40f; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
-<body class="p-4 pb-24">
+<body class="p-4 pb-28">
 
-    <nav class="fixed bottom-0 left-0 right-0 glass h-16 flex justify-around items-center z-50 border-t border-white/10">
-        <button onclick="showPage('home')" class="flex flex-col items-center"><i class="fas fa-home"></i><span class="text-[10px]">Home</span></button>
-        <button onclick="showPage('tasks')" class="flex flex-col items-center"><i class="fas fa-tasks"></i><span class="text-[10px]">Earning</span></button>
-        <button onclick="showPage('premium')" class="flex flex-col items-center text-yellow-500"><i class="fas fa-crown"></i><span class="text-[10px]">Premium</span></button>
-        <button onclick="showPage('refer')" class="flex flex-col items-center"><i class="fas fa-users"></i><span class="text-[10px]">Refer</span></button>
-        <button onclick="showPage('withdraw')" class="flex flex-col items-center"><i class="fas fa-wallet"></i><span class="text-[10px]">Withdraw</span></button>
+    <nav class="fixed bottom-0 left-0 right-0 glass h-20 flex justify-around items-center z-50 border-t border-white/5 mx-2 mb-2">
+        <button onclick="showPage('home')" class="flex flex-col items-center opacity-70 hover:opacity-100"><i class="fas fa-home text-lg"></i><span class="text-[10px] mt-1">Home</span></button>
+        <button onclick="showPage('tasks')" class="flex flex-col items-center opacity-70 hover:opacity-100"><i class="fas fa-bolt text-lg"></i><span class="text-[10px] mt-1">Earn</span></button>
+        <button onclick="showPage('premium')" class="flex flex-col items-center text-yellow-500"><i class="fas fa-crown text-lg"></i><span class="text-[10px] mt-1 font-bold">Premium</span></button>
+        <button onclick="showPage('refer')" class="flex flex-col items-center opacity-70 hover:opacity-100"><i class="fas fa-users text-lg"></i><span class="text-[10px] mt-1">Refer</span></button>
+        <button onclick="showPage('withdraw')" class="flex flex-col items-center opacity-70 hover:opacity-100"><i class="fas fa-wallet text-lg"></i><span class="text-[10px] mt-1">Wallet</span></button>
     </nav>
 
     <div id="home" class="page-section active-section">
-        <div class="glass p-6 text-center mb-6 grad-blue shadow-lg">
-            <p class="text-xs uppercase font-black opacity-80">Total Balance</p>
-            <h1 id="balance-text" class="text-4xl font-black mt-1">$0.000</h1>
-            <p id="multiplier-text" class="text-[10px] mt-2 font-bold bg-white/20 inline-block px-3 py-1 rounded">Earning: 1X Speed</p>
+        <div class="glass p-8 text-center mb-6 grad-blue shadow-2xl">
+            <p class="text-[10px] uppercase font-bold tracking-widest opacity-80">Current Balance</p>
+            <h1 id="balance-text" class="text-5xl font-black mt-2">$0.000</h1>
+            <div id="multiplier-text" class="mt-4 text-[10px] font-bold bg-black/20 px-4 py-1.5 rounded-full inline-block">1X Speed Activated</div>
         </div>
 
-        <div class="glass p-5 mb-4 text-center border-blue-500/30">
-            <h3 class="font-bold text-sm">Main Video Task (Daily 15)</h3>
-            <p class="text-[9px] text-gray-400 mb-3">বাকি আছে: <span id="rem-count">15</span> টি</p>
-            <button onclick="handleMainTask(this)" class="w-full bg-blue-600 py-3 rounded-xl font-bold shadow-lg">Watch Video ($0.05)</button>
+        <div class="glass p-6 mb-4 border-l-4 border-blue-500">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-sm">Main Video Task</h3>
+                <span class="text-[10px] bg-blue-500/20 px-2 py-1 rounded">Daily: 15 / <span id="rem-count">15</span></span>
+            </div>
+            <button onclick="handleMainTask(this)" class="w-full bg-blue-600 py-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">WATCH ADS & EARN $0.05</button>
         </div>
 
-        <div class="glass p-5 border-green-500/30 text-center">
-            <h3 class="font-bold text-sm text-green-400">Daily Special Signup</h3>
-            <p class="text-[9px] text-gray-400 mb-3" id="signup-status">প্রতিদিন একটি নতুন সাইন-আপ টাস্ক ($0.20)</p>
-            <button id="signup-open-btn" onclick="openSignupLink()" class="w-full bg-white/10 py-2 rounded-lg mb-2 text-xs border border-white/20">১. লিংক ওপেন করুন</button>
-            <button id="signup-claim-btn" onclick="handleSignupTask(this)" class="w-full bg-green-600 py-3 rounded-xl font-bold">২. ভেরিফাই ও বোনাস</button>
+        <div class="glass p-6 border-l-4 border-green-500">
+            <h3 class="font-bold text-sm text-green-400 mb-1">Daily Special Signup</h3>
+            <p id="signup-status" class="text-[10px] text-gray-400 mb-4">নিচের লিংকে সাইন-আপ করে ৬০ সেকেন্ড অপেক্ষা করুন। ($0.20)</p>
+            <div class="flex gap-2">
+                <button id="signup-open-btn" onclick="openSignupLink()" class="flex-1 bg-white/5 py-3 rounded-xl text-[11px] font-bold border border-white/10">OPEN LINK</button>
+                <button id="signup-claim-btn" onclick="handleSignupVerify(this)" class="flex-[1.5] bg-green-600 py-3 rounded-xl text-[11px] font-bold">VERIFY & CLAIM</button>
+            </div>
         </div>
     </div>
 
     <div id="tasks" class="page-section">
-        <div class="flex gap-2 mb-6">
-            <button onclick="toggleTaskType('smart')" id="smart-tab" class="flex-1 py-3 rounded-xl bg-blue-600 font-bold text-sm">Smart Task</button>
-            <button onclick="toggleTaskType('web')" id="web-tab" class="flex-1 py-3 rounded-xl glass font-bold text-sm">Web Task</button>
+        <div class="flex p-1 bg-white/5 rounded-2xl mb-6">
+            <button onclick="toggleTaskType('smart')" id="smart-tab" class="flex-1 py-3 rounded-xl bg-blue-600 font-bold text-xs transition-all">Ads View</button>
+            <button onclick="toggleTaskType('web')" id="web-tab" class="flex-1 py-3 rounded-xl font-bold text-xs transition-all">Web View</button>
         </div>
-        <div id="task-list" class="space-y-3"></div>
+        <div id="task-list" class="space-y-4"></div>
     </div>
 
     <div id="premium" class="page-section">
-        <h2 class="text-xl font-black mb-4 text-center text-yellow-500 italic">PREMIUM OFFERS</h2>
-        <div id="premium-plans" class="space-y-3 mb-6"></div>
+        <h2 class="text-2xl font-black mb-6 text-center text-yellow-500 italic">UPGRADE PLAN</h2>
+        <div id="premium-plans" class="space-y-4 mb-8"></div>
 
-        <div id="pay-box" class="hidden glass p-5 border-yellow-500/50">
-            <h4 class="text-center font-bold text-yellow-500 mb-4 underline">Payment Method</h4>
-            <div class="space-y-4 text-[11px]">
-                <div class="bg-black/40 p-3 rounded-lg border border-white/5">
-                    <p class="text-gray-400 mb-1">বিকাশ/নগদ (১ ডলার = ১২৫ টাকা):</p>
-                    <p class="text-yellow-400 font-bold text-lg">আপনার_পার্সোনাল_নম্বর_দিন</p>
-                    <p class="text-[9px] text-red-400 mt-1">পেমেন্ট করার পর ট্রানজেকশন স্ক্রিনশট সাপোর্টে দিন।</p>
+        <div id="pay-box" class="hidden glass p-6 border-yellow-500/30 animate-pulse-slow">
+            <h4 class="text-center font-black text-yellow-500 mb-6 uppercase tracking-widest">Payment Details</h4>
+            <div class="space-y-4 text-xs">
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p class="text-gray-400 mb-2">বিকাশ/নগদ পার্সোনাল (১$ = ১২৫৳)</p>
+                    <p class="text-xl font-black text-white">আপনার_নম্বর_এখানে_লিখুন</p>
                 </div>
-                <div class="bg-black/40 p-3 rounded-lg border border-white/5 text-center">
-                    <p class="text-gray-400 mb-2 font-bold">USDT Address (TRC20):</p>
-                    <p id="trc-addr" class="font-mono text-[9px] break-all text-blue-400 mb-2">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
-                    <button onclick="copyClip('trc-addr')" class="bg-blue-600 px-4 py-1 rounded text-[9px]">COPY</button>
-                    <div class="mt-4"><img src="আপনার_কিউআর_কোড_লিংক" class="w-32 h-32 mx-auto rounded border border-white/20"></div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                    <p class="text-gray-400 mb-3 font-bold">USDT (TRC20) Address</p>
+                    <p id="trc-addr" class="font-mono text-[9px] break-all text-blue-400 mb-4">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
+                    <button onclick="copyText('trc-addr')" class="bg-blue-600/20 text-blue-400 border border-blue-500/50 px-6 py-2 rounded-lg font-bold">COPY ADDRESS</button>
+                    <div class="mt-6 p-2 bg-white rounded-xl inline-block">
+                        <img src="আপনার_কিউআর_কোড_লিংক" class="w-32 h-32">
+                    </div>
                 </div>
-                <button onclick="tg.openTelegramLink('https://t.me/আপনার_সাপোর্ট_আইডি')" class="w-full bg-blue-500 py-3 rounded-xl font-bold"><i class="fab fa-telegram mr-2"></i>টেলিগ্রাম সাপোর্ট</button>
+                <button onclick="tg.openTelegramLink('https://t.me/আপনার_আইডি')" class="w-full bg-blue-500 py-4 rounded-2xl font-black uppercase tracking-widest mt-4">Send Payment Screenshot</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="withdraw" class="page-section">
+        <div class="glass p-8 border-red-500/20">
+            <h2 class="text-2xl font-black mb-8 text-center text-red-500 italic">CASH OUT</h2>
+            <div class="space-y-5">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">Amount ($)</label>
+                    <input type="number" id="w-amount" placeholder="0.00" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-red-500/50 transition-all font-bold text-lg">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 ml-2 uppercase">Method</label>
+                    <select id="w-method" class="w-full bg-black border border-white/10 p-4 rounded-2xl outline-none font-bold">
+                        <option value="Bkash">Bkash (Personal)</option>
+                        <option value="Nagad">Nagad (Personal)</option>
+                        <option value="Binance">Binance Pay ID</option>
+                        <option value="TRC20">USDT (TRC20)</option>
+                    </select>
+                </div>
+                <input type="text" id="w-number" placeholder="Account No / Address" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none font-bold">
+                <button onclick="submitWithdraw()" class="w-full bg-red-600 py-5 rounded-2xl font-black shadow-xl active:scale-95 transition-all mt-4">WITHDRAW NOW</button>
             </div>
         </div>
     </div>
 
     <div id="refer" class="page-section">
-        <div class="glass p-6 text-center border-blue-500/30">
-            <h2 class="text-xl font-black text-blue-400 italic">Network Refer</h2>
-            <div class="bg-green-500/10 p-3 rounded-lg mb-4 text-xs font-bold border border-green-500/20">রেফারে $1.00 বোনাস + লাইফটাইম কমিশন</div>
-            <div class="bg-black/30 p-3 rounded-xl text-[10px] mb-4 space-y-2">
-                <div class="flex justify-between"><span>Level 1 (Direct)</span> <span class="text-green-400">25% Commission</span></div>
-                <div class="flex justify-between pt-1 border-t border-white/5"><span>Level 2</span> <span class="text-green-400">10% Commission</span></div>
-                <div class="flex justify-between pt-1 border-t border-white/5"><span>Level 3-5</span> <span class="text-green-400">5% Commission</span></div>
+        <div class="glass p-8 text-center border-blue-500/20">
+            <h2 class="text-2xl font-black text-blue-400 mb-6 italic">REFERRAL</h2>
+            <div class="bg-blue-500/10 p-4 rounded-2xl mb-6">
+                <p class="text-xs font-bold text-blue-300">প্রতি ইনস্টল রেফারে $1.00 বোনাস!</p>
+                <p class="text-[10px] text-gray-400 mt-2">লাইফটাইম কমিশন: L1: 25% | L2: 10% | L3-5: 5%</p>
             </div>
-            <div id="ref-url" class="bg-black/50 p-3 rounded-lg text-[10px] mb-4 break-all border border-white/10 text-yellow-400 font-mono italic">Loading...</div>
-            <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-xl font-bold uppercase tracking-widest">Copy Invite Link</button>
-        </div>
-    </div>
-
-    <div id="withdraw" class="page-section">
-        <div class="glass p-6 border-red-500/30">
-            <h2 class="text-xl font-black mb-6 text-center text-red-500 uppercase italic">Cash Out</h2>
-            <div class="space-y-4">
-                <input type="number" id="w-amount" placeholder="উত্তোলন পরিমাণ ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-center outline-none">
-                <select id="w-method" class="w-full bg-black/80 border border-white/10 p-4 rounded-xl outline-none text-white text-center">
-                    <option value="Bkash">Bkash</option>
-                    <option value="Nagad">Nagad</option>
-                    <option value="Binance ID">Binance Pay ID</option>
-                    <option value="USDT TRC20">USDT (TRC20)</option>
-                </select>
-                <input type="text" id="w-number" placeholder="হিসাব নম্বর / এড্রেস দিন" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-center outline-none">
-                <button onclick="submitWithdraw()" class="w-full bg-red-600 py-4 rounded-xl font-bold shadow-lg">WITHDRAW REQUEST</button>
-            </div>
+            <div id="ref-url" class="bg-black/40 p-4 rounded-2xl text-[10px] mb-6 break-all border border-white/5 text-yellow-500 font-mono">Loading...</div>
+            <button onclick="copyRef()" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase tracking-tighter">Copy My Invite Link</button>
         </div>
     </div>
 
@@ -118,6 +129,7 @@
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
             databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
@@ -127,8 +139,8 @@
         const db = firebase.database();
         const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "12345";
 
-        let uData = { balance: 0, mult: 1, adCount: 15, lastSignup: "", completedTasks: {} };
-        let isTaskRunning = false;
+        let uData = { balance: 0, mult: 1, adCount: 15, lastSignup: "", completed: {} };
+        let isWorking = false;
 
         const smartLinks = [
             "https://omg10.com/4/10742061", "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac",
@@ -141,19 +153,19 @@
             "https://omg10.com/4/10742062"
         ];
 
+        // Fetch Data
         db.ref('users/' + userId).on('value', (s) => {
-            uData = s.val() || { balance: 0, mult: 1, adCount: 15, lastSignup: "", completedTasks: {} };
+            uData = s.val() || { balance: 0, mult: 1, adCount: 15, lastSignup: "", completed: {} };
             document.getElementById('balance-text').innerText = "$" + (uData.balance || 0).toFixed(3);
-            document.getElementById('multiplier-text').innerText = `Earning: ${uData.mult || 1}X Speed`;
+            document.getElementById('multiplier-text').innerText = `${uData.mult || 1}X Speed Activated`;
             document.getElementById('rem-count').innerText = uData.adCount || 0;
             document.getElementById('ref-url').innerText = `https://t.me/metaadsmonnybot?start=${userId}`;
             
-            // সাইন-আপ বাটন লকিং
             const today = new Date().toDateString();
             if(uData.lastSignup === today) {
                 document.getElementById('signup-open-btn').classList.add('disabled-btn');
                 document.getElementById('signup-claim-btn').classList.add('disabled-btn');
-                document.getElementById('signup-status').innerText = "✅ আজকের সাইন-আপ টাস্ক সম্পন্ন হয়েছে!";
+                document.getElementById('signup-status').innerText = "✅ Today's Signup Task Completed!";
             }
         });
 
@@ -164,13 +176,12 @@
             if(p === 'premium') renderPlans();
         }
 
-        // --- মেইন টাস্ক ---
+        // --- Main Video Task ---
         function handleMainTask(btn) {
-            if(uData.adCount <= 0) return tg.showAlert("আজকের লিমিট শেষ!");
-            if(isTaskRunning) return;
-            isTaskRunning = true; btn.disabled = true;
+            if(uData.adCount <= 0) return tg.showAlert("Limit Over!");
+            if(isWorking) return;
+            isWorking = true; btn.disabled = true;
 
-            // Adsterra SDK Trigger
             if (typeof show_10741886 === 'function') show_10741886();
             tg.openTelegramLink("https://t.me/metaadsmonnybot");
 
@@ -184,54 +195,54 @@
                         balance: (uData.balance || 0) + bonus,
                         adCount: uData.adCount - 1
                     });
-                    tg.showAlert("Congrats! $"+bonus+" added.");
-                    isTaskRunning = false; btn.disabled = false; btn.innerText = "Watch Video ($0.05)";
+                    tg.showAlert("Bonus Added!");
+                    isWorking = false; btn.disabled = false; btn.innerText = "WATCH ADS & EARN $0.05";
                 }
             }, 1000);
         }
 
-        // --- সাইন আপ টাস্ক ---
+        // --- Signup Task ---
         function openSignupLink() {
-            const index = new Date().getDate() % 15;
-            tg.openLink(smartLinks[index]);
+            const idx = new Date().getDate() % 15;
+            tg.openLink(smartLinks[idx]);
         }
 
-        function handleSignupTask(btn) {
+        function handleSignupVerify(btn) {
             const today = new Date().toDateString();
             if(uData.lastSignup === today) return;
-            startCommonTask(btn, 0.20, 60, 'signup', 'daily_signup');
+            startTaskLogic(btn, 0.20, 60, 'signup', 'daily_reg');
         }
 
-        // --- কমন টাস্ক লজিক ---
-        function startCommonTask(btn, reward, time, type, taskId) {
-            if(isTaskRunning) return;
-            if(uData.completedTasks && uData.completedTasks[taskId]) return;
+        // --- Master Task Function ---
+        function startTaskLogic(btn, reward, time, type, taskId) {
+            if(isWorking) return;
+            if(uData.completed && uData.completed[taskId]) return;
 
-            isTaskRunning = true; btn.disabled = true;
+            isWorking = true; btn.disabled = true;
             if(type !== 'signup') {
-                const url = smartLinks[Math.floor(Math.random()*15)];
-                tg.openLink(url);
+                const link = smartLinks[Math.floor(Math.random()*15)];
+                tg.openLink(link);
             }
 
             let left = time;
             const t = setInterval(() => {
-                btn.innerText = `Checking ${left}s`;
+                btn.innerHTML = `<span class="verify-text">Verifying ${left}s</span>`;
                 if(left-- <= 0) {
                     clearInterval(t);
                     const bonus = reward * (uData.mult || 1);
-                    let upd = { balance: (uData.balance || 0) + bonus };
+                    let updateObj = { balance: (uData.balance || 0) + bonus };
                     
-                    if(type === 'signup') upd.lastSignup = new Date().toDateString();
-                    else {
-                        if(!upd.completedTasks) upd.completedTasks = uData.completedTasks || {};
-                        upd.completedTasks[taskId] = true;
+                    if(type === 'signup') {
+                        updateObj.lastSignup = new Date().toDateString();
+                    } else {
+                        if(!updateObj.completed) updateObj.completed = uData.completed || {};
+                        updateObj.completed[taskId] = true;
                     }
 
-                    db.ref('users/' + userId).update(upd).then(() => {
-                        tg.showAlert("Verified! Bonus Added.");
-                        distributeCom(reward);
-                        isTaskRunning = false;
-                        btn.innerText = "DONE";
+                    db.ref('users/' + userId).update(updateObj).then(() => {
+                        tg.showAlert("Success! $"+bonus.toFixed(2)+" added.");
+                        isWorking = false;
+                        btn.innerText = "COMPLETED";
                         btn.classList.add('disabled-btn');
                     });
                 }
@@ -240,41 +251,46 @@
 
         function toggleTaskType(type) {
             const list = document.getElementById('task-list');
+            const tabSmart = document.getElementById('smart-tab');
+            const tabWeb = document.getElementById('web-tab');
             list.innerHTML = "";
-            const count = type === 'smart' ? 10 : 15;
-            const reward = type === 'smart' ? 0.05 : 0.10;
-            const name = type === 'smart' ? "Free Claim $0.05" : "Free Claim $0.10";
 
-            for(let i=1; i<=count; i++) {
-                const tid = `${type}_${i}`;
-                const isDone = uData.completedTasks && uData.completedTasks[tid];
-                list.innerHTML += `
-                <div class="glass p-4 flex justify-between items-center">
-                    <span class="text-xs font-bold">${name} (#${i})</span>
-                    <button onclick="startCommonTask(this, ${reward}, 30, '${type}', '${tid}')" 
-                    class="px-4 py-2 rounded-lg text-[10px] font-bold ${isDone ? 'disabled-btn' : 'bg-blue-600'}">
-                    ${isDone ? 'DONE' : 'CLAIM'}
-                    </button>
-                </div>`;
+            if(type === 'smart') {
+                tabSmart.classList.add('bg-blue-600'); tabWeb.classList.remove('bg-blue-600');
+                for(let i=1; i<=15; i++) {
+                    const tid = `ads_${i}`;
+                    const done = uData.completed && uData.completed[tid];
+                    list.innerHTML += `<div class="glass p-5 flex justify-between items-center">
+                        <div><p class="text-[11px] font-black">Ads View 30s Earn $0.05</p><p class="text-[8px] text-gray-500">Task ID: #${i}</p></div>
+                        <button onclick="startTaskLogic(this, 0.05, 30, 'ads', '${tid}')" class="px-6 py-2 rounded-xl text-[10px] font-black ${done ? 'disabled-btn' : 'bg-blue-600 shadow-lg shadow-blue-500/20'}">${done ? 'DONE' : 'CLAIM'}</button>
+                    </div>`;
+                }
+            } else {
+                tabWeb.classList.add('bg-blue-600'); tabSmart.classList.remove('bg-blue-600');
+                for(let i=1; i<=15; i++) {
+                    const tid = `web_${i}`;
+                    const done = uData.completed && uData.completed[tid];
+                    list.innerHTML += `<div class="glass p-5 flex justify-between items-center border-l-2 border-white/10">
+                        <div><p class="text-[11px] font-black">Web View 60s Earn $0.10</p><p class="text-[8px] text-gray-500">Web ID: #${i}</p></div>
+                        <button onclick="startTaskLogic(this, 0.10, 30, 'web', '${tid}')" class="px-6 py-2 rounded-xl text-[10px] font-black ${done ? 'disabled-btn' : 'bg-white/10 border border-white/10'}">${done ? 'DONE' : 'VIEW'}</button>
+                    </div>`;
+                }
             }
         }
 
         function renderPlans() {
-            const plans = [
-                {p:5, m:2, n:'SILVER'}, {p:10, m:3, n:'GOLD'}, 
-                {p:25, m:5, n:'PLATINUM'}, {p:50, m:10, n:'DIAMOND'}
-            ];
+            const plans = [{p:5, m:2, n:'SILVER'}, {p:10, m:3, n:'GOLD'}, {p:25, m:5, n:'PLATINUM'}, {p:50, m:10, n:'DIAMOND'}];
             document.getElementById('premium-plans').innerHTML = plans.map(x => `
-                <div class="glass p-4 flex justify-between items-center border-white/10">
-                    <div><h4 class="font-bold text-sm">${x.n} (${x.m}X)</h4><p class="text-[10px] text-gray-400">$${x.p}.00</p></div>
-                    <button onclick="showPay('${x.p}')" class="bg-yellow-600 px-4 py-2 rounded-lg font-bold text-xs text-black">BUY</button>
+                <div class="glass p-5 flex justify-between items-center border-white/5">
+                    <div><h4 class="font-black text-sm text-yellow-500">${x.n}</h4><p class="text-[9px] text-gray-400">${x.m}X Speed - $${x.p}.00</p></div>
+                    <button onclick="showPay('${x.p}')" class="bg-yellow-500 text-black px-6 py-2 rounded-xl font-black text-[10px] active:scale-95 transition-all">BUY</button>
                 </div>
             `).join('');
         }
 
         function showPay(p) {
             document.getElementById('pay-box').classList.remove('hidden');
-            tg.showAlert(`১ ডলার ১২৫ টাকা হিসেবে ${p*125} টাকা পেমেন্ট করুন।`);
+            tg.showAlert(`বিকাশ/নগদ পেমেন্ট: ${p * 125} টাকা।`);
         }
 
         function submitWithdraw() {
@@ -282,29 +298,16 @@
             const method = document.getElementById('w-method').value;
             const num = document.getElementById('w-number').value;
             if(amt <= uData.balance && amt >= 1 && num) {
-                db.ref('withdraw_requests').push({ userId, amt, method, num, status: 'pending', time: Date.now() });
+                db.ref('withdraw_requests').push({ userId, amt, method, num, status: 'pending', date: new Date().toLocaleString() });
                 db.ref('users/' + userId).update({ balance: uData.balance - amt });
-                tg.showAlert("উইথড্র রিকোয়েস্ট জমা হয়েছে!");
+                tg.showAlert("উইথড্র রিকোয়েস্ট সাকসেসফুল!");
             } else {
-                tg.showAlert("ব্যালেন্স নেই বা ভুল তথ্য!");
+                tg.showAlert("ব্যালেন্স বা তথ্য সঠিক নয়!");
             }
         }
 
-        function distributeCom(amt) {
-            db.ref('users/' + userId + '/refBy').once('value', (s) => {
-                let currentRef = s.val();
-                let rates = [0.25, 0.10, 0.05, 0.05, 0.05]; // 5 levels
-                for(let i=0; i<rates.length; i++) {
-                    if(!currentRef) break;
-                    let refId = currentRef;
-                    db.ref('users/'+refId+'/balance').transaction(c => (c||0) + (amt * rates[i]));
-                    db.ref('users/'+refId+'/refBy').once('value', s2 => currentRef = s2.val());
-                }
-            });
-        }
-
-        function copyClip(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Copied!"); }
-        function copyRef() { navigator.clipboard.writeText(document.getElementById('ref-url').innerText); tg.showAlert("Link Copied!"); }
+        function copyText(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Copied!"); }
+        function copyRef() { navigator.clipboard.writeText(document.getElementById('ref-url').innerText); tg.showAlert("Ref Link Copied!"); }
     </script>
 </body>
 </html>
