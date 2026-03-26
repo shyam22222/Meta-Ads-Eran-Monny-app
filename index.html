@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ads Pro - Premium Network</title>
+    <title>Meta Ads Pro - Ultimate Earning</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -13,148 +13,130 @@
     <script src='//libtl.com/sdk.js' data-zone='10741886' data-sdk='show_10741886'></script>
 
     <style>
-        body { background-color: #05070a; color: #e1e1e1; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
-        .nav-active { color: #3b82f6; transform: translateY(-4px); transition: all 0.3s ease; }
-        .page-section { display: none; animation: fadeIn 0.4s ease-out; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Poppins:wght@300;600&display=swap');
+        body { background-color: #030712; color: #f3f4f6; font-family: 'Poppins', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
+        .page-section { display: none; animation: slideUp 0.4s ease-out; }
         .active-section { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .disabled-btn { background: #1a1d23 !important; color: #4b5563 !important; pointer-events: none; opacity: 0.6; border: none !important; }
-        .timer-badge { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.2); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .disabled-btn { background: #1f2937 !important; color: #6b7280 !important; pointer-events: none; border: none !important; opacity: 0.5; }
+        .spin-container { width: 280px; height: 280px; border: 8px solid #1f2937; border-radius: 50%; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 0.99); }
+        .spin-item { position: absolute; width: 50%; height: 50%; transform-origin: 100% 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; color: white; }
     </style>
 </head>
-<body class="p-4 pb-24">
+<body class="p-4 pb-28">
 
-    <div class="flex justify-between items-center mb-6 px-2">
+    <div class="flex justify-between items-center mb-8 px-2 pt-2">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full grad-primary flex items-center justify-center bg-blue-600 shadow-lg">
-                <i class="fas fa-robot text-white"></i>
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <i class="fas fa-bolt text-white text-xl"></i>
             </div>
             <div>
-                <h2 id="user-name" class="font-bold text-sm tracking-tight">Premium User</h2>
-                <p class="text-[9px] text-gray-500 uppercase tracking-widest font-black">Meta Ads Pro v3.0</p>
+                <h2 id="user-display" class="font-bold text-sm tracking-tight">Active Member</h2>
+                <p id="multiplier-status" class="text-[9px] text-blue-400 font-black uppercase tracking-widest">1.0X MULTIPLIER</p>
             </div>
         </div>
-        <div class="glass px-4 py-2 flex items-center gap-2 border-blue-500/20">
-            <i class="fas fa-coins text-yellow-500 text-xs"></i>
-            <span id="balance-top" class="font-black text-sm">$0.000</span>
+        <div class="glass px-5 py-3 border-blue-500/30">
+            <p class="text-[8px] uppercase font-bold text-gray-400 mb-1 text-center">Balance</p>
+            <h1 id="top-bal" class="text-lg font-black text-white">$0.000</h1>
         </div>
     </div>
 
     <div id="home" class="page-section active-section">
-        <div class="glass p-10 text-center mb-6 relative overflow-hidden bg-gradient-to-br from-blue-600/20 to-transparent">
-            <p class="text-[10px] uppercase font-bold text-blue-400 mb-2">My Total Earning</p>
-            <h1 id="balance-main" class="text-5xl font-black text-white">$0.000</h1>
-            <div class="mt-4 flex justify-center">
-                <div id="speed-tag" class="text-[9px] font-bold bg-white/5 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    1.0X MULTIPLIER ACTIVE
-                </div>
+        <div class="glass p-8 text-center mb-6 relative bg-gradient-to-br from-blue-600/10 to-transparent">
+            <p class="text-[10px] font-black text-blue-500 mb-2 uppercase">Current Assets</p>
+            <h1 id="main-bal" class="text-5xl font-black text-white mb-6">$0.000</h1>
+            <div class="flex gap-2 justify-center">
+                <button onclick="showPage('withdraw')" class="bg-blue-600 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-tighter">Withdraw</button>
+                <button onclick="showPage('history')" class="bg-white/5 border border-white/10 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-tighter">History</button>
             </div>
         </div>
 
-        <div class="glass p-6 mb-4 border-l-4 border-blue-500 bg-blue-500/5">
+        <div class="glass p-6 mb-5 border-l-4 border-blue-500">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-black text-xs uppercase tracking-tighter">Main Video Task</h3>
-                <span class="text-[10px] timer-badge px-3 py-1 rounded-full">Daily: 15 / <span id="rem-ads">15</span></span>
+                <h3 class="font-black text-xs uppercase italic">Daily Video Task</h3>
+                <span class="text-[10px] bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20">Daily: 15 / <span id="daily-count">15</span></span>
             </div>
-            <button id="main-ad-btn" onclick="triggerVideoTask(this)" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-black text-xs shadow-xl transition-all active:scale-95">WATCH ADS & EARN $0.05</button>
+            <button id="main-v-btn" onclick="handleMainVideo(this)" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs shadow-xl active:scale-95 transition-all">WATCH ADS & EARN $0.05</button>
         </div>
 
-        <div class="glass p-6 border-l-4 border-green-500 bg-green-500/5">
-            <div class="flex items-center gap-2 mb-2 text-green-400">
-                <i class="fas fa-star-of-life animate-spin text-[10px]"></i>
-                <h3 class="font-black text-xs uppercase tracking-tighter">Daily Signup Reward</h3>
+        <div class="glass p-6 mb-5 border-l-4 border-green-500">
+            <div class="flex items-center gap-2 mb-3">
+                <i class="fas fa-gift text-green-400 text-sm"></i>
+                <h3 class="font-black text-xs uppercase italic">Daily Special Signup</h3>
             </div>
-            <p id="signup-desc" class="text-[9px] text-gray-400 mb-5 leading-relaxed">এই টাস্কটি দিনে একবারই করতে পারবেন। লিংকে গিয়ে সাইন-আপ করে ৬০ সেকেন্ড অপেক্ষা করুন।</p>
+            <p id="signup-info" class="text-[9px] text-gray-400 mb-5 leading-relaxed">Visit the link, complete the signup process and wait 60s to claim your bonus.</p>
             <div class="flex gap-3">
-                <button id="signup-open" onclick="openDailySignup()" class="flex-1 bg-white/5 border border-white/10 py-3.5 rounded-xl font-bold text-[10px] hover:bg-white/10">OPEN AD LINK</button>
-                <button id="signup-claim" onclick="verifySignup(this)" class="flex-[1.5] bg-green-600 py-3.5 rounded-xl font-black text-[10px] shadow-lg">VERIFY & CLAIM $0.20</button>
+                <button id="s-open" onclick="openSignupUrl()" class="flex-1 bg-white/5 border border-white/10 py-3.5 rounded-xl font-bold text-[10px] uppercase">Open Link</button>
+                <button id="s-claim" onclick="verifySignup(this)" class="flex-[1.5] bg-green-600 py-3.5 rounded-xl font-black text-[10px] shadow-lg shadow-green-600/20 uppercase">Verify & Earn $0.20</button>
             </div>
         </div>
     </div>
 
     <div id="tasks" class="page-section">
         <div class="flex p-1.5 bg-white/5 rounded-2xl mb-8 border border-white/5">
-            <button onclick="tabSwitcher('smart')" id="tab-s" class="flex-1 py-3.5 rounded-xl bg-blue-600 font-black text-[11px] transition-all">ADS VIEW</button>
-            <button onclick="tabSwitcher('web')" id="tab-w" class="flex-1 py-3.5 rounded-xl font-black text-[11px] transition-all text-gray-400">WEB VIEW</button>
+            <button onclick="switchTab('ads')" id="t-ads" class="flex-1 py-3.5 rounded-xl bg-blue-600 font-black text-[11px] transition-all">ADS VIEW</button>
+            <button onclick="switchTab('web')" id="t-web" class="flex-1 py-3.5 rounded-xl font-black text-[11px] transition-all text-gray-400">WEB VIEW</button>
         </div>
-        <div id="task-grid" class="space-y-4"></div>
+        <div id="task-list" class="space-y-4"></div>
+    </div>
+
+    <div id="spin" class="page-section">
+        <div class="glass p-8 text-center flex flex-col items-center border-yellow-500/20">
+            <h2 class="text-2xl font-black mb-1 text-yellow-500 italic">LUCKY WHEEL</h2>
+            <p class="text-[9px] text-gray-500 mb-10 font-bold uppercase tracking-widest">Test Your Luck Every Day</p>
+            
+            <div class="relative mb-10">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-10 text-red-500 text-2xl"><i class="fas fa-caret-down"></i></div>
+                <div id="wheel" class="spin-container bg-gray-900 border-4 border-white/5 shadow-2xl">
+                    </div>
+            </div>
+            
+            <button id="spin-btn" onclick="spinWheel()" class="w-full bg-yellow-500 text-black py-4 rounded-2xl font-black text-xs uppercase shadow-xl shadow-yellow-500/20 active:scale-95 transition-all">SPIN NOW</button>
+            <p class="mt-4 text-[10px] text-gray-500 font-bold uppercase italic" id="spin-msg">1 Spin Available Today</p>
+        </div>
     </div>
 
     <div id="premium" class="page-section">
-        <h2 class="text-2xl font-black text-center mb-8 text-yellow-500 italic">UPGRADE TO PREMIUM</h2>
-        <div id="plan-grid" class="space-y-4 mb-8"></div>
-        
-        <div id="payment-gateway" class="hidden glass p-6 border-yellow-500/30">
-            <h4 class="text-center font-black text-yellow-500 mb-6 uppercase tracking-tighter">Secure Payment Details</h4>
-            <div class="space-y-4">
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <p class="text-[10px] text-gray-500 mb-2 uppercase font-bold">বিকাশ / নগদ পার্সোনাল</p>
-                    <p class="text-lg font-black text-white tracking-widest">নম্বর_এখানে_বসাবেন</p>
-                    <p class="text-[9px] text-blue-400 mt-2 italic">* প্রতি ১ ডলার = ১২৫ টাকা</p>
+        <h2 class="text-2xl font-black text-center mb-8 text-indigo-400 italic underline">VIP MEMBERSHIP</h2>
+        <div id="vip-list" class="space-y-4 mb-10"></div>
+        <div id="pay-box" class="hidden glass p-6 border-indigo-500/30">
+            <h4 class="text-center font-black text-indigo-400 mb-6 uppercase">Secure Payment</h4>
+            <div class="space-y-4 text-xs">
+                <div class="bg-black/40 p-5 rounded-2xl border border-white/5">
+                    <p class="text-gray-500 mb-1 uppercase font-bold">Bkash / Nagad Personal</p>
+                    <p class="text-lg font-black text-white tracking-widest font-mono">নম্বর_এখানে_লিখুন</p>
+                    <p class="text-blue-400 mt-2 font-bold italic underline">Rate: $1 = 125 BDT</p>
                 </div>
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
-                    <p class="text-[10px] text-gray-500 mb-3 uppercase font-bold">USDT Address (TRC20)</p>
-                    <p id="wallet-addr" class="font-mono text-[10px] break-all text-blue-300 bg-black/40 p-3 rounded-lg border border-white/5 mb-4">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
-                    <button onclick="copy('wallet-addr')" class="bg-blue-600 px-6 py-2 rounded-lg font-bold text-[10px]">COPY ADDRESS</button>
-                    <div class="mt-6 p-3 bg-white rounded-2xl inline-block shadow-2xl">
-                        <img src="কিউআর_কোড_লিংক" class="w-32 h-32">
-                    </div>
+                <div class="bg-black/40 p-5 rounded-2xl border border-white/5">
+                    <p class="text-gray-500 mb-1 uppercase font-bold text-center">USDT (TRC20)</p>
+                    <p id="usdt-addr" class="text-[10px] font-mono break-all text-blue-300 text-center mb-4">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
+                    <button onclick="copy('usdt-addr')" class="w-full bg-blue-600 py-3 rounded-lg font-black mb-4">COPY ADDRESS</button>
+                    <div class="flex justify-center"><img src="কিউআর_কোড_লিংক" class="w-36 h-36 rounded-xl border-2 border-white/10"></div>
                 </div>
-                <button onclick="tg.openTelegramLink('https://t.me/admin_support')" class="w-full bg-blue-500 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">Contact Admin & Send ScreenShot</button>
+                <button onclick="tg.openTelegramLink('https://t.me/Support_Admin')" class="w-full bg-indigo-600 py-4 rounded-2xl font-black uppercase text-[11px] shadow-lg">Submit Transaction ID & Screenshot</button>
             </div>
         </div>
     </div>
 
-    <div id="withdraw" class="page-section">
-        <div class="glass p-8 border-red-500/20">
-            <h2 class="text-2xl font-black text-center mb-8 text-red-500">WITHDRAWAL</h2>
-            <div class="bg-red-500/10 p-4 rounded-2xl mb-8 text-center border border-red-500/30">
-                <p class="text-xs font-black text-red-400 italic">Minimum: $10.00 (1250 BDT)</p>
-            </div>
-            <div class="space-y-6">
-                <div>
-                    <label class="text-[9px] font-black text-gray-500 ml-2 mb-2 block uppercase">Select Method</label>
-                    <select id="w-meth" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl font-bold text-xs outline-none focus:border-red-500">
-                        <option value="Bkash">Bkash (Personal)</option>
-                        <option value="Nagad">Nagad (Personal)</option>
-                        <option value="Binance">Binance Pay ID</option>
-                        <option value="USDT">USDT (TRC20)</option>
-                    </select>
-                </div>
-                <input type="number" id="w-val" placeholder="Amount ($)" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl font-bold text-sm outline-none">
-                <input type="text" id="w-adr" placeholder="Account Number / Wallet Address" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl font-bold text-sm outline-none">
-                <button onclick="submitWithdraw()" class="w-full bg-red-600 py-4 rounded-xl font-black shadow-2xl active:scale-95 transition-all text-xs">CONFIRM WITHDRAWAL</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="refer" class="page-section">
-        <div class="glass p-8 text-center border-blue-500/20">
-            <h2 class="text-2xl font-black text-blue-400 mb-6 italic">NETWORK EARNING</h2>
-            <div class="bg-blue-600/10 p-4 rounded-2xl mb-8 border border-blue-500/10">
-                <p class="text-xs font-black text-blue-300">Invite Friends & Earn $1.00 Bonus!</p>
-                <p class="text-[9px] text-gray-500 mt-2 font-bold uppercase">L1: 25% | L2: 10% | L3-L5: 5% COMMISSION</p>
-            </div>
-            <div id="ref-link" class="bg-black p-4 rounded-2xl text-[10px] mb-6 border border-white/10 text-yellow-500 font-mono tracking-tighter overflow-hidden">Loading...</div>
-            <button onclick="copyRef()" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase text-xs shadow-xl active:scale-95 transition-all">Copy My Referral Link</button>
-        </div>
+    <div id="history" class="page-section">
+        <h2 class="text-xl font-black mb-6 flex items-center gap-3"><i class="fas fa-history text-blue-500"></i> EARNING LOGS</h2>
+        <div id="log-list" class="space-y-3"></div>
     </div>
 
     <nav class="fixed bottom-4 left-4 right-4 glass h-20 flex justify-around items-center z-50 px-2 border border-white/10 shadow-2xl">
-        <button onclick="showPage('home')" class="flex flex-col items-center gap-1 opacity-70 transition-all"><i class="fas fa-home text-lg"></i><span class="text-[9px] font-bold">Home</span></button>
-        <button onclick="showPage('tasks')" class="flex flex-col items-center gap-1 opacity-70 transition-all"><i class="fas fa-layer-group text-lg"></i><span class="text-[9px] font-bold">Earn</span></button>
-        <button onclick="showPage('premium')" class="flex flex-col items-center gap-1 text-yellow-500 scale-110"><i class="fas fa-crown text-xl"></i><span class="text-[9px] font-bold">VIP</span></button>
-        <button onclick="showPage('refer')" class="flex flex-col items-center gap-1 opacity-70 transition-all"><i class="fas fa-users text-lg"></i><span class="text-[9px] font-bold">Refer</span></button>
-        <button onclick="showPage('withdraw')" class="flex flex-col items-center gap-1 opacity-70 transition-all"><i class="fas fa-wallet text-lg"></i><span class="text-[9px] font-bold">Wallet</span></button>
+        <button onclick="showPage('home')" class="flex flex-col items-center gap-1 opacity-70"><i class="fas fa-home text-lg"></i><span class="text-[8px] font-black uppercase">Home</span></button>
+        <button onclick="showPage('tasks')" class="flex flex-col items-center gap-1 opacity-70"><i class="fas fa-tasks text-lg"></i><span class="text-[8px] font-black uppercase">Tasks</span></button>
+        <button onclick="showPage('spin')" class="flex flex-col items-center gap-1 text-yellow-500"><i class="fas fa-dharmachakra text-2xl"></i><span class="text-[8px] font-black uppercase">Spin</span></button>
+        <button onclick="showPage('premium')" class="flex flex-col items-center gap-1 opacity-70"><i class="fas fa-crown text-lg"></i><span class="text-[8px] font-black uppercase">VIP</span></button>
+        <button onclick="showPage('withdraw')" class="flex flex-col items-center gap-1 opacity-70"><i class="fas fa-wallet text-lg"></i><span class="text-[8px] font-black uppercase">Wallet</span></button>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        // Firebase Setup
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
             databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
@@ -162,12 +144,12 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "123456789";
+        const uid = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "DEMO_UID";
 
-        let userData = { balance: 0, mult: 1, dailyAds: 15, lastSignupDate: "", completedTasks: {} };
-        let isProcessing = false;
+        let user = { balance: 0, mult: 1, dailyAds: 15, lastSignup: "", lastSpin: "", tasks: {}, history: [] };
+        let active = false;
 
-        const smartLinks = [
+        const links = [
             "https://omg10.com/4/10742061", "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac",
             "https://omg10.com/4/10741957", "https://www.effectivegatecpm.com/e3icg0yc?key=34838b697cff95cb4259720733741245",
             "https://omg10.com/4/10742063", "https://www.effectivegatecpm.com/a771zn3ch?key=4f550e605f792b6e4926408dad579c46",
@@ -178,171 +160,217 @@
             "https://omg10.com/4/10742062"
         ];
 
-        db.ref('users/' + userId).on('value', (snap) => {
-            userData = snap.val() || { balance: 0, mult: 1, dailyAds: 15, lastSignupDate: "", completedTasks: {} };
+        // Spin Rewards
+        const rewards = ["10¢", "20¢", "$1", "$2", "$5", "$10", "$20", "$30", "$50", "$100", "TRY AGAIN", "20¢"];
+        const wheel = document.getElementById('wheel');
+        rewards.forEach((r, i) => {
+            const el = document.createElement('div');
+            el.className = 'spin-item';
+            el.style.transform = `rotate(${i * 30}deg) skewY(60deg)`;
+            el.style.background = i % 2 === 0 ? '#1e293b' : '#334155';
+            el.innerHTML = `<span style="transform: skewY(-60deg) rotate(15deg) translateY(-40px);">${r}</span>`;
+            wheel.appendChild(el);
+        });
+
+        // Initialize Data
+        db.ref('users/' + uid).on('value', snap => {
+            user = snap.val() || { balance: 0, mult: 1, dailyAds: 15, lastSignup: "", lastSpin: "", tasks: {}, history: [] };
             updateUI();
         });
 
         function updateUI() {
-            document.getElementById('balance-main').innerText = "$" + (userData.balance || 0).toFixed(3);
-            document.getElementById('balance-top').innerText = "$" + (userData.balance || 0).toFixed(3);
-            document.getElementById('balance-top').innerText = "$" + (userData.balance || 0).toFixed(3);
-            document.getElementById('speed-tag').innerText = (userData.mult || 1) + "X MULTIPLIER ACTIVE";
-            document.getElementById('rem-ads').innerText = userData.dailyAds || 0;
-            document.getElementById('ref-link').innerText = `https://t.me/metaadsmonnybot?start=${userId}`;
+            document.getElementById('main-bal').innerText = "$" + (user.balance || 0).toFixed(3);
+            document.getElementById('top-bal').innerText = "$" + (user.balance || 0).toFixed(3);
+            document.getElementById('multiplier-status').innerText = (user.mult || 1).toFixed(1) + "X MULTIPLIER ACTIVE";
+            document.getElementById('daily-count').innerText = user.dailyAds || 0;
             
             const today = new Date().toDateString();
-            if(userData.lastSignupDate === today) {
-                document.getElementById('signup-open').classList.add('disabled-btn');
-                document.getElementById('signup-claim').classList.add('disabled-btn');
-                document.getElementById('signup-desc').innerText = "✅ আজকের সাইন-আপ শেষ! আগামীকাল আবার ট্রাই করুন।";
+            if(user.lastSignup === today) {
+                document.getElementById('s-open').classList.add('disabled-btn');
+                document.getElementById('s-claim').classList.add('disabled-btn');
+                document.getElementById('s-claim').innerText = "DONE TODAY";
+            }
+            if(user.lastSpin === today) {
+                document.getElementById('spin-btn').classList.add('disabled-btn');
+                document.getElementById('spin-msg').innerText = "TRY AGAIN TO-DAY";
             }
         }
 
         function showPage(p) {
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-section'));
             document.getElementById(p).classList.add('active-section');
-            if(p === 'tasks') tabSwitcher('smart');
-            if(p === 'premium') renderPlans();
+            if(p === 'tasks') switchTab('ads');
+            if(p === 'premium') renderVIP();
+            if(p === 'history') renderHistory();
         }
 
-        // --- Main Video Logic ---
-        function triggerVideoTask(btn) {
-            if(userData.dailyAds <= 0 || isProcessing) return;
-            isProcessing = true;
-            btn.disabled = true;
+        // --- Core Task Handlers ---
+        function handleMainVideo(btn) {
+            if(user.dailyAds <= 0 || active) return;
+            active = true; btn.disabled = true;
 
-            // SDK Call
+            // Trigger Adsterra SDK & Telegram Interaction
             if(typeof show_10741886 === 'function') show_10741886();
             tg.openTelegramLink("https://t.me/metaadsmonnybot");
 
-            let timeLeft = 30;
+            let time = 30;
             const t = setInterval(() => {
-                btn.innerText = `WAITING... ${timeLeft}S`;
-                if(timeLeft-- <= 0) {
+                btn.innerText = `VERIFYING... ${time}S`;
+                if(time-- <= 0) {
                     clearInterval(t);
-                    const gain = 0.05 * (userData.mult || 1);
-                    db.ref('users/' + userId).update({
-                        balance: (userData.balance || 0) + gain,
-                        dailyAds: userData.dailyAds - 1
+                    const gain = 0.05 * (user.mult || 1);
+                    const newLog = { title: "Daily Video Task", reward: gain, date: new Date().toLocaleString() };
+                    db.ref('users/' + uid).update({
+                        balance: (user.balance || 0) + gain,
+                        dailyAds: user.dailyAds - 1,
+                        history: [newLog, ...(user.history || [])].slice(0, 20)
                     });
-                    tg.showAlert("Success! $0.05 Credited.");
-                    isProcessing = false; btn.disabled = false; btn.innerText = "WATCH ADS & EARN $0.05";
+                    tg.showAlert("Earning Credited: $0.05");
+                    active = false; btn.disabled = false; btn.innerText = "WATCH ADS & EARN $0.05";
                 }
             }, 1000);
         }
 
-        // --- Daily Signup ---
-        function openDailySignup() {
-            const index = new Date().getDate() % 15;
-            tg.openLink(smartLinks[index]);
+        function openSignupUrl() {
+            const idx = new Date().getDate() % 15;
+            tg.openLink(links[idx]);
         }
 
         function verifySignup(btn) {
-            const today = new Date().toDateString();
-            if(userData.lastSignupDate === today || isProcessing) return;
-            isProcessing = true; btn.disabled = true;
+            if(user.lastSignup === new Date().toDateString() || active) return;
+            active = true; btn.disabled = true;
 
-            let timeLeft = 60;
+            let time = 60;
             const t = setInterval(() => {
-                btn.innerText = `VERIFYING ${timeLeft}S`;
-                if(timeLeft-- <= 0) {
+                btn.innerText = `CHECKING... ${time}S`;
+                if(time-- <= 0) {
                     clearInterval(t);
-                    const gain = 0.20 * (userData.mult || 1);
-                    db.ref('users/' + userId).update({
-                        balance: (userData.balance || 0) + gain,
-                        lastSignupDate: today
+                    const gain = 0.20 * (user.mult || 1);
+                    const newLog = { title: "Daily Special Signup", reward: gain, date: new Date().toLocaleString() };
+                    db.ref('users/' + uid).update({
+                        balance: (user.balance || 0) + gain,
+                        lastSignup: new Date().toDateString(),
+                        history: [newLog, ...(user.history || [])].slice(0, 20)
                     });
-                    tg.showAlert("Daily Signup Approved! $0.20 Added.");
-                    isProcessing = false;
+                    tg.showAlert("Signup Verified! $0.20 Added.");
+                    active = false;
                 }
             }, 1000);
         }
 
-        // --- Master Task Switcher ---
-        function tabSwitcher(type) {
-            const grid = document.getElementById('task-grid');
-            const ts = document.getElementById('tab-s');
-            const tw = document.getElementById('tab-w');
-            grid.innerHTML = "";
+        // --- Spin Wheel Logic ---
+        function spinWheel() {
+            if(user.lastSpin === new Date().toDateString() || active) return;
+            active = true;
+            const btn = document.getElementById('spin-btn');
+            const randDeg = Math.floor(5000 + Math.random() * 5000);
+            wheel.style.transform = `rotate(${randDeg}deg)`;
+            
+            setTimeout(() => {
+                const actualDeg = randDeg % 360;
+                const sliceIdx = Math.floor(((360 - actualDeg + 15) % 360) / 30);
+                const prize = rewards[sliceIdx];
+                
+                let gain = 0;
+                if(prize.includes('¢')) gain = parseFloat(prize)/100;
+                if(prize.includes('$')) gain = parseFloat(prize.replace('$',''));
 
-            if(type === 'smart') {
-                ts.classList.add('bg-blue-600'); ts.classList.remove('text-gray-400');
-                tw.classList.remove('bg-blue-600'); tw.classList.add('text-gray-400');
+                if(gain > 0) {
+                    const newLog = { title: "Lucky Spin Reward", reward: gain, date: new Date().toLocaleString() };
+                    db.ref('users/' + uid).update({
+                        balance: (user.balance || 0) + gain,
+                        lastSpin: new Date().toDateString(),
+                        history: [newLog, ...(user.history || [])].slice(0, 20)
+                    });
+                    tg.showAlert(`CONGRATS! You won ${prize}`);
+                } else {
+                    db.ref('users/' + uid).update({ lastSpin: new Date().toDateString() });
+                    tg.showAlert("Bad Luck! Try again tomorrow.");
+                }
+                active = false;
+            }, 4000);
+        }
+
+        // --- Task Tab Logic ---
+        function switchTab(type) {
+            const list = document.getElementById('task-list');
+            const ta = document.getElementById('t-ads');
+            const tw = document.getElementById('t-web');
+            list.innerHTML = "";
+
+            if(type === 'ads') {
+                ta.className = "flex-1 py-3.5 rounded-xl bg-blue-600 font-black text-[11px]";
+                tw.className = "flex-1 py-3.5 rounded-xl font-black text-[11px] text-gray-400";
                 for(let i=1; i<=15; i++) {
-                    const tid = `ads_v_${i}`;
-                    const done = userData.completedTasks && userData.completedTasks[tid];
-                    grid.innerHTML += `<div class="glass p-5 flex justify-between items-center border-l-2 border-blue-500/30">
-                        <div><p class="text-[11px] font-black uppercase">Ads View 30s Earn $0.05</p><p class="text-[8px] text-gray-500 mt-1 tracking-widest font-bold">#SMART_ADS_${i}</p></div>
-                        <button onclick="handleLogic(this, 0.05, 30, '${tid}', 'ads')" class="px-6 py-2 rounded-xl text-[10px] font-black ${done ? 'disabled-btn' : 'bg-blue-600 shadow-lg shadow-blue-500/20'}">${done ? 'DONE' : 'CLAIM'}</button>
+                    const tid = `ads_task_${i}`;
+                    const done = user.tasks && user.tasks[tid];
+                    list.innerHTML += `<div class="glass p-5 flex justify-between items-center border-l-2 border-blue-500/30">
+                        <div><p class="text-[10px] font-black uppercase tracking-tighter">Ads View 30s Earn $0.05</p></div>
+                        <button onclick="runTask(this, 0.05, 30, '${tid}')" class="px-5 py-2 rounded-xl text-[9px] font-black ${done ? 'disabled-btn' : 'bg-blue-600'}">${done ? 'COMPLETED' : 'START'}</button>
                     </div>`;
                 }
             } else {
-                tw.classList.add('bg-blue-600'); tw.classList.remove('text-gray-400');
-                ts.classList.remove('bg-blue-600'); ts.classList.add('text-gray-400');
+                tw.className = "flex-1 py-3.5 rounded-xl bg-blue-600 font-black text-[11px]";
+                ta.className = "flex-1 py-3.5 rounded-xl font-black text-[11px] text-gray-400";
                 for(let i=1; i<=15; i++) {
-                    const tid = `web_v_${i}`;
-                    const done = userData.completedTasks && userData.completedTasks[tid];
-                    grid.innerHTML += `<div class="glass p-5 flex justify-between items-center border-l-2 border-white/10">
-                        <div><p class="text-[11px] font-black uppercase">Web View 60s Earn $0.10</p><p class="text-[8px] text-gray-500 mt-1 tracking-widest font-bold">#WEB_VIEW_${i}</p></div>
-                        <button onclick="handleLogic(this, 0.10, 30, '${tid}', 'web')" class="px-6 py-2 rounded-xl text-[10px] font-black ${done ? 'disabled-btn' : 'bg-white/10 border border-white/10'}">${done ? 'DONE' : 'START'}</button>
+                    const tid = `web_task_${i}`;
+                    const done = user.tasks && user.tasks[tid];
+                    list.innerHTML += `<div class="glass p-5 flex justify-between items-center border-l-2 border-indigo-500/30">
+                        <div><p class="text-[10px] font-black uppercase tracking-tighter">Web View 60s Earn $0.10</p></div>
+                        <button onclick="runTask(this, 0.10, 30, '${tid}')" class="px-5 py-2 rounded-xl text-[9px] font-black ${done ? 'disabled-btn' : 'bg-indigo-600'}">${done ? 'COMPLETED' : 'START'}</button>
                     </div>`;
                 }
             }
         }
 
-        function handleLogic(btn, reward, time, tid, type) {
-            if(isProcessing || (userData.completedTasks && userData.completedTasks[tid])) return;
-            isProcessing = true; btn.disabled = true;
+        function runTask(btn, reward, time, tid) {
+            if(active || (user.tasks && user.tasks[tid])) return;
+            active = true; btn.disabled = true;
 
-            tg.openLink(smartLinks[Math.floor(Math.random() * 15)]);
+            tg.openLink(links[Math.floor(Math.random()*15)]);
 
-            let timeLeft = time;
+            let left = time;
             const t = setInterval(() => {
-                btn.innerText = `WAIT ${timeLeft}S`;
-                if(timeLeft-- <= 0) {
+                btn.innerText = `WAIT ${left}S`;
+                if(left-- <= 0) {
                     clearInterval(t);
-                    const bonus = reward * (userData.mult || 1);
-                    let upd = { balance: (userData.balance || 0) + bonus };
-                    if(!upd.completedTasks) upd.completedTasks = userData.completedTasks || {};
-                    upd.completedTasks[tid] = true;
+                    const gain = reward * (user.mult || 1);
+                    const newLog = { title: "Task Completed: "+tid, reward: gain, date: new Date().toLocaleString() };
+                    let upd = { balance: (user.balance || 0) + gain, history: [newLog, ...(user.history || [])].slice(0, 20) };
+                    if(!upd.tasks) upd.tasks = user.tasks || {};
+                    upd.tasks[tid] = true;
 
-                    db.ref('users/' + userId).update(upd).then(() => {
-                        tg.showAlert("Task Verified! Earnings Added.");
-                        isProcessing = false;
-                        btn.innerText = "DONE";
-                        btn.classList.add('disabled-btn');
+                    db.ref('users/' + uid).update(upd).then(() => {
+                        tg.showAlert("Reward Added!");
+                        active = false; btn.innerText = "DONE"; btn.classList.add('disabled-btn');
                     });
                 }
             }, 1000);
         }
 
-        function renderPlans() {
-            const p = [{v:5,m:2,n:'SILVER'},{v:10,m:3,n:'GOLD'},{v:25,m:5,n:'PLATINUM'},{v:50,m:10,n:'DIAMOND'}];
-            document.getElementById('plan-grid').innerHTML = p.map(x => `
-                <div class="glass p-5 flex justify-between items-center border-white/5 bg-gradient-to-r from-yellow-500/5 to-transparent">
-                    <div><h4 class="font-black text-[12px] text-yellow-500 tracking-widest underline">${x.n} PACKAGE</h4><p class="text-[9px] text-gray-500 font-bold mt-1 uppercase">${x.m}X Speed - Cost: $${x.v}.00</p></div>
-                    <button onclick="showPay('${x.v}')" class="bg-yellow-500 text-black px-6 py-2 rounded-xl font-black text-[10px] shadow-lg">UPGRADE</button>
+        function renderVIP() {
+            const plans = [{v:5,m:2,n:'SILVER'},{v:10,m:3,n:'GOLD'},{v:25,m:5,n:'PLATINUM'},{v:50,m:10,n:'DIAMOND'}];
+            document.getElementById('vip-list').innerHTML = plans.map(p => `
+                <div class="glass p-5 flex justify-between items-center border-indigo-500/20 bg-indigo-500/5">
+                    <div><h4 class="font-black text-xs text-indigo-400 tracking-widest">${p.n} PLAN</h4><p class="text-[9px] text-gray-500 mt-1 uppercase font-bold">${p.m}X EARNING SPEED</p></div>
+                    <button onclick="showPay('${p.v}')" class="bg-indigo-600 px-6 py-2 rounded-xl font-black text-[9px]">BUY $${p.v}</button>
                 </div>
             `).join('');
         }
 
-        function showPay(v) { document.getElementById('payment-gateway').classList.remove('hidden'); tg.showAlert(`Total BDT: ${v*125} TK`); }
+        function showPay(v) { document.getElementById('pay-box').classList.remove('hidden'); tg.showAlert(`Pay BDT: ${v*125}`); }
 
-        function submitWithdraw() {
-            const val = parseFloat(document.getElementById('w-val').value);
-            const adr = document.getElementById('w-adr').value;
-            if(val >= 10 && val <= userData.balance && adr) {
-                db.ref('withdraw_logs').push({ userId, val, adr, method: document.getElementById('w-meth').value, status: 'pending', time: Date.now() });
-                db.ref('users/' + userId).update({ balance: userData.balance - val });
-                tg.showAlert("Withdraw Success! Wait for Admin Review.");
-            } else {
-                tg.showAlert("Min Withdraw $10 and enough balance required!");
-            }
+        function renderHistory() {
+            const list = document.getElementById('log-list');
+            list.innerHTML = user.history && user.history.length ? user.history.map(h => `
+                <div class="glass p-4 border-white/5 flex justify-between items-center">
+                    <div><p class="text-[10px] font-black uppercase">${h.title}</p><p class="text-[8px] text-gray-500">${h.date}</p></div>
+                    <div class="text-green-400 font-black text-[10px]">+$${h.reward.toFixed(3)}</div>
+                </div>
+            `).join('') : `<p class="text-center text-xs text-gray-500 py-10">No history found.</p>`;
         }
 
-        function copy(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Address Copied!"); }
-        function copyRef() { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); tg.showAlert("Ref Link Copied!"); }
+        function copy(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Copied!"); }
     </script>
 </body>
 </html>
