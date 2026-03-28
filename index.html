@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Ads Pro - Final Fixed</title>
+    <title>Meta Ads Pro - Fixed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -13,150 +13,133 @@
     <script src='//libtl.com/sdk.js' data-zone='10741886' data-sdk='show_10741886'></script>
 
     <style>
-        body { background: #050a15; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
-        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 20px; transition: 0.3s; }
-        .page { display: none; padding-bottom: 100px; }
-        .active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        body { background: #050a15; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .page { display: none; }
+        .active { display: block; }
+        .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 20px; padding: 20px; margin-bottom: 15px; }
         
-        /* WHEEL FIX */
-        #wheel { width: 280px; height: 280px; border-radius: 50%; border: 10px solid #1e293b; position: relative; transition: transform 5s cubic-bezier(0.1, 0, 0, 1); background: conic-gradient(
-            #1e3a8a 0deg 30deg, #0f172a 30deg 60deg, #1e40af 60deg 90deg, #020617 90deg 120deg, 
-            #2563eb 120deg 150deg, #1e293b 150deg 180deg, #3b82f6 180deg 210deg, #0f172a 210deg 240deg, 
-            #60a5fa 240deg 270deg, #1e3a8a 270deg 300deg, #ef4444 300deg 330deg, #1e40af 330deg 360deg
-        ); }
-        .wheel-val { position: absolute; width: 100%; height: 100%; text-align: center; font-weight: 900; font-size: 10px; padding-top: 15px; color: white; transform-origin: 50% 50%; }
-        
-        .disabled { pointer-events: none; opacity: 0.4; }
-        .nav-active { color: #3b82f6; border-top: 2px solid #3b82f6; }
+        /* WHEEL FIX - শতভাগ দৃশ্যমান করার জন্য */
+        #wheel { 
+            position: relative; width: 260px; height: 260px; border-radius: 50%; 
+            border: 5px solid #3b82f6; margin: 20px auto; overflow: hidden;
+            transition: transform 5s cubic-bezier(0.1, 0, 0, 1);
+            background: conic-gradient(
+                #1e3a8a 0deg 30deg, #0f172a 30deg 60deg, #1e40af 60deg 90deg, 
+                #020617 90deg 120deg, #2563eb 120deg 150deg, #1e293b 150deg 180deg, 
+                #3b82f6 180deg 210deg, #0f172a 210deg 240deg, #60a5fa 240deg 270deg, 
+                #1e3a8a 270deg 300deg, #ef4444 300deg 330deg, #1e40af 330deg 360deg
+            );
+        }
+        .wheel-item {
+            position: absolute; width: 50%; height: 50%; transform-origin: 100% 100%;
+            display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;
+        }
+
+        .locked { opacity: 0.4; pointer-events: none; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: #020617; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #1e293b; z-index: 100; }
+        .nav-btn { color: #64748b; font-size: 10px; text-align: center; }
+        .nav-btn.active-nav { color: #3b82f6; }
     </style>
 </head>
-<body>
+<body class="p-4 pb-24">
 
-    <div class="p-6 flex justify-between items-center sticky top-0 bg-[#050a15] z-40 border-b border-white/5">
+    <div class="flex justify-between items-center mb-6">
         <div>
-            <p id="user-tier" class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Standard User</p>
-            <h1 id="top-bal" class="text-2xl font-black">$0.000</h1>
+            <p id="tier" class="text-[10px] text-blue-400 font-bold uppercase">Standard Plan</p>
+            <h1 id="bal-top" class="text-2xl font-black">$0.000</h1>
         </div>
         <div class="text-right">
-            <button onclick="nav('premium')" class="bg-blue-600/20 text-blue-400 px-4 py-2 rounded-full text-[10px] font-bold border border-blue-600/30">UPGRADE VIP</button>
+            <button onclick="showPage('premium')" class="bg-blue-600 text-[10px] px-4 py-2 rounded-full font-bold">VIP UPGRADE</button>
         </div>
     </div>
 
-    <div id="p-home" class="page active px-4">
-        <div class="card p-8 text-center my-6 bg-gradient-to-b from-blue-600/10 to-transparent">
-            <p class="text-xs font-bold text-gray-500 uppercase mb-2">Total Earnings</p>
-            <h2 id="main-bal" class="text-5xl font-black mb-8">$0.000</h2>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="nav('withdraw')" class="bg-blue-600 py-4 rounded-2xl font-black text-xs uppercase shadow-lg shadow-blue-600/20">Withdraw</button>
-                <button onclick="nav('history')" class="bg-white/5 py-4 rounded-2xl font-black text-xs uppercase border border-white/10">History</button>
-            </div>
-        </div>
-
-        <div class="card p-5 mb-4 border-l-4 border-blue-600">
-            <div class="flex justify-between items-center mb-4">
-                <h4 class="text-xs font-black uppercase tracking-tighter italic">Daily Video Task</h4>
-                <span id="v-rem" class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded font-bold">15 Left</span>
-            </div>
-            <button id="main-v-btn" onclick="watchAd(this)" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs uppercase shadow-xl">Watch Video & Earn $0.05</button>
-        </div>
-
-        <div class="card p-5 mb-4 border-l-4 border-green-500">
-            <h4 class="text-xs font-black uppercase mb-4 text-green-500">Premium Signup Task ($0.20)</h4>
+    <div id="p-home" class="page active">
+        <div class="card text-center bg-gradient-to-b from-blue-900/20 to-transparent">
+            <p class="text-gray-400 text-[10px] uppercase font-bold mb-1">Total Earnings</p>
+            <h2 id="bal-main" class="text-5xl font-black mb-6">$0.000</h2>
             <div class="flex gap-2">
-                <button id="s-open" onclick="openLink()" class="flex-1 bg-white/5 py-3 rounded-xl text-[10px] font-bold border border-white/10">OPEN SITE</button>
-                <button id="s-claim" onclick="claimSignup(this)" class="flex-1 bg-green-600 py-3 rounded-xl text-[10px] font-black uppercase">VERIFY (60S)</button>
+                <button onclick="showPage('withdraw')" class="flex-1 bg-blue-600 py-3 rounded-xl font-bold text-xs uppercase">Withdraw</button>
+                <button onclick="showPage('history')" class="flex-1 bg-white/5 py-3 rounded-xl font-bold text-xs uppercase border border-white/10">History</button>
+            </div>
+        </div>
+
+        <div class="card border-l-4 border-blue-500">
+            <div class="flex justify-between mb-4">
+                <span class="text-[10px] font-bold text-gray-400 uppercase">Daily Video Ads</span>
+                <span id="v-rem" class="text-[10px] text-blue-400 font-bold">15 Left</span>
+            </div>
+            <button id="main-ad-btn" onclick="startMainAd(this)" class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs uppercase">Watch Ads ($0.05)</button>
+        </div>
+
+        <div class="card border-l-4 border-green-500">
+            <p class="text-[10px] text-green-500 font-bold uppercase mb-4">Daily Signup Offer ($0.20)</p>
+            <div class="flex gap-2">
+                <button onclick="openSignup()" class="flex-1 bg-white/5 py-3 rounded-xl text-[10px] font-bold">OPEN LINK</button>
+                <button id="verify-btn" onclick="verifySignup(this)" class="flex-1 bg-green-600 py-3 rounded-xl text-[10px] font-black uppercase">VERIFY (60S)</button>
             </div>
         </div>
     </div>
 
-    <div id="p-tasks" class="page px-4">
-        <div class="flex gap-2 mb-6">
-            <button onclick="renderTasks('ads')" id="t-ads" class="flex-1 py-3 rounded-xl font-black text-xs bg-blue-600">ADS VIEW</button>
-            <button onclick="renderTasks('web')" id="t-web" class="flex-1 py-3 rounded-xl font-black text-xs bg-slate-800 text-gray-400">WEB VIEW</button>
+    <div id="p-tasks" class="page">
+        <div class="flex bg-slate-900 p-1 rounded-xl mb-6">
+            <button id="t-ads" onclick="renderJobs('ads')" class="flex-1 py-3 rounded-lg font-bold text-[10px] bg-blue-600">ADS VIEW</button>
+            <button id="t-web" onclick="renderJobs('web')" class="flex-1 py-3 rounded-lg font-bold text-[10px]">WEB VIEW</button>
         </div>
-        <div id="task-list" class="space-y-3"></div>
+        <div id="job-container" class="space-y-3"></div>
     </div>
 
-    <div id="p-spin" class="page text-center px-4">
-        <div class="card p-10">
-            <h2 class="text-xl font-black mb-10 text-blue-500 italic uppercase">Lucky Spin Wheel</h2>
-            <div class="relative flex justify-center mb-10">
-                <div class="absolute -top-5 z-20 text-blue-500 text-4xl">▼</div>
-                <div id="wheel">
-                    </div>
+    <div id="p-spin" class="page text-center">
+        <div class="card">
+            <h2 class="text-lg font-black text-blue-500 uppercase italic">Lucky Spin Wheel</h2>
+            <p id="spin-msg" class="text-[9px] text-gray-500 uppercase mt-1">Spin to win up to $100</p>
+            
+            <div class="relative flex justify-center py-4">
+                <div class="absolute top-0 text-blue-500 text-3xl z-10"><i class="fas fa-caret-down"></i></div>
+                <div id="wheel"></div>
             </div>
-            <button id="spin-btn" onclick="doSpin()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs uppercase shadow-xl">SPIN NOW</button>
-            <p id="spin-msg" class="text-[10px] mt-4 font-bold text-gray-500 uppercase">One Spin Available Every 24 Hours</p>
+
+            <button id="spin-btn" onclick="doSpin()" class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs uppercase">Start Spin</button>
         </div>
     </div>
 
-    <div id="p-refer" class="page px-4">
-        <div class="card p-8 text-center">
-            <i class="fas fa-users-crown text-4xl text-blue-500 mb-4"></i>
-            <h2 class="text-xl font-black uppercase mb-6 italic">Affiliate Network</h2>
-            <div class="bg-blue-600/5 p-4 rounded-2xl mb-6 border border-blue-600/10">
-                <p class="text-[10px] font-black text-blue-400 mb-2 uppercase">Earn $1.00 Per Valid Referral</p>
-                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">L1: 25% | L2: 10% | L3-L5: 5% Commission</p>
-            </div>
-            <div id="ref-url" class="bg-black/40 p-4 rounded-xl text-[10px] font-mono text-blue-400 border border-white/5 mb-4 break-all">Generating...</div>
-            <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs uppercase">Copy Invite Link</button>
+    <div id="p-refer" class="page text-center">
+        <div class="card">
+            <i class="fas fa-link text-4xl text-blue-500 mb-4"></i>
+            <h2 class="text-xl font-black uppercase">Referral Network</h2>
+            <p class="text-[10px] text-gray-400 mt-2">Get $1.00 for every install + 25% Lifetime commission</p>
+            <div id="ref-box" class="bg-black/40 p-4 rounded-xl text-[10px] text-blue-400 my-6 break-all border border-white/5">Generating...</div>
+            <button onclick="copyRef()" class="w-full bg-blue-600 py-4 rounded-xl font-black text-xs">COPY INVITE LINK</button>
         </div>
     </div>
 
-    <div id="p-premium" class="page px-4">
-        <h2 class="text-center font-black text-blue-500 mb-6 uppercase tracking-widest">Boost Your Income</h2>
-        <div id="vip-list" class="space-y-3 mb-10"></div>
-        <div id="pay-box" class="hidden card p-6 border-blue-600/40">
-            <p class="text-center text-[10px] font-black text-blue-400 mb-6 uppercase">Payment Methods</p>
+    <div id="p-withdraw" class="page">
+        <div class="card">
+            <h3 class="text-center font-black text-red-500 mb-6 uppercase">Withdraw Fund</h3>
             <div class="space-y-4">
-                <div class="bg-white/5 p-4 rounded-xl border border-white/5">
-                    <p class="text-[9px] text-gray-500 font-black uppercase mb-1">Bkash / Nagad (Personal)</p>
-                    <p class="text-sm font-black text-white italic tracking-wider">নম্বর_এখানে_লিখুন</p>
-                    <p class="text-[9px] text-blue-500 mt-2 font-bold uppercase italic">$1 = 125 BDT</p>
-                </div>
-                <div class="bg-white/5 p-4 rounded-xl text-center border border-white/5">
-                    <p class="text-[9px] text-gray-500 font-black uppercase mb-2">USDT Wallet (TRC20)</p>
-                    <p id="t-addr" class="text-[10px] font-mono text-gray-400 break-all mb-4">TFWJnWzEhSYSv3o11WdZNrJjLZLt3UYdqR</p>
-                    <button onclick="copy('t-addr')" class="w-full bg-blue-600/10 py-2 rounded-lg text-blue-400 font-black text-[10px] uppercase">Copy USDT Address</button>
-                </div>
-                <button onclick="tg.openTelegramLink('https://t.me/Support_Admin')" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-xs uppercase shadow-xl">Contact Support & Send Screenshot</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="p-withdraw" class="page px-4">
-        <div class="card p-6">
-            <h2 class="text-center font-black text-red-500 mb-6 uppercase italic tracking-widest">Request Cash Out</h2>
-            <div class="space-y-4">
-                <select id="w-gate" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl text-[10px] font-black outline-none appearance-none">
-                    <option value="Bkash">BKASH</option><option value="Nagad">NAGAD</option><option value="Binance">BINANCE PAY</option><option value="USDT">USDT TRC20</option>
+                <select id="w-gate" class="w-full bg-slate-900 p-4 rounded-xl text-xs font-bold border border-white/10 outline-none">
+                    <option value="Bkash">Bkash (125 BDT/$)</option>
+                    <option value="Nagad">Nagad (125 BDT/$)</option>
+                    <option value="Binance">Binance Pay</option>
                 </select>
-                <input type="number" id="w-amt" placeholder="Minimum $10 (1250 BDT)" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-sm font-black outline-none">
-                <input type="text" id="w-inf" placeholder="Enter Wallet/Account Number" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-sm font-black outline-none">
-                <button onclick="submitOut()" class="w-full bg-red-600 py-4 rounded-2xl font-black text-xs uppercase shadow-xl">Submit Payout Request</button>
+                <input type="number" id="w-amt" placeholder="Min $10" class="w-full bg-white/5 p-4 rounded-xl text-sm font-bold border border-white/10 outline-none">
+                <input type="text" id="w-info" placeholder="Phone Number / Wallet ID" class="w-full bg-white/5 p-4 rounded-xl text-sm font-bold border border-white/10 outline-none">
+                <button onclick="handleWithdraw()" class="w-full bg-red-600 py-4 rounded-xl font-black text-xs uppercase">Submit Request</button>
             </div>
         </div>
     </div>
 
-    <div id="p-history" class="page px-4">
-        <h3 class="font-black text-sm uppercase mb-6 flex items-center gap-2 text-blue-500 italic"><i class="fas fa-history"></i> Earnings Log</h3>
-        <div id="hist-list" class="space-y-2"></div>
-    </div>
-
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-[#050a15]/95 backdrop-blur-lg flex justify-around items-center px-4 z-50 border-t border-white/5">
-        <button onclick="nav('home')" id="n-home" class="nav-active flex flex-col items-center"><i class="fas fa-house-chimney text-xl mb-1"></i><span class="text-[9px] font-black">HOME</span></button>
-        <button onclick="nav('tasks')" id="n-tasks" class="flex flex-col items-center text-gray-500"><i class="fas fa-layer-group text-xl mb-1"></i><span class="text-[9px] font-black">TASKS</span></button>
-        <button onclick="nav('spin')" id="n-spin" class="flex flex-col items-center text-blue-500 scale-125 -translate-y-2"><i class="fas fa-dharmachakra text-2xl mb-1"></i><span class="text-[9px] font-black">SPIN</span></button>
-        <button onclick="nav('refer')" id="n-refer" class="flex flex-col items-center text-gray-500"><i class="fas fa-user-group text-xl mb-1"></i><span class="text-[9px] font-black">REFER</span></button>
-        <button onclick="nav('premium')" id="n-premium" class="flex flex-col items-center text-gray-500"><i class="fas fa-crown text-xl mb-1"></i><span class="text-[9px] font-black">VIP</span></button>
+    <nav>
+        <div onclick="showPage('home')" id="n-home" class="nav-btn active-nav"><i class="fas fa-home text-lg"></i><br>HOME</div>
+        <div onclick="showPage('tasks')" id="n-tasks" class="nav-btn"><i class="fas fa-tasks text-lg"></i><br>TASKS</div>
+        <div onclick="showPage('spin')" id="n-spin" class="nav-btn"><i class="fas fa-sync text-lg"></i><br>SPIN</div>
+        <div onclick="showPage('refer')" id="n-refer" class="nav-btn"><i class="fas fa-user-plus text-lg"></i><br>REFER</div>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        // Database Configuration
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAjZXYVbwkdVHKK_KJeaWDKKkgankWuibU",
             databaseURL: "https://meta-ads-monny-bot-default-rtdb.firebaseio.com/",
@@ -164,12 +147,12 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const uid = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "DEMO_12345";
+        const uid = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "USER_786";
 
-        let userData = { balance: 0, mult: 1, dailyAds: 15, lastSignup: "", lastSpin: "", tasks: {}, history: [] };
-        let busy = false;
+        let uData = { balance: 0, mult: 1, dailyAds: 15, lastSignup: "", lastSpin: "", tasks: {}, history: [] };
+        let isWaiting = false;
 
-        const smartLinks = [
+        const sLinks = [
             "https://omg10.com/4/10742061", "https://www.effectivegatecpm.com/san2vs080?key=06546f718cb8c7f01528f4bbb0d3adac",
             "https://omg10.com/4/10741957", "https://www.effectivegatecpm.com/e3icg0yc?key=34838b697cff95cb4259720733741245",
             "https://omg10.com/4/10742063", "https://www.effectivegatecpm.com/a771zn3ch?key=4f550e605f792b6e4926408dad579c46",
@@ -182,205 +165,165 @@
 
         const rewards = ["$0.10", "$0.20", "$1", "$2", "$5", "$10", "$20", "$30", "$50", "$100", "TRY AGAIN", "$0.20"];
 
-        // Sync Data from Server
+        // Sync Data
         db.ref('users/' + uid).on('value', snap => {
-            if(snap.exists()){
-                userData = snap.val();
-                userData.tasks = userData.tasks || {};
-                userData.history = userData.history || [];
-            }
+            if(snap.exists()) uData = snap.val();
             updateUI();
         });
 
         function updateUI() {
-            const b = (userData.balance || 0).toFixed(3);
-            document.getElementById('top-bal').innerText = "$" + b;
-            document.getElementById('main-bal').innerText = "$" + b;
-            document.getElementById('v-rem').innerText = (userData.dailyAds || 0) + " Left";
-            document.getElementById('user-tier').innerText = (userData.mult > 1 ? "Premium" : "Standard") + " User";
-            document.getElementById('ref-url').innerText = `https://t.me/metaadsmonnybot?start=${uid}`;
-
-            const today = new Date().toDateString();
-            if(userData.lastSignup === today) {
-                document.getElementById('s-claim').className = "flex-1 bg-slate-800 text-gray-500 py-3 rounded-xl text-[10px] font-black uppercase pointer-events-none";
-                document.getElementById('s-claim').innerText = "USED TODAY";
-                document.getElementById('s-open').classList.add('disabled');
-            }
-            if(userData.lastSpin === today) {
-                document.getElementById('spin-btn').classList.add('disabled');
-                document.getElementById('spin-btn').innerText = "TRY TOMORROW";
-            }
-        }
-
-        function nav(p) {
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(el => el.classList.remove('nav-active', 'text-gray-500'));
-            document.getElementById('p-' + p).classList.add('active');
-            document.getElementById('n-' + p).classList.add('nav-active');
-            if(p === 'tasks') renderTasks('ads');
-            if(p === 'premium') renderVIP();
-            if(p === 'history') renderHistory();
-        }
-
-        // --- FIXED WATCH AD ---
-        function watchAd(btn) {
-            if(userData.dailyAds <= 0 || busy) return;
-            busy = true; btn.classList.add('disabled');
+            const b = (uData.balance || 0).toFixed(3);
+            document.getElementById('bal-top').innerText = "$" + b;
+            document.getElementById('bal-main').innerText = "$" + b;
+            document.getElementById('v-rem').innerText = (uData.dailyAds || 0) + " Left";
+            document.getElementById('ref-box').innerText = `https://t.me/metaadsmonnybot?start=${uid}`;
             
+            const today = new Date().toDateString();
+            if(uData.lastSignup === today) {
+                document.getElementById('verify-btn').className = "flex-1 bg-slate-800 text-gray-500 py-3 rounded-xl text-[10px] font-bold pointer-events-none";
+                document.getElementById('verify-btn').innerText = "DONE TODAY";
+            }
+            if(uData.lastSpin === today) {
+                document.getElementById('spin-btn').classList.add('locked');
+                document.getElementById('spin-btn').innerText = "TRY AGAIN TO-DAY";
+            }
+        }
+
+        function showPage(p) {
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active-nav'));
+            document.getElementById('p-' + p).classList.add('active');
+            document.getElementById('n-' + p).classList.add('active-nav');
+            if(p === 'tasks') renderJobs('ads');
+        }
+
+        // --- MAIN AD FIX ---
+        function startMainAd(btn) {
+            if(uData.dailyAds <= 0 || isWaiting) return;
+            isWaiting = true; btn.classList.add('locked');
+
             if(typeof show_10741886 === 'function') show_10741886();
             tg.openTelegramLink("https://t.me/metaadsmonnybot");
 
-            let s = 30;
+            let time = 30;
             const t = setInterval(() => {
-                btn.innerText = `PLEASE WAIT ${s}S`;
-                if(s-- <= 0) {
+                btn.innerText = `WAITING... ${time}S`;
+                if(time-- <= 0) {
                     clearInterval(t);
-                    const gain = 0.05 * (userData.mult || 1);
-                    saveProfit("Ad Reward", gain, { dailyAds: userData.dailyAds - 1 });
-                    tg.showAlert("Profit Credited!");
-                    busy = false; btn.classList.remove('disabled'); btn.innerText = "Watch Video & Earn $0.05";
+                    saveEarn("Daily Video", 0.05, { dailyAds: uData.dailyAds - 1 });
+                    tg.showAlert("Profit Added! $0.05");
+                    isWaiting = false; btn.classList.remove('locked'); btn.innerText = "Watch Ads ($0.05)";
                 }
             }, 1000);
         }
 
-        // --- SIGNUP LOGIC ---
-        function openLink() {
-            tg.openLink(smartLinks[new Date().getDate() % 15]);
+        // --- SIGNUP FIX ---
+        function openSignup() {
+            const idx = new Date().getDate() % 15;
+            tg.openLink(sLinks[idx]);
         }
 
-        function claimSignup(btn) {
-            if(userData.lastSignup === new Date().toDateString() || busy) return;
-            busy = true; btn.classList.add('disabled');
-            let s = 60;
+        function verifySignup(btn) {
+            if(uData.lastSignup === new Date().toDateString() || isWaiting) return;
+            isWaiting = true; btn.classList.add('locked');
+            
+            let time = 60;
             const t = setInterval(() => {
-                btn.innerText = `VERIFYING... ${s}S`;
-                if(s-- <= 0) {
+                btn.innerText = `VERIFYING... ${time}S`;
+                if(time-- <= 0) {
                     clearInterval(t);
-                    const gain = 0.20 * (userData.mult || 1);
-                    saveProfit("Signup Reward", gain, { lastSignup: new Date().toDateString() });
-                    tg.showAlert("Signup Verified!");
-                    busy = false;
+                    saveEarn("Daily Signup", 0.20, { lastSignup: new Date().toDateString() });
+                    tg.showAlert("Signup Verified! $0.20 Earned.");
+                    isWaiting = false;
                 }
             }, 1000);
         }
 
         // --- SPIN WHEEL FIX ---
-        const wheelBox = document.getElementById('wheel');
-        rewards.forEach((v, i) => {
-            const d = document.createElement('div');
-            d.className = 'wheel-val';
-            d.style.transform = `rotate(${i * 30}deg)`;
-            d.innerText = v;
-            wheelBox.appendChild(d);
-        });
-
         function doSpin() {
-            if(userData.lastSpin === new Date().toDateString() || busy) return;
-            busy = true;
+            if(uData.lastSpin === new Date().toDateString() || isWaiting) return;
+            isWaiting = true;
             const deg = 3600 + Math.floor(Math.random() * 3600);
-            wheelBox.style.transform = `rotate(${deg}deg)`;
+            document.getElementById('wheel').style.transform = `rotate(${deg}deg)`;
 
             setTimeout(() => {
-                const actualDeg = deg % 360;
-                const idx = Math.floor(((360 - actualDeg + 15) % 360) / 30);
-                const win = rewards[idx];
-                let amt = win.includes('$') ? parseFloat(win.replace('$','')) : 0;
+                const winIdx = Math.floor(((360 - (deg % 360) + 15) % 360) / 30);
+                const prize = rewards[winIdx];
+                let amt = prize.includes('$') ? parseFloat(prize.replace('$','')) : 0;
 
                 if(amt > 0) {
-                    saveProfit("Lucky Spin", amt, { lastSpin: new Date().toDateString() });
-                    tg.showAlert("You Won " + win);
+                    saveEarn("Spin Reward", amt, { lastSpin: new Date().toDateString() });
+                    tg.showAlert(`You Won ${prize}!`);
                 } else {
                     db.ref('users/' + uid).update({ lastSpin: new Date().toDateString() });
                     tg.showAlert("Try Tomorrow!");
                 }
-                busy = false;
+                isWaiting = false;
             }, 5000);
         }
 
-        // --- JOB SYSTEM ---
-        function renderTasks(type) {
-            const box = document.getElementById('task-list');
+        // --- TASKS SYSTEM ---
+        function renderJobs(type) {
+            const list = document.getElementById('job-container');
+            list.innerHTML = "";
             const isAds = type === 'ads';
-            document.getElementById('t-ads').className = isAds ? "flex-1 py-3 rounded-xl font-black text-xs bg-blue-600" : "flex-1 py-3 rounded-xl font-black text-xs bg-slate-800 text-gray-400";
-            document.getElementById('t-web').className = !isAds ? "flex-1 py-3 rounded-xl font-black text-xs bg-blue-600" : "flex-1 py-3 rounded-xl font-black text-xs bg-slate-800 text-gray-400";
             
-            box.innerHTML = "";
+            document.getElementById('t-ads').className = isAds ? "flex-1 py-3 rounded-lg font-bold text-[10px] bg-blue-600" : "flex-1 py-3 rounded-lg font-bold text-[10px]";
+            document.getElementById('t-web').className = !isAds ? "flex-1 py-3 rounded-lg font-bold text-[10px] bg-blue-600" : "flex-1 py-3 rounded-lg font-bold text-[10px]";
+
             for(let i=1; i<=15; i++) {
-                const id = `${type}_${i}`;
-                const done = userData.tasks[id];
-                const rew = isAds ? 0.05 : 0.10;
-                const txt = isAds ? "Ads View 30s Earn $0.05" : "Web View 60s Earn $0.10";
-                
-                box.innerHTML += `<div class="card p-5 flex justify-between items-center border-l-2 border-blue-600/30">
-                    <p class="text-[10px] font-black uppercase tracking-tight">${txt}</p>
-                    <button onclick="startJob(this, ${rew}, 30, '${id}')" class="px-5 py-2 rounded-xl text-[10px] font-black ${done ? 'disabled bg-slate-800' : 'bg-blue-600 shadow-lg'}">${done ? 'DONE' : 'START'}</button>
+                const tid = `${type}_v${i}`;
+                const done = uData.tasks && uData.tasks[tid];
+                list.innerHTML += `<div class="card flex justify-between items-center">
+                    <p class="text-[9px] font-bold uppercase">${isAds ? 'Ads View 30s Earn $0.05' : 'Web View 60s Earn $0.10'}</p>
+                    <button onclick="runJob(this, ${isAds?0.05:0.10}, ${isAds?30:30}, '${tid}')" class="px-5 py-2 rounded-lg text-[9px] font-black ${done ? 'locked' : 'bg-blue-600'}">${done ? 'DONE' : 'START'}</button>
                 </div>`;
             }
         }
 
-        function startJob(btn, rew, sec, tid) {
-            if(busy || userData.tasks[tid]) return;
-            busy = true; btn.classList.add('disabled');
-            tg.openLink(smartLinks[Math.floor(Math.random()*15)]);
-            let s = sec;
+        function runJob(btn, rew, sec, tid) {
+            if(isWaiting || (uData.tasks && uData.tasks[tid])) return;
+            isWaiting = true; btn.classList.add('locked');
+            tg.openLink(sLinks[Math.floor(Math.random()*15)]);
+
+            let r = sec;
             const t = setInterval(() => {
-                btn.innerText = `${s}S`;
-                if(s-- <= 0) {
+                btn.innerText = `${r}S`;
+                if(r-- <= 0) {
                     clearInterval(t);
-                    const gain = rew * (userData.mult || 1);
-                    let upd = { balance: (userData.balance || 0) + gain };
-                    userData.tasks[tid] = true;
-                    upd.tasks = userData.tasks;
-                    saveProfit(`Task ${tid}`, gain, upd);
-                    tg.showAlert("Reward Added!");
-                    busy = false; btn.innerText = "DONE";
+                    let upd = { balance: (uData.balance || 0) + rew };
+                    if(!uData.tasks) uData.tasks = {};
+                    uData.tasks[tid] = true;
+                    upd.tasks = uData.tasks;
+                    saveEarn("Task Complete", rew, upd);
+                    tg.showAlert("Task Verified!");
+                    isWaiting = false; btn.innerText = "DONE";
                 }
             }, 1000);
         }
 
-        // --- DATA HANDLER ---
-        function saveProfit(title, amt, extras = {}) {
-            const log = { title, amt, date: new Date().toLocaleTimeString() };
-            const hist = [log, ...(userData.history || [])].slice(0, 15);
+        // --- DATABASE SAVE FIX ---
+        function saveEarn(title, amt, extras = {}) {
+            const log = { title, amt, time: new Date().toLocaleString() };
+            const history = [log, ...(uData.history || [])].slice(0, 15);
             db.ref('users/' + uid).update({
-                balance: (userData.balance || 0) + amt,
-                history: hist,
+                balance: (uData.balance || 0) + (amt * (uData.mult || 1)),
+                history: history,
                 ...extras
             });
         }
 
-        function renderHistory() {
-            const box = document.getElementById('hist-list');
-            box.innerHTML = userData.history.length ? userData.history.map(h => `
-                <div class="card p-4 flex justify-between items-center border-white/5">
-                    <div><p class="text-[10px] font-black uppercase text-gray-400">${h.title}</p><p class="text-[8px] text-gray-600">${h.date}</p></div>
-                    <p class="text-[11px] font-black text-green-500">+$${h.amt.toFixed(3)}</p>
-                </div>
-            `).join('') : '<p class="text-center py-20 text-xs opacity-20">NO HISTORY FOUND</p>';
-        }
-
-        function renderVIP() {
-            const vips = [{v:5,m:2,n:'SILVER'},{v:10,m:3,n:'GOLD'},{v:25,m:5,n:'PLATINUM'},{v:50,m:10,n:'DIAMOND'}];
-            document.getElementById('vip-list').innerHTML = vips.map(v => `
-                <div class="card p-5 flex justify-between items-center">
-                    <div><h4 class="font-black text-xs text-blue-500 italic">${v.n} BOOST</h4><p class="text-[9px] text-gray-500 uppercase mt-1">${v.m}X PROFIT - COST $${v.v}</p></div>
-                    <button onclick="document.getElementById('pay-box').classList.remove('hidden')" class="bg-blue-600 px-6 py-2 rounded-xl font-black text-[10px]">BUY</button>
-                </div>
-            `).join('');
-        }
-
-        function submitOut() {
+        function handleWithdraw() {
             const a = parseFloat(document.getElementById('w-amt').value);
-            const i = document.getElementById('w-inf').value;
-            if(a >= 10 && userData.balance >= a && i) {
-                db.ref('withdrawals').push({ uid, amount: a, info: i, gate: document.getElementById('w-gate').value, status: 'Pending' });
-                db.ref('users/' + uid).update({ balance: userData.balance - a });
-                tg.showAlert("Success! Admin will pay soon.");
+            const i = document.getElementById('w-info').value;
+            if(a >= 10 && uData.balance >= a && i) {
+                db.ref('withdrawals').push({ uid, amt: a, info: i, gate: document.getElementById('w-gate').value, status: 'Pending' });
+                db.ref('users/' + uid).update({ balance: uData.balance - a });
+                tg.showAlert("Success! Pending for Approval.");
             } else { tg.showAlert("Invalid Amount or Info!"); }
         }
 
-        function copy(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); tg.showAlert("Copied!"); }
-        function copyRef() { navigator.clipboard.writeText(document.getElementById('ref-url').innerText); tg.showAlert("Link Copied!"); }
+        function copyRef() { navigator.clipboard.writeText(document.getElementById('ref-box').innerText); tg.showAlert("Link Copied!"); }
     </script>
 </body>
 </html>
